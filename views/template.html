@@ -1,0 +1,73 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title><%=title%></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <!-- build:css css/vendor.css -->
+  <link rel="stylesheet" href="/libs/css/swiper.min.css">
+  <link rel="stylesheet" href="/libs/css/animate.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <!-- endbuild -->
+  <!--正式环境埋点链接-->
+  <!--<script src="http://domp.bluemoon.com.cn:82/bd-api-tracking/api/script?appId=WEIXIN"></script>-->
+  <!--测试环境埋点链接-->
+  <!--<script src="http://dompapi.bluemoon.com.cn:82/bd-api-tracking/api/script?appId=WEIXIN"></script>-->
+</head>
+
+<body>
+  <div id="wx_pic"><img src=""></div>
+  <div class="content-container">
+    <div id="loadingCont">
+      <div class="resize-container mediate">
+        <div class="mediate" id="loadingSvg">
+          <svg width="100" height="100">
+            <circle id="loadingCircle" r="25" cx="50" cy="50" stroke-dasharray="156" style="stroke-dashoffset: 156"></circle>
+          </svg>
+        </div>
+        <span id="loadingTxt" class="mediate">0%</span>
+      </div>
+    </div>
+    <div class="swiper-container" style="opacity: 0;">
+      <div class="swiper-wrapper">
+        <% pages.forEach(function (page) { %>
+          <section class="swiper-slide flat">
+            <% page.elements.forEach(function (element) { %>
+              <% if (element.type === 'bg') { %>
+                <img class="ele-bg" pre-src="<%= element['imgSrc'] %>">
+              <% } %>
+            <% }) %>
+            <div class="resize-container mediate flat">
+              <% page.elements.forEach(function (element) { %>
+                <% if (element.type === 'pic') { %>
+                  <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; height: <%= element['height'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px;">
+                    <div class="<%= element['animatedName'] && 'ani ' %><%= element['loop'] && 'loop ' %>" swiper-animate-effect="<%= element['animatedName'] %>" swiper-animate-duration="<%= element['duration'] && element['duration'] + 's' %>" swiper-animate-delay="<%= element['delay'] && element['delay'] + 's' %>">
+                      <% if (element.href) { %><a target="_blank" href="http://<%= element['href'] %>"><img class="ele-img" pre-src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"></a><%} else {%><img class="ele-img" pre-src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"><%}%>
+                    </div>
+                  </div>
+                <% } %>
+                <% if (element.type === 'text') { %>
+                  <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px;">
+                    <div class="<%= element['animatedName'] && 'ani ' %><%= element['loop'] && 'loop ' %>" swiper-animate-effect="<%= element['animatedName'] %>" swiper-animate-duration="<%= element['duration'] && element['duration'] + 's' %>" swiper-animate-delay="<%= element['delay'] && element['delay'] + 's' %>">
+                      <div style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg); color: <%= element['color'] %>; text-align: <%= element['textAlign'] %>; line-height: <%= element['lineHeight'] %>; font-family: <%= element['fontFamily'] %>; font-size: <%= element['fontSize'] %>px; white-space: pre-line;font-weight: <%= element['fontWeight'] || 'normal' %>"><% if (element.href) { %><a style="color: <%= element['color'] %>;" target="_blank" href="http://<%= element['href'] %>"><%= element.text %></a><%} else {%><%= element.text %><%}%></div>
+                    </div>
+                  </div>
+                <% } %>
+              <% }) %>
+            </div>
+          </section>
+        <% }) %>
+      </div>
+      <img class="button-next" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAAkCAMAAADip6m2AAAAolBMVEUAAAAAAAAAAAAAAAAAAAABAQEAAAAAAAAHBwcAAAD////9/f37+/vt7e25ubn39/cKCgrz8/Pe3t7c3Nz+/v729vbW1tZra2tKSkoAAABpaWlgYGD9/f38/Pz5+fn5+fn39/fz8/Px8fHu7u7q6urm5ubj4+Pd3d3y8vLX19fJycnAwMC4uLisrKyhoaGVlZWGhoajo6MpKSkxMTGAgID///9oDYyzAAAANXRSTlMAAwcLFR0SGRAO+efJbSOcIqBDQvLNbTEpGxEQ9e3h29XDvLOsnJOJiIFpYVlNRkE7MiwfDLl52bwAAAGFSURBVEjH3ZXZboMwFERbHAMhC6EFQtrs+777/3+t98bGjmwqy32plHmLPYfMiYTy9nJ5F/kb693j+O4h7Y567SZjzbYHuDv72WCQxgfSjixpReyRqEWAdmK/YyaTfAHtpivjIo6TUReTZYxxcZzupju/XufP4g660aYD2USmuF13sKeP7Ae6uF13fKZBDRLQ81gTt+rOCmD9MPSBLmaauEV3hWidQOqIr57FLbrpDllCPAghSO9SU7xad3QCNiRQgwAeAn0a6eLVutOC4mRk+SCcToupIW7qsmWnByw25B3Svc6SaeKGbn9LA8UqGsW3fVMc2VJ3eJS6apcUPw5LcVmAq1J30qWBL1mN9gPanZTiUBE3pe5C6cpo4gtRjXkJjtf8cbnSlTHEcz5yTTwBh00UOVToVogfGvibhQq+pCyr0q0Wz1h6kTDsyZObPvn36bckh6qA8YE1eIUEa6GxyyeKEzhC1MLy6byL3yNP4BNn7TSWVRffHYHaI7qq7PB3qMr/mh8s20b2bOZlXQAAAABJRU5ErkJggg==" alt="">
+    </div>
+  </div>
+  <!-- build:js scripts/vendor.js -->
+  <script src="/libs/js/resizeBak.js"></script>
+  <script src="/libs/js/swiper.min.js"></script>
+  <script src="/libs/js/swiper.animate.min.js"></script>
+  <script src="/libs/js/resLoader.js"></script>
+  <script src="/js/main.js"></script>
+  <!-- endbuild -->
+</body>
+
+</html>

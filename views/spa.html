@@ -1,0 +1,74 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title><%=title%></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <!-- build:css css/vendor.css -->
+  <link rel="stylesheet" href="/css/main.css">
+  <!-- endbuild -->
+</head>
+
+<body>
+  <div id="wx_pic"><img src=""></div>
+  <div class="content-container">
+        <% pages.forEach(function (page) { %>
+            <% page.elements.forEach(function (element) { %>
+              <% if (element.type === 'bg') { %>
+                <img class="ele-bg" style="width:100%" src="<%= element['imgSrc'] %>">
+              <% } %>
+            <% }) %>
+            <div class="resize-container mediate flat">
+              <section style="height:<%= canvasHeight %>px">
+              <% page.elements.forEach(function (element) { %>
+                <% if (element.type === 'pic') { %>
+                  <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; height: <%= element['height'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px;">
+                    <div>
+                      <% if (element.href) { %><a target="_blank" href="http://<%= element['href'] %>"><img class="ele-img" src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"></a><%} else {%><img class="ele-img" src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"><%}%>
+                    </div>
+                  </div>
+                <% } %>
+                <% if (element.type === 'text') { %>
+                  <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px;">
+                    <div>
+                        <div style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg); color: <%= element['color'] %>; text-align: <%= element['textAlign'] %>; line-height: <%= element['lineHeight'] %>; font-family: <%= element['fontFamily'] %>; font-size: <%= element['fontSize'] %>px; white-space: pre-line;font-weight: <%= element['fontWeight'] || 'normal' %>"><% if (element.href) { %><a style="color: <%= element['color'] %>;" target="_blank" href="http://<%= element['href'] %>"><%= element.text %></a><%} else {%><%= element.text %><%}%></div>
+                    </div>
+                  </div>
+                <% } %>
+              <% }) %>
+        </section>
+        <% }) %>
+      </div>
+  </div>
+  <!-- build:js scripts/vendor.js -->
+  <script>
+  (function () {
+  var designW = 320
+  var designH = 508
+  var designR = designW / designH
+
+  var actualW = document.documentElement.clientWidth
+  var actualH = document.documentElement.clientHeight
+  var actualR = actualW / actualH
+
+  var scale = (actualR > designR) ? (actualH / designH) : (actualW / designW)
+  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + '); '
+  if (actualW < designW) {
+    if (actualR > designR) {
+      style += 'margin-left: ' + (actualW - designW) / 2 + 'px;'
+    } else {
+      style += '-webkit-transform-origin: left; transform-origin: left;'
+    }
+  }
+
+  var containers = document.getElementsByClassName('resize-container')
+  var i
+  for (i = 0; i < containers.length; i++) {
+    containers[i].setAttribute('style', style)
+  }
+})()
+  </script>
+  <!-- endbuild -->
+</body>
+
+</html>

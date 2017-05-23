@@ -1,0 +1,131 @@
+/* 2017/01/10 */
+*, *:before, *:after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+a:hover, a:visited, a:link, a:active {
+    text-decoration: none;
+}
+.resize-container {
+    overflow: hidden;
+}
+
+.content-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.ele {
+    position: absolute;
+}
+
+.ele-bg {
+    height: 100%;
+    width: auto;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    z-index: 0;    
+}
+
+.ele-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.mediate {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+
+.loop {
+    animation-iteration-count: infinite;
+}
+
+.flat {
+    transform-style: flat;
+}
+
+#wx_pic {
+    display: none;
+}
+
+.button-next {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    width: 40px;
+    height: 20px;
+    margin-left: -20px;
+    z-index: 10;
+    cursor: pointer;
+    animation: buttonNext 2s infinite;
+}
+
+@keyframes buttonNext {
+    0% {
+        transform: translateY(-5px);
+        opacity: .8;
+    }
+    50% {
+        transform: translateY(10px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-5px);
+    }
+}
+
+.button-next.swiper-button-disabled {
+    display: none;
+}
+
+.swiper-container {
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+#loadingCont {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    background-color: #fff;
+    transition: opacity 1s;
+}
+
+#loadingSvg {
+    width: 100px;
+    height: 100px;
+    transform: rotate(-90deg);
+}
+
+#loadingCircle {
+    fill: transparent;
+    stroke: #0074d9;
+    stroke-width: 50px;
+    transition: stroke-dashoffset 0.1s;
+}
+
+#loadingTxt {
+    color: #b4b4b4;
+    font-size: 10px;
+    width: 4em;
+    height: 1em;
+    text-align: center;
+    top: 120px;
+}
