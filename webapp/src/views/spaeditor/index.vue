@@ -109,7 +109,7 @@
               <div v-if="panelTabState === 0">
                 <!-- 文字编辑界面特有控件 -->
                 <template v-if="panelState === 11">
-                  <el-form-item label="链接">
+                  <el-form-item label="跳转链接">
                     <el-input v-model="element.href"></el-input>
                   </el-form-item>
                   <el-form-item label="文本内容">
@@ -137,7 +137,7 @@
                   </el-form-item>
                 </template>
                 <!-- 通用控件-->
-                <el-form-item label="链接">
+                <el-form-item label="跳转链接">
                   <el-input v-model="element.href"></el-input>
                 </el-form-item>
                 <el-form-item label="透明度">

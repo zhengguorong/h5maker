@@ -30,6 +30,10 @@ export default {
         path: 'spaList',
         name: '单页作品',
         active: false
+      }, {
+        path: 'about',
+        name: '关于作者',
+        active: false
       }
       ]
     }

@@ -18,15 +18,17 @@
 </style>
 
 <script>
+  import lrz from 'lrz'
   export default {
     methods: {
       fileChange (event) {
         let file = event.target.files[0]
         if (file) {
-          let reader = new window.FileReader()
-          reader.onload = (ev) => {
+          lrz(file, {quality: 0.5}).then(result => {
+            // let reader = new window.FileReader()
+            // reader.onload = (ev) => {
             let img = document.createElement('img')
-            let base64 = ev.target.result
+            let base64 = result.base64
             img.onload = () => {
               this.$emit('uploaded', {
                 'base64': base64,
@@ -35,8 +37,9 @@
               })
             }
             img.src = base64
-          }
-          reader.readAsDataURL(file)
+            // }
+            // reader.readAsDataURL(file)
+          })
         }
       }
     }

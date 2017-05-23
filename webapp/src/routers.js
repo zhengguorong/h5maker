@@ -29,4 +29,8 @@ export default [{
   path: '/spaList',
   name: 'spaList',
   component: require('./views/spaeditor/themeList.vue')
+}, {
+  path: '/about',
+  name: 'about',
+  component: require('./views/user/about.vue')
 }]
