@@ -43,6 +43,8 @@ export default {
     this.navList.forEach((element) => {
       if (element.path === this.$route.name) {
         element.active = true
+      } else if (this.$route.name === 'index') {
+        this.navList[0].active = true
       }
     })
   }
