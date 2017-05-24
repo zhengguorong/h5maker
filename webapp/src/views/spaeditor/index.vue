@@ -5,7 +5,7 @@
       <Overview class="overview" />
       <div class="canvas-wrap" id="canvas-wrap">
         <Page :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" />
-        <div class="tool-bar" :style="{top: parseInt(canvasHeight) + 35 + 'px'}">在右侧设置界面调整页面高度</div>
+        <!--<div class="tool-bar" :style="{top: parseInt(canvasHeight) + 35 + 'px'}">在右侧设置界面调整页面高度</div>-->
       </div>
       <div class="control-panel">
         <div class="funcs">
@@ -107,7 +107,7 @@
     },
     methods: {
       dialogSave () {
-        return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('themeList'))
+        return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('spaList'))
       },
       getPicList (_id) {
         this.$store.dispatch('getPicListByThemeId', _id)
