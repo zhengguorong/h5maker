@@ -25,6 +25,10 @@
         let file = event.target.files[0]
         if (file) {
           lrz(file, {quality: 0.5}).then(result => {
+            if (result.fileLen > 2 * 1024 * 1024) {
+              this.$message.error('请选择小于2M的文件')
+              return
+            }
             // let reader = new window.FileReader()
             // reader.onload = (ev) => {
             let img = document.createElement('img')
