@@ -24,7 +24,21 @@
         </div>
         <div class="wrapper custom-scrollbar">
           <!-- 设置背景 0 -->
-          <BgPanel :addBG="addBG" :cleanBG="cleanBG"/>
+        <div class="panel panel-bg">
+          <div class="clearfix"
+              v-if="panelTabState !== 1">
+            <el-button class="btn"
+                      type="success"
+                      @click="panelTabState = 1">更换背景</el-button>
+            <el-button class="btn"
+                      type="danger"
+                      @click="cleanBG">移除背景</el-button>
+          </div>
+          <div class="clearfix"
+              v-if="panelTabState === 1">
+            <ImgPanel :selectedImg="addBG"/>
+          </div>
+        </div>
           <!-- 添加文字 1 -->
           <div class="panel panel-text" v-if="panelState === 1">
             <div class="btn" @click="addTextElement('title')" style="font-size: 32px; font-weight: bold;">插入标题</div>
@@ -32,8 +46,7 @@
           </div>
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-if="panelState === 2">
-            <PicPicker class="ele" @uploaded="uploadImage"></PicPicker>
-            <div class="ele" :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }" @click="addPicElement(element)" v-for="element in picList"></div>
+            <ImgPanel :selectedImg="addPicElement"/>
           </div>
           <!-- 图层编辑面板 -->
           <EditPanel :element="element" :panelState="panelState" v-if="panelState > 10"/>
@@ -53,7 +66,7 @@
   import HeaderEdit from '../../components/HeaderEdit'
   import EditPanel from '../../components/EditPanel'
   import SvgPanel from '../../components/SvgPanel'
-  import BgPanel from '../../components/BgPanel'
+  import ImgPanel from '../../components/ImgPanel'
   import appConst from '../../util/appConst'
   export default {
     data () {
@@ -67,7 +80,8 @@
         http: appConst.BACKEND_DOMAIN,
         releaseUrl: '',
         showPreView: false,
-        isLoadingPreview: false
+        isLoadingPreview: false,
+        panelTabState: 0
       }
     },
     watch: {
@@ -195,16 +209,12 @@
       deleteElement () {
         this.$store.dispatch('deleteSelectedElement')
       },
-      style (obj) {
-        this.element.width = obj.width
-        this.element.height = obj.height
-      },
       togglePanel (code) {
         this.panelState = code
       }
     },
     components: {
-      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, BgPanel
+      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, ImgPanel
     },
     mounted () {
       this.itemId = this.$route.query.itemId

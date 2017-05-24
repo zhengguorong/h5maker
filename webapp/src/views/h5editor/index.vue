@@ -10,7 +10,7 @@
             <button class="func el-icon-edit" @click="togglePanel(1)" :class="{ active: panelState === 1 }"></button>
           </el-tooltip>
           <el-tooltip  effect="dark" content="新建素材" placement="left">
-            <button class="func el-icon-picture" @click="togglePanel(2)":class="{ active: panelState === 2 }"></button>
+            <button class="func el-icon-picture" @click="togglePanel(2)" :class="{ active: panelState === 2 }"></button>
           </el-tooltip>
           <el-tooltip  effect="dark" content="播放动画" placement="left">
             <button class="func el-icon-caret-right" @click="playAnimate"></button>
@@ -21,19 +21,32 @@
         </div>
         <div class="wrapper custom-scrollbar">
           <!-- 设置背景 0 -->
-          <BgPanel :addBG="addBG" :cleanBG="cleanBG"/>
+        <div class="panel panel-bg">
+          <div class="clearfix"
+              v-if="panelTabState !== 1">
+            <el-button class="btn"
+                      type="success"
+                      @click="panelTabState = 1">更换背景</el-button>
+            <el-button class="btn"
+                      type="danger"
+                      @click="cleanBG">移除背景</el-button>
+          </div>
+          <div class="clearfix"
+              v-if="panelTabState === 1">
+            <ImgPanel  :selectedImg="addBG"/>
+          </div>
+        </div>
           <!-- 添加文字 1 -->
-          <div class="panel panel-text" v-if="panelState === 1">
+          <div class="panel panel-text" v-show="panelState === 1">
             <div class="btn" @click="addTextElement('title')" style="font-size: 32px; font-weight: bold;">插入标题</div>
             <div class="btn" @click="addTextElement('plain')">插入文本</div>
           </div>
           <!-- 添加元素 2 -->
-          <div class="panel panel-element clearfix" v-if="panelState === 2">
-            <PicPicker class="ele" @uploaded="uploadImage"></PicPicker>
-            <div class="ele" :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }" @click="addPicElement(element)" v-for="element in picList"></div>
+          <div class="panel panel-element clearfix" v-show="panelState === 2">
+            <ImgPanel :selectedImg="addPicElement"/>
           </div>
           <!-- 图层编辑面板 -->
-          <EditPanel :element="element" :panelState="panelState" v-if="panelState > 10"/>
+          <EditPanel :element="element" :panelState="panelState" v-show="panelState > 10"/>
         </div>
       </div>
     </section>
@@ -50,7 +63,7 @@
   import HeaderEdit from '../../components/HeaderEdit'
   import EditPanel from '../../components/EditPanel'
   import SvgPanel from '../../components/SvgPanel'
-  import BgPanel from '../../components/BgPanel'
+  import ImgPanel from '../../components/ImgPanel'
   import appConst from '../../util/appConst'
   export default {
     data () {
@@ -60,6 +73,7 @@
         canvasWidth: 320,
         canvasHeight: 504,
         dialogSaveBeforeBack: false,
+        panelTabState: 0,
         picBase64: '',
         http: appConst.BACKEND_DOMAIN,
         releaseUrl: '',
@@ -68,8 +82,6 @@
       }
     },
     watch: {
-      picBase64 () {
-      },
       element () {
         let ele = this.$store.state.editor.editorElement
         let type = ele ? ele.type : 'null'
@@ -97,9 +109,6 @@
       element () {
         let ele = this.$store.state.editor.editorElement
         return ele || {}
-      },
-      picList () {
-        return this.$store.state.editor.picList
       }
     },
     methods: {
@@ -108,14 +117,6 @@
       },
       getPicList (_id) {
         this.$store.dispatch('getPicListByThemeId', _id)
-      },
-      uploadImage (data) {
-        this.$store.dispatch('savePic', {
-          'imgData': data['base64'],
-          'themeId': this.themeId,
-          'width': data['width'],
-          'height': data['height']
-        })
       },
       addPicElement (ele) {
         // if (ele) {
@@ -134,8 +135,8 @@
         this.element.type = 'pic'
       },
 
-      addBG (src) {
-        this.$store.dispatch('addBGElement', { type: 'bg', imgSrc: src })
+      addBG (file) {
+        this.$store.dispatch('addBGElement', { type: 'bg', imgSrc: file.filePath })
       },
       cleanBG () {
         this.$store.dispatch('cleanBG')
@@ -192,16 +193,13 @@
       deleteElement () {
         this.$store.dispatch('deleteSelectedElement')
       },
-      style (obj) {
-        this.element.width = obj.width
-        this.element.height = obj.height
-      },
       togglePanel (code) {
+        console.log(code)
         this.panelState = code
       }
     },
     components: {
-      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, BgPanel
+      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, ImgPanel
     },
     mounted () {
       this.itemId = this.$route.query.itemId
@@ -312,20 +310,14 @@
       z-index: 2;
       background-color: #ececec;
     }
-    .panel-text {
+    .panel-bg {
       .btn {
-        height: 50px;
-        line-height: 50px;
-        text-align: center;
-        border: 2px solid transparent;
-        &:hover {
-          cursor: pointer;
-          border-color: #04b9c4;
-        }
+        float: left;
+        width: 48%;
+        margin-left: 1%;
+        margin-right: 1%;
       }
-    }
-    .panel-element {
-      .ele {
+      .bgs {
         float: left;
         width: 80px;
         height: 80px;
@@ -336,6 +328,18 @@
         &:hover {
           border: 2px solid #18ccc0;
           cursor: pointer;
+        }
+      }
+    }
+    .panel-text {
+      .btn {
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        border: 2px solid transparent;
+        &:hover {
+          cursor: pointer;
+          border-color: #04b9c4;
         }
       }
     }

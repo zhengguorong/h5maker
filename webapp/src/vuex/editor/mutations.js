@@ -39,7 +39,6 @@ const mutations = {
   },
   // 停止播放动画
   [types.STOP_ANIMATE] (state, data) {
-    console.log(data)
     if (data instanceof Array) {
       // 该页元素
       data.forEach(v => {
@@ -94,7 +93,6 @@ const mutations = {
     state.editorTheme._id = data._id
   },
   [types.UPDATE_THEME_SUCCESS] (state, data) {
-    console.log('成功！！！！！')
   },
   [types.SAVE_PIC] (state, data) {
     state.editorElement.imgSrc = app.APP_MALL_API_URL + data.filePath

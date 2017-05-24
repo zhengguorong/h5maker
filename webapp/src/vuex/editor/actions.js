@@ -129,7 +129,6 @@ export const delPage = ({commit}, page) => {
 
 export const getPageByThemeId = ({dispatch, commit}, id) => {
   api.getPageByThemeId(id).then((res) => {
-    console.log(id)
     commit(types.SET_CUR_EDITOR_THEME, res)
     commit(types.SET_CUR_EDITOR_PAGE, res.pages[0])
   }).then(() => {

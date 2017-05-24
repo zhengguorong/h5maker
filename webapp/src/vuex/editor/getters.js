@@ -11,8 +11,6 @@ export const editingPage = state => {
 }
 
 export const editingPageElements = state => {
-  console.log(state['editorPage'])
-  console.log(state['editorPage']['elements'])
   return state['editorPage']['elements']
 }
 
