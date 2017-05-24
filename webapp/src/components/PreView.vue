@@ -29,7 +29,6 @@
         <i class="el-icon-close"></i>
       </div>
     </div>
-    <PreView :itemId="itemId" @hideView="showPreView=false" v-if="showPreView"/>
   </div>
 </template>
 
