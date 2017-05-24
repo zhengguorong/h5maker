@@ -2,7 +2,7 @@
   <div class="container">
     <div class="login-main">
       <div class="login-title">
-        蓝月亮前端
+        h5页面生成器
       </div>
       <div class="content">
         <el-form :model="loginForm" ref="loginForm" :rules="loginRule">

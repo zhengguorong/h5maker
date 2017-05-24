@@ -3,7 +3,7 @@
     <header class="header">
       <button class="reset-btn" @click="dialogSave(true)"><i class="el-icon-arrow-left"></i>返回作品</button>
       <div class="right-panel">
-        <el-button @click="deploy" class="preview" type="info">预览</el-button>
+        <el-button @click="deploy" class="preview" type="info" :loading="isLoadingPreview">预览</el-button>
       </div>
     </header>
     <section class="section">
@@ -184,7 +184,8 @@
         picBase64: '',
         http: appConst.BACKEND_DOMAIN,
         releaseUrl: '',
-        showPreView: false
+        showPreView: false,
+        isLoadingPreview: false
       }
     },
     watch: {
@@ -302,8 +303,13 @@
         })
       },
       deploy () {
-        this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme))
-        this.showPreView = true
+        this.isLoadingPreview = true
+        this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
+          setTimeout(() => {
+            this.showPreView = true
+            this.isLoadingPreview = false
+          }, 1000)
+        })
       },
       selectedElement (element) {
         this.$store.dispatch('setEditorElement', element)

@@ -10,28 +10,45 @@
             </div>
           </li>
           <template v-for="item in list">
-            <li class="theme-item" @click="toEditor(item)">
+            <li class="theme-item">
               <div class="thumb" >
                 <img src="../../assets/images/default.png" alt="">
+                <div class="cover">
+                  <div class="toolbar">
+                    <el-tooltip class="item" effect="dark" content="编辑" placement="top-start">
+                      <i @click="toEditor(item)" class="el-icon-edit"></i>
+                    </el-tooltip>
+                    <el-tooltip class="item" effect="dark" content="删除" placement="top-start">
+                      <i @click.stop="deleteTheme(item)" class="el-icon-delete"></i>
+                    </el-tooltip>
+                  </div>
+                  <div class="preview" @click="showPreView(item._id)"><span>预 览</span></div>
+                </div>
               </div>
               <div class="footer">
                 <div class="title">{{item.title}}</div>
                 <div class="content">{{item.description}}</div>
-                <el-button class="delete" @click.stop="deleteTheme(item)" type="danger">删除</el-button>
               </div>
             </li>
           </template>
         </ul>
       </div>
     </div>
+    <PreView :itemId="itemId" @hideView="isShowPreView=false" v-if="isShowPreView"/>
   </div>
 </template>
 
 <script>
   import HeaderBar from '../../components/HeaderBar'
   import tools from '../../util/tools'
-  // import ThemeItem from '../../components/ThemeItem'
+  import PreView from '../../components/PreView'
   export default {
+    data () {
+      return {
+        isShowPreView: false,
+        itemId: null
+      }
+    },
     computed: {
       list () {
         return this.$store.state.editor.themeList
@@ -71,10 +88,14 @@
         this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$router.replace({ path: '/h5editor', query: { itemId: $this.$store.state.editor.editorTheme._id } })
         })
+      },
+      showPreView (itemId) {
+        this.isShowPreView = true
+        this.itemId = itemId
       }
     },
     components: {
-      HeaderBar
+      HeaderBar, PreView
     }
   }
 </script>
@@ -109,7 +130,44 @@
     width: 100%;
     height: 230px;
   }
-
+  .thumb {
+    position: relative;
+    .cover {
+      display: none;
+      position: absolute;
+      background: #000;
+      opacity: 0.5;
+      width: 100%;
+      height: 100%;
+      top:0;
+      .toolbar {
+        color: #fff;
+        text-align: right;
+        cursor: pointer;
+        padding: 10px;
+        font-size: 18px;
+        i {
+          margin: 5px;
+        }
+      }
+      .preview {
+        text-align: center;
+        margin-top:70px;
+        span {
+          border: 1px solid #fff;
+          padding: 5px 10px;
+          font-size: 20px;
+          color: #fff;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .thumb:hover {
+    .cover {
+      display: block;
+    }
+  }
   .theme-item .footer {
     height: 98px;
     padding: 10px;
