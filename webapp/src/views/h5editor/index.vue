@@ -2,13 +2,9 @@
   <div class="editor">
     <header class="header">
       <button class="reset-btn" @click="dialogSave(true)"><i class="el-icon-arrow-left"></i>返回作品</button>
-      <!--<el-dialog title="即将返回作品列表" v-model="dialogSaveBeforeBack" size="tiny">
-        <span>未保存的作品将会失去目前进度，是否继续返回</span>
-        <span slot="footer">
-          <el-button type="danger" @click="dialogSave(false)">继续返回</el-button>
-          <el-button type="primary" @click="dialogSave(true)">保 存</el-button>
-        </span>
-      </el-dialog>-->
+      <div class="right-panel">
+        <el-button @click="deploy" class="preview" type="info">预览</el-button>
+      </div>
     </header>
     <section class="section">
       <Overview class="overview" />
@@ -21,9 +17,6 @@
           <el-tooltip  effect="dark" content="新建素材" placement="left">
             <button class="func el-icon-picture" @click="togglePanel(2)":class="{ active: panelState === 2 }"></button>
           </el-tooltip>
-          <el-tooltip  effect="dark" content="设置" placement="left">
-            <button class="func el-icon-setting" @click="togglePanel(4)" :class="{ active: panelState === 4 }"></button>
-          </el-tooltip>
           <!--<el-tooltip  effect="dark" content="形状元素" placement="left">
             <button class="func el-icon-star-on" @click="togglePanel(3)":class="{ active: panelState === 3 }"></button>
           </el-tooltip>-->
@@ -32,9 +25,6 @@
           </el-tooltip>
           <el-tooltip  effect="dark" content="保存" placement="left">
             <button class="func el-icon-upload" @click="save"></button>
-          </el-tooltip>
-          <el-tooltip  effect="dark" content="发布" placement="left"  >
-            <button class="func el-icon-message" @click="deployAndShowCode()" :class="{ active: panelState === 5 }"></button>
           </el-tooltip>
 
         </div>
@@ -85,11 +75,6 @@
                 <el-button type="primary" @click="saveSetting">确认</el-button>
               </el-form-item>
             </el-form>
-          </div>
-          <!-- 发布 -->
-          <div class="panel panel-shape clearfix" v-show="panelState === 5">
-            <a target="_blank" :href="releaseUrl"><el-button type="success">点击访问</el-button></a>
-            <div><canvas id="canvas"></canvas></div>
           </div>
           <!-- 图层编辑面板 -->
           <div class="panel panel-edit">
@@ -175,6 +160,7 @@
         </div>
       </div>
     </section>
+    <PreView :itemId="itemId" @hideView="showPreView=false" v-if="showPreView"/>
   </div>
 </template>
 
@@ -183,11 +169,12 @@
   import Overview from './overview'
   import Page from '../../components/Page'
   import PicPicker from '../../components/PicturePicker'
+  import PreView from '../../components/PreView'
   import appConst from '../../util/appConst'
-  import QRCode from 'qrcode'
   export default {
     data () {
       return {
+        itemId: null,
         panelState: 0,
         panelTabState: 0,
         canvasWidth: 320,
@@ -196,9 +183,8 @@
         animateList: ['bounce', 'flash', 'pulse', 'rubberBand', 'shake', 'swing', 'tada', 'wobble', 'jello', 'bounceIn', 'bounceInDown', 'bounceInLeft', 'bounceInRight', 'bounceInUp', 'bounceOut', 'bounceOutDown', 'bounceOutLeft', 'bounceOutRight', 'bounceOutUp', 'fadeIn', 'fadeInDown', 'fadeInDownBig', 'fadeInLeft', 'fadeInLeftBig', 'fadeInRight', 'fadeInRightBig', 'fadeInUp', 'fadeInUpBig', 'fadeOut', 'fadeOutDown', 'fadeOutDownBig', 'fadeOutLeft', 'fadeOutLeftBig', 'fadeOutRight', 'fadeOutRightBig', 'fadeOutUp', 'fadeOutUpBig', 'flip', 'flipInX', 'flipInY', 'flipOutX', 'flipOutY', 'lightSpeedIn', 'lightSpeedOut', 'rotateIn', 'rotateInDownLeft', 'rotateInDownRight', 'rotateInUpLeft', 'rotateInUpRight', 'rotateOut', 'rotateOutDownLeft', 'rotateOutDownRight', 'rotateOutUpLeft', 'rotateOutUpRight', 'slideInUp', 'slideInDown', 'slideInLeft', 'slideInRight', 'slideOutUp', 'slideOutDown', 'slideOutLeft', 'slideOutRight', 'zoomIn', 'zoomInDown', 'zoomInLeft', 'zoomInRight', 'zoomInUp', 'zoomOut', 'zoomOutDown', 'zoomOutLeft', 'zoomOutRight', 'zoomOutUp', 'hinge', 'rollIn', 'rollOut'],
         picBase64: '',
         http: appConst.BACKEND_DOMAIN,
-        title: this.$store.state.editor.editorTheme.title || '',
-        description: this.$store.state.editor.editorTheme.description || '',
-        releaseUrl: ''
+        releaseUrl: '',
+        showPreView: false
       }
     },
     watch: {
@@ -317,22 +303,7 @@
       },
       deploy () {
         this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme))
-        let _id = this.$store.state.editor.editorTheme._id
-        this.releaseUrl = appConst.BACKEND_DOMAIN + '/pages/' + _id + '.html'
-        // window.open(appConst.BACKEND_DOMAIN + '/pages/' + _id + '.html')
-        // 生成二维码
-        var canvas = document.getElementById('canvas')
-        QRCode.toCanvas(canvas, this.releaseUrl, (err) => {
-          console.log(err)
-        })
-      },
-      deployAndShowCode () {
-        this.togglePanel(5)
-        this.deploy()
-      },
-      saveSetting () {
-        this.$store.commit('UPDATE_THEME_DES', {title: this.title, description: this.description})
-        this.save()
+        this.showPreView = true
       },
       selectedElement (element) {
         this.$store.dispatch('setEditorElement', element)
@@ -354,15 +325,15 @@
       }
     },
     components: {
-      Overview, Page, PicPicker, appConst
+      Overview, Page, PicPicker, appConst, PreView
     },
     mounted () {
-      let itemId = this.$route.query.itemId
-      if (itemId) {
+      this.itemId = this.$route.query.itemId
+      if (this.itemId) {
         if (!this.pages) {
-          this.$store.dispatch('getPageByThemeId', this.$route.query.itemId)
+          this.$store.dispatch('getPageByThemeId', this.itemId)
         }
-        this.getPicList(this.$route.query.itemId)
+        this.getPicList(this.itemId)
       } else {
         this.$store.dispatch('createTheme')
         this.$store.dispatch('addPage')
@@ -399,6 +370,15 @@
     }
     .el-icon-arrow-left {
       margin-right: 20px;
+    }
+    .right-panel{
+      float: right;
+      height: 100%;
+      width: 100px;
+      display: flex;
+      align-items:center;
+      padding-right: 15px;
+      flex-direction: row-reverse;
     }
   }
 
