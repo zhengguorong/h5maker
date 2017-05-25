@@ -124,7 +124,7 @@
         </div>
       </div>
     </div>
-    <div v-show="panelTabState === 1">
+    <div v-if="panelTabState === 1">
       <div class="item">
         <label>动画库</label>
         <div class="content">

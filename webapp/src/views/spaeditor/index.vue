@@ -151,8 +151,8 @@
         this.element.type = 'pic'
       },
 
-      addBG (src) {
-        this.$store.dispatch('addBGElement', { type: 'bg', imgSrc: src })
+      addBG (file) {
+        this.$store.dispatch('addBGElement', { type: 'bg', imgSrc: file.filePath })
       },
       cleanBG () {
         this.$store.dispatch('cleanBG')
