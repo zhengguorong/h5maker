@@ -20,8 +20,26 @@
         </div>
         <div class="qrcode">
           <div class="label">手机扫码分享给好友</div>
-          <div class="code"><canvas id="canvas"></canvas></div>
-          <div class="link"><a target="_blank" :href="releaseUrl">{{releaseUrl}}</a></div>
+          <div class="code">
+            <div class="size">
+              <canvas style="float: left" id="canvas"></canvas>
+              <el-radio-group class="radios" v-model="qrcodeSize">
+                <el-radio :label="500">500x500</el-radio>
+                <el-radio :label="1000">1000x1000</el-radio>
+                <el-radio :label="2000">2000x2000</el-radio>
+                <el-button @click="downQRcode">下载二维码</el-button>
+              </el-radio-group>
+            </div>
+          </div>
+          <div class="link">
+            <div class="link-title">
+              链接地址：
+            </div>
+            <div class="href">
+              <input type="text" id="releaseUrl" v-model="releaseUrl">
+              </div>
+            <el-button type="info" @click="copyUrl">复制链接</el-button>
+          </div>
           <div class="edit" @click="edit"><el-button style="width:180px" type="primary" icon="edit">编   辑</el-button></div>
         </div>
       </div>
@@ -75,14 +93,43 @@
         }
       }
       .qrcode {
-        margin-top: 10px;
+        margin-top: 20px;
       }
       .code {
-        text-align: center;
+        .size {
+          float: left;
+          .radios {
+            width: 80px;
+            margin-top: 5px;
+            margin-left: 30px;
+            label {
+              margin-left: 0px;
+              margin-top: 10px;
+            }
+            button {
+              margin-top: 15px;
+            }
+          }
+        }
       }
       .link {
         width:100%;
         overflow: scroll;
+        .link-title {
+          margin: 10px 0;
+        }
+        .href {
+          width: 280px;
+          line-height: 36px;
+          margin-right: 10px;
+          overflow: scroll;
+          float: left;
+          input {
+            border: 0;
+            color: blue;
+            width: 100%;
+          }
+        }
       }
       .edit {
         text-align: center;
@@ -114,7 +161,8 @@ export default {
     return {
       releaseUrl: appConst.BACKEND_DOMAIN + '/pages/' + this.itemId + '.html',
       title: this.$store.state.editor.editorTheme.title || '',
-      description: this.$store.state.editor.editorTheme.description || ''
+      description: this.$store.state.editor.editorTheme.description || '',
+      qrcodeSize: 500
     }
   },
   methods: {
@@ -125,6 +173,17 @@ export default {
       })
       let openUrl = 'http://' + window.location.host + '/#/h5editor?itemId=' + this.itemId
       window.open(openUrl)
+    },
+    downQRcode () {
+      QRCode.toDataURL(this.releaseUrl, {scale: Math.ceil(this.qrcodeSize / 40)}, (err, url) => {
+        console.log(err)
+        url = url.replace(/^data:image\/[^;]/, 'data:application/octet-stream')
+        window.open(url)
+      })
+    },
+    copyUrl () {
+      document.querySelector('#releaseUrl').select()
+      document.execCommand('copy')
     },
     close () {
       this.$emit('hideView')
@@ -149,7 +208,7 @@ export default {
   },
   mounted () {
     var canvas = document.getElementById('canvas')
-    QRCode.toCanvas(canvas, this.releaseUrl, (err) => {
+    QRCode.toCanvas(canvas, this.releaseUrl, {scale: 4}, (err) => {
       console.log(err)
     })
   }
