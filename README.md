@@ -8,9 +8,7 @@
 ### <a href="http://h5.limesoftware.cn/">在线演示传送门</a>
 
 ### 演示效果
-<div>
-<img src="http://test-10019075.cossh.myqcloud.com/h5maker.gif" width="800"/>
-</div>
+![](./h5maker.gif)
 
 ### 目录结构
 <div>
