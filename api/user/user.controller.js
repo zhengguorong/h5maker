@@ -17,6 +17,15 @@ const validationError = (res, statusCode) => {
     return res.status(statusCode).json(err)
   }
 }
+const respondWithResult = (res, statusCode) => {
+  statusCode = statusCode || 200
+  return function (entity) {
+    if (entity) {
+      return res.status(statusCode).json(entity)
+    }
+    return null
+  }
+}
 
 const handleError = (res, statusCode) => {
   statusCode = statusCode || 500
@@ -139,6 +148,18 @@ module.exports.login = (req, res) => {
         return res.status(401).end()
       }
     })
+}
+
+/**
+ * 退出登录
+ */
+module.exports.logout = (req, res) => {
+  var userId = req.user._id
+  return User.findOneAndUpdate({ _id: userId }, { token: '' }).exec()
+    .then(() => {
+      res.status(200).end()
+    })
+    .catch(handleError(res))
 }
 
 /**

@@ -14,6 +14,10 @@
           </li>
         </ul>
       </div>
+      <div class="logout">
+        <div class="username">{{loginId}}</div>
+        <el-button @click="logout" class="logout-btn">注销</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -35,12 +39,19 @@ export default {
         name: '关于作者',
         active: false
       }
-      ]
+      ],
+      loginId: window.localStorage.getItem('loginId')
     }
   },
   methods: {
     select (item) {
       this.$router.push(item.path)
+    },
+    logout () {
+      this.$store.dispatch('logout')
+        .then(res => {
+          this.$router.push('login')
+        })
     }
   },
   mounted () {
@@ -66,6 +77,15 @@ export default {
   margin: 0 auto;
   width: 1024px;
   text-align: center;
+}
+.logout {
+  float: right;
+  display: flex;
+  align-items: center;
+  height: 65px;
+  .username {
+    margin-right: 10px;
+  }
 }
 
 .header .logo img {

@@ -6,7 +6,10 @@ const login = (userInfo) => {
 const register = (userInfo) => {
   return http.post('/auth/register', userInfo)
 }
+const logout = () => {
+  return http.get('/auth/logout')
+}
 
 module.exports = {
-  login, register
+  login, register, logout
 }
