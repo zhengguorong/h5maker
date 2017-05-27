@@ -36,7 +36,7 @@ export default {
         active: false
       }, {
         path: 'about',
-        name: '关于作者',
+        name: '开源声明',
         active: false
       }
       ],
