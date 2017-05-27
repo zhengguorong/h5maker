@@ -30,4 +30,9 @@
 <img src="	http://test-10019075.cossh.myqcloud.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202017-05-27%2016.03.02.png" width="800"/>
 </div>-->
 
+### 运行方法
+> npm install  // 安装依赖
 
+> npm run webapp // 启动前端工程
+
+> npm run local //  启动后端工程
