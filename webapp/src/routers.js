@@ -33,4 +33,12 @@ export default [{
   path: '/about',
   name: 'about',
   component: require('./views/user/about.vue')
+}, {
+  path: '/formList',
+  name: 'formList',
+  component: require('./views/formeditor/list.vue')
+}, {
+  path: '/formeditor',
+  name: 'formeditor',
+  component: require('./views/formeditor/index.vue')
 }]

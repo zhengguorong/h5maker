@@ -3,6 +3,7 @@ var errors = require('./components/errors')
 module.exports = function (app) {
   app.use('/api/users', require('./api/user'));
   app.use('/api/pages', require('./api/pages'));
+  app.use('/api/form', require('./api/form'));
   app.use('/api/upload', require('./api/file'));
   app.use('/auth', require('./auth'))
   // 404错误处理

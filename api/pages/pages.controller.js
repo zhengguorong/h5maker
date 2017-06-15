@@ -79,7 +79,7 @@ module.exports.show = (req, res) => {
 
 // Creates a new Pages in the DB
 module.exports.create = (req, res) => {
-  //添加作者信息
+  // 添加作者信息
   req.body.loginId = req.user.loginId
   return Pages.create(req.body)
     .then(respondWithResult(res, 201))
@@ -105,7 +105,6 @@ module.exports.update = (req, res) => {
     .then(respondWithResult(res))
     .catch(handleError(res))
 }
-
 
 // Updates an existing Pages in the DB
 module.exports.patch = (req, res) => {
