@@ -1,40 +1,41 @@
 <template>
-  <div class="container">
+  <div class="container" @click="setActive" :class="{active: question.isActive}">
     <div class="question">
-      <div class="title"><span class="must">*</span>1. 你的兴趣是什么</div>
+      <div class="title">
+        <span class="must" v-if="question.isMust">*</span>{{index + 1}}. {{question.title}}</div>
       <div class="result">
         <el-input placeholder="请输入内容"></el-input>
       </div>
     </div>
     <div class="split"></div>
     <div class="action-bar">
-       <el-button icon="check" :plain="true" size="small" type="warning">完成</el-button>
-       <!--<el-button icon="edit" :plain="true" size="small" type="info">编辑</el-button>-->
-       <el-button icon="document" :plain="true" size="small" type="info">复制</el-button>
-       <el-button icon="delete" :plain="true" size="small" type="info">删除</el-button>
-       <el-button icon="arrow-up" :plain="true" size="small" type="info">上移</el-button>
-       <el-button icon="arrow-down" :plain="true" size="small" type="info">下移</el-button>
-       <el-button icon="d-arrow-left" :plain="true" size="small" type="info">最前</el-button>
-       <el-button icon="d-arrow-right" :plain="true" size="small" type="info">最后</el-button>
+      <el-button v-show="question.isActive" @click.stop="save" icon="check" :plain="true" size="small" type="warning">完成</el-button>
+      <el-button v-show="!question.isActive" icon="edit" :plain="true" size="small" type="info">编辑</el-button>
+      <el-button @click.stop="copyQuestion" icon="document" :plain="true" size="small" type="info">复制</el-button>
+      <el-button @click="deleteQuestion" icon="delete" :plain="true" size="small" type="info">删除</el-button>
+      <el-button @click.stop="moveUpQuestion" icon="arrow-up" :plain="true" size="small" type="info">上移</el-button>
+      <el-button @click.stop="moveDownQuestion" icon="arrow-down" :plain="true" size="small" type="info">下移</el-button>
+      <el-button @click.stop="moveTopQuestion" icon="d-arrow-left" :plain="true" size="small" type="info">最前</el-button>
+      <el-button @click.stop="moveBottomQuestion" icon="d-arrow-right" :plain="true" size="small" type="info">最后</el-button>
     </div>
-    <div class="editor-panel">
+    <div class="editor-panel"  v-show="question.isActive">
       <div class="row">
         <div class="item">
           <span class="title">问题标题</span>
-          <el-input class="input"></el-input>
+          <el-input class="input" v-model="question.title"></el-input>
         </div>
         <div class="item">
-          <el-checkbox>填写提示</el-checkbox>
-          <el-input class="input"></el-input>
+          <el-checkbox v-model="question.isTips">填写提示</el-checkbox>
+          <el-input :disabled="!question.isTips" class="input" v-model="question.tips"></el-input>
         </div>
         <div class="item">
-          <el-checkbox>必填项</el-checkbox>
+          <el-checkbox v-model="question.isMust">必填项</el-checkbox>
         </div>
       </div>
       <div class="row">
         <div class="item">
           <span class="title">答案类型</span>
-            <el-select class="input" v-model="value" placeholder="请选择">
+            <el-select class="input" v-model="question.validate" placeholder="请选择">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -45,26 +46,61 @@
         </div>
         <div class="item">
           <span class="title">最小字数</span>
-          <el-input-number></el-input-number>
+          <el-input-number v-model="question.minLength"></el-input-number>
         </div>
         <div class="item">
           <span class="title">最多字数</span>
-          <el-input-number></el-input-number>
+          <el-input-number v-model="question.maxLength"></el-input-number>
         </div>
       </div>
-      <el-button style="width:100%" type="primary">完成编辑</el-button>
+      <el-button @click.stop="save" style="width:100%" type="primary">完成编辑</el-button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: ['question', 'index'],
   data () {
     return {
       options: [
-        {value: '手机', label: '手机'}
-      ],
-      value: ''
+        {value: 'text', label: '文本'},
+        {value: 'num', label: '数字'},
+        {value: 'address', label: '地区（省市区）'},
+        {value: 'date', label: '日期'},
+        {value: 'time', label: '时间'},
+        {value: 'phone', label: '手机'},
+        {value: 'email', label: '邮箱'},
+        {value: 'id', label: '身份证'}
+      ]
+    }
+  },
+  methods: {
+    setActive () {
+      if (this.question.isActive === true) return
+      this.$store.commit('form/activeQuestion', this.index)
+    },
+    save () {
+      this.$store.commit('form/disActiveQuestion', this.index)
+      this.$store.commit('form/saveQuestion', { question: this.question, index: this.index })
+    },
+    copyQuestion () {
+      this.$store.commit('form/copyQuestion', this.index)
+    },
+    moveUpQuestion () {
+      this.$store.commit('form/moveUpQuestion', this.index)
+    },
+    moveDownQuestion () {
+      this.$store.commit('form/moveDownQuestion', this.index)
+    },
+    moveTopQuestion () {
+      this.$store.commit('form/moveTopQuestion', this.index)
+    },
+    moveBottomQuestion () {
+      this.$store.commit('form/moveBottomQuestion', this.index)
+    },
+    deleteQuestion () {
+      this.$store.commit('form/deleteQuestion', this.index)
     }
   }
 }

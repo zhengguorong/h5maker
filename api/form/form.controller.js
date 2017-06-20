@@ -67,3 +67,11 @@ module.exports.destroy = (req, res) => {
     .then(removeEntity(res))
     .catch(handleError(res))
 }
+module.exports.update = (req, res) => {
+  if (req.body._id) {
+    delete req.body._id
+  }
+  return Form.findOneAndUpdate({ _id: req.params.id }, req.body, { upsert: true, setDefaultsOnInsert: true, runValidators: true }).exec()
+    .then(respondWithResult(res))
+    .catch(handleError(res))
+}

@@ -3,15 +3,18 @@
     <HeaderEdit :goback="save" />
     <div class="main">
         <div class="tool-bar">
-          <div><i class="el-icon-circle-check"></i>单选</div>
-          <div><i class="el-icon-circle-check"></i>多选</div>
-          <div><i class="el-icon-edit"></i>单项填空</div>
+          <div @click="addRadioQuestion"><i class="el-icon-circle-check"></i>单选</div>
+          <div @click="addCheckQuestion"><i class="el-icon-circle-check"></i>多选</div>
+          <div @click="addTextQuestion"><i class="el-icon-edit"></i>单项填空</div>
+          <el-button @click="saveForm">保存</el-button>
         </div>
         <div class="editor">
-          <div class="title">问卷标题</div>
-          <p class="description">欢迎参加我们的在线课程，请填写下面的题目，方便我们为您服务！欢迎参加我们的在线课程，请填写下面的题目，方便我们为您服务！欢迎参加我们的在线课程，请填写下面的题目，方便我们为您服务！欢迎参加我们的在线课程，请填写下面的题目，方便我们为您服务！</p>
-          <div class="form">
-            <TextInput/>
+          <div class="title"><input type="text" v-model="form.title"/></div>
+          <p class="description"><textarea rows="4" v-model="form.description"/></p>
+          <div class="form" v-for="(item,index) in form.questions">
+            <TextInput :index="index" :question="item" v-if="item.qsType === 'text'"/>
+            <Checkbox :index="index" :question="item" v-if="item.qsType === 'check'"/>
+            <Checkbox :index="index" :question="item" v-if="item.qsType === 'radio'"/>
           </div>
         </div>
     </div>
@@ -21,17 +24,39 @@
 <script>
 import HeaderEdit from '../../components/HeaderEdit'
 import TextInput from './textInput'
+import Checkbox from './checkbox'
+import {mapGetters} from 'vuex'
 export default {
   data () {
     return {}
   },
+  computed: {
+    ...mapGetters({
+      form: 'form/getForm'
+    })
+  },
   methods: {
     save () {
       this.$router.replace('formList')
+    },
+    addTextQuestion () {
+      this.$store.commit('form/addTextQuestion')
+    },
+    addCheckQuestion () {
+      this.$store.commit('form/addCheckQuestion')
+    },
+    addRadioQuestion () {
+      this.$store.commit('form/addRadioQuestion')
+    },
+    saveForm () {
+      this.$store.dispatch('form/updateForm')
     }
   },
   components: {
-    HeaderEdit, TextInput
+    HeaderEdit, TextInput, Checkbox
+  },
+  mounted () {
+    this.$store.dispatch('form/getFormById', this.$route.query.itemId)
   }
 }
 </script>
@@ -70,12 +95,22 @@ export default {
         font-size: 24px;
         font-weight: bold;
         text-align: center;
+        input {
+          color: #000;
+          border: 0;
+          text-align: center;
+        }
       }
       .description {
         font-size: 16px;
         padding:18px 0 22px 0;
         border-bottom: 1px dashed #979797;
         line-height: 1.5;
+        textarea {
+          color: #000;
+          width: 100%;
+          border: 0
+        }
       }
     }
   }
