@@ -11,6 +11,11 @@
         <el-radio v-model="item.isDefault" class="item">{{item.title}}</el-radio>
         <img v-if="item.imgPath" class="checkBox-img" :src="item.base64 || http + item.imgPath" alt="">
       </div>
+      <div class="result">
+        <div class="tips" v-if="question.tips">
+          提示：{{question.tips}}
+        </div>
+      </div>
     </div>
     <div class="split"></div>
     <div class="action-bar">
@@ -59,7 +64,7 @@
           </el-table-column>
           <el-table-column label="默认选中" width="100">
             <template scope="scope">
-              <el-switch v-model="scope.row.isDefault">
+              <el-switch @change="" v-model="scope.row.isDefault">
               </el-switch>
             </template>
           </el-table-column>
@@ -205,6 +210,11 @@ export default {
     img {
       width: 150px;
       margin-top:10px;
+    }
+    .tips {
+      font-size: 14px;
+      margin-top: 10px;
+      color: #999;
     }
   }
 }

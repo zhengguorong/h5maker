@@ -116,7 +116,9 @@ export default {
         color: #999;
       }
       .tips {
+        font-size: 14px;
         margin-top: 10px;
+        color: #999;
       }
     }
   }

@@ -5,6 +5,9 @@
         <span class="must" v-if="question.isMust">*</span>{{index + 1}}. {{question.title}}</div>
       <div class="result">
         <el-input placeholder="请输入内容"></el-input>
+        <div class="tips" v-if="question.tips">
+          提示：{{question.tips}}
+        </div>
       </div>
     </div>
     <div class="split"></div>
@@ -126,6 +129,11 @@ export default {
     .result {
       width: 200px;
       margin: 15px 25px;
+      .tips {
+        font-size: 14px;
+        color: #999;
+        margin-top: 10px;
+      }
     }
   }
   .split {
