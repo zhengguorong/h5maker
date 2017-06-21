@@ -93,7 +93,7 @@ export default {
       if (state.activeQuestionIndex > -1) {
         state.form.questions.splice(state.activeQuestionIndex + 1, 0, radioQuestion)
       } else {
-        state.form.question.push(radioQuestion)
+        state.form.questions.push(radioQuestion)
       }
     },
     copyQuestion (state, index) {

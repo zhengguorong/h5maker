@@ -12,20 +12,12 @@
         <div class="editor">
           <div class="title"><input type="text" v-model="form.title"/></div>
           <p class="description"><textarea rows="4" v-model="form.description"/></p>
-          <div class="form" v-for="(item,index) in form.questions">
-            <TextInput :index="index" :question="item" v-if="item.qsType === 'text'"/>
-            <Checkbox :index="index" :question="item" v-if="item.qsType === 'check'"/>
-            <Checkbox :index="index" :question="item" v-if="item.qsType === 'radio'"/>
-          </div>
+            <div class="form list-complete-item"  v-for="(item,index) in form.questions" v-bind:key="index">
+              <TextInput :index="index" :question="item" v-if="item.qsType === 'text'"/>
+              <Checkbox :index="index" :question="item" v-if="item.qsType === 'check'"/>
+              <Checkbox :index="index" :question="item" v-if="item.qsType === 'radio'"/>
+            </div>
         </div>
-          <transition-group name="list-complete" tag="p">
-            <div class="form list-complete-item" v-for="(item,index) in form.questions">
-            <TextInput :index="index" :question="item" v-if="item.qsType === 'text'"/>
-            <Checkbox :index="index" :question="item" v-if="item.qsType === 'check'"/>
-            <Checkbox :index="index" :question="item" v-if="item.qsType === 'radio'"/>
-          </div>
-          </span>
-        </transition-group>
     </div>
      </div>
   </div>
@@ -84,18 +76,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.list-complete-item {
-  transition: all 1s;
-  display: inline-block;
-  margin-right: 10px;
-}
-.list-complete-enter, .list-complete-leave-active {
-  opacity: 0;
-  transform: translateY(30px);
-}
-.list-complete-leave-active {
-  position: absolute;
-}
   .container {
     height: 100%
   }
