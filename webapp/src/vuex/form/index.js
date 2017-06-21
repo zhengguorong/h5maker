@@ -3,6 +3,7 @@ import FormModel from '../../model/Form'
 import TextQuestionModel from '../../model/TextQuestion'
 import SelectedQuestionModel from '../../model/SelectedQuestion'
 import CheckModel from '../../model/Check'
+import FileQuestionModel from '../../model/FileQuestion'
 export default {
   namespaced: true,
   state: {
@@ -37,6 +38,22 @@ export default {
     },
     savePic ({commit}, data) {
       return api.uploadPic(data)
+    },
+    addTextQuestion ({commit}) {
+      let textQuestion = new TextQuestionModel()
+      commit('addQuestion', textQuestion)
+    },
+    addCheckQuestion ({commit}) {
+      let checkQuestion = new SelectedQuestionModel({qsType: 'check'})
+      commit('addQuestion', checkQuestion)
+    },
+    addFileQuestion ({commit}) {
+      let fileQuestion = new FileQuestionModel()
+      commit('addQuestion', fileQuestion)
+    },
+    addRadioQuestion ({commit}) {
+      let radioQuestion = new SelectedQuestionModel({qsType: 'radio'})
+      commit('addQuestion', radioQuestion)
     }
   },
   getters: {
@@ -72,28 +89,11 @@ export default {
       if (state.activeQuestionIndex !== -1) state.form.questions[index].isActive = false
       state.activeQuestionIndex = -1
     },
-    addTextQuestion (state) {
-      let textQuestion = new TextQuestionModel()
+    addQuestion (state, question) {
       if (state.activeQuestionIndex > -1) {
-        state.form.questions.splice(state.activeQuestionIndex + 1, 0, textQuestion)
+        state.form.questions.splice(state.activeQuestionIndex + 1, 0, question)
       } else {
-        state.form.questions.push(textQuestion)
-      }
-    },
-    addCheckQuestion (state) {
-      let checkQuestion = new SelectedQuestionModel({qsType: 'check'})
-      if (state.activeQuestionIndex > -1) {
-        state.form.questions.splice(state.activeQuestionIndex + 1, 0, checkQuestion)
-      } else {
-        state.form.questions.push(checkQuestion)
-      }
-    },
-    addRadioQuestion (state) {
-      let radioQuestion = new SelectedQuestionModel({qsType: 'radio'})
-      if (state.activeQuestionIndex > -1) {
-        state.form.questions.splice(state.activeQuestionIndex + 1, 0, radioQuestion)
-      } else {
-        state.form.questions.push(radioQuestion)
+        state.form.questions.push(question)
       }
     },
     copyQuestion (state, index) {
@@ -149,4 +149,5 @@ export default {
       askList.splice(askIndex, 1, targetAsk)
     }
   }
+
 }

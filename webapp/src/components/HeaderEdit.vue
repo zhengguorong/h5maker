@@ -27,7 +27,7 @@ export default {
       this.loading = true
       this.perViewAction().then(() => {
         setTimeout(() => {
-          this.$emit('saveThemeSuccess')
+          this.$emit('saveSuccess')
           this.loading = false
         }, 1000)
       })

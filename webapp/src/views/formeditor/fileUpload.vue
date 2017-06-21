@@ -4,7 +4,12 @@
       <div class="title">
         <span class="must" v-if="question.isMust">*</span>{{index + 1}}. {{question.title}}</div>
       <div class="result">
-        <el-input placeholder="请输入内容"></el-input>
+        <div class="upload">
+          <i class="el-icon-upload2"/>
+        </div>
+        <div class="tips" v-if="question.tips">
+          提示：{{question.tips}}
+        </div>
       </div>
     </div>
     <div class="split"></div>
@@ -34,23 +39,8 @@
       </div>
       <div class="row">
         <div class="item">
-          <span class="title">答案类型</span>
-            <el-select class="input" v-model="question.validate" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-        </div>
-        <div class="item">
-          <span class="title">最小字数</span>
-          <el-input-number v-model="question.minLength"></el-input-number>
-        </div>
-        <div class="item">
-          <span class="title">最多字数</span>
-          <el-input-number v-model="question.maxLength"></el-input-number>
+          <span class="title">数量限制</span>
+          <el-input-number v-model="question.count"></el-input-number>
         </div>
       </div>
       <el-button @click.stop="save" style="width:100%" type="primary">完成编辑</el-button>
@@ -63,16 +53,6 @@ export default {
   props: ['question', 'index'],
   data () {
     return {
-      options: [
-        {value: 'text', label: '文本'},
-        {value: 'num', label: '数字'},
-        {value: 'address', label: '地区（省市区）'},
-        {value: 'date', label: '日期'},
-        {value: 'time', label: '时间'},
-        {value: 'phone', label: '手机'},
-        {value: 'email', label: '邮箱'},
-        {value: 'id', label: '身份证'}
-      ]
     }
   },
   methods: {
@@ -124,8 +104,20 @@ export default {
       }
     }
     .result {
-      width: 200px;
       margin: 15px 25px;
+      .upload {
+        width: 80px;
+        height: 80px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #999;
+      }
+      .tips {
+        margin-top: 10px;
+      }
     }
   }
   .split {
@@ -158,7 +150,7 @@ export default {
       }
       .el-input-number {
         vertical-align: middle;
-        width: 150px;
+        width: 195px;
         padding-left: 15px;
       }
     }

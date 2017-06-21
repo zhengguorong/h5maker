@@ -6,7 +6,7 @@
                 frameborder="0"></iframe>
       </div>
       <div class="setting">
-        <div class="info">
+        <div class="info" v-if="showSetting">
           <div class="label">设置作品信息</div>
           <el-input class="input"
                     v-model="title"
@@ -155,6 +155,10 @@ export default {
   props: {
     itemId: {
       type: String
+    },
+    showSetting: {
+      type: Boolean,
+      default: true
     }
   },
   data () {

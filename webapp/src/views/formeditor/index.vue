@@ -1,12 +1,13 @@
 <template>
   <div class="container">
-    <HeaderEdit :goback="save" />
+    <HeaderEdit :goback="save" :perViewAction="saveForm" @saveSuccess="showPreView=true" />
     <div @click.stop="disActiveQuestion">
       <div class="main">
         <div class="tool-bar" :class="{fixed: scrolled > 70}">
           <div @click.stop="addRadioQuestion"><i class="el-icon-circle-check"></i>单选</div>
           <div @click.stop="addCheckQuestion"><i class="el-icon-circle-check"></i>多选</div>
           <div @click.stop="addTextQuestion"><i class="el-icon-edit"></i>单项填空</div>
+          <div @click.stop="addFileQuestion"><i class="el-icon-upload"></i>文件上传</div>
           <el-button class="save" :plain="true" type="info" @click.stop="saveForm">保存</el-button>
         </div>
         <div class="editor">
@@ -16,10 +17,12 @@
               <TextInput :index="index" :question="item" v-if="item.qsType === 'text'"/>
               <Checkbox :index="index" :question="item" v-if="item.qsType === 'check'"/>
               <Checkbox :index="index" :question="item" v-if="item.qsType === 'radio'"/>
+              <FileUpload :index="index" :question="item" v-if="item.qsType === 'file'" />
             </div>
         </div>
     </div>
      </div>
+     <PreView :itemId="form._id" @hideView="showPreView=false" v-if="showPreView" :showSetting="false"/>
   </div>
 </template>
 
@@ -27,11 +30,14 @@
 import HeaderEdit from '../../components/HeaderEdit'
 import TextInput from './textInput'
 import Checkbox from './checkbox'
+import FileUpload from './fileUpload'
+import PreView from '../../components/PreView'
 import {mapGetters} from 'vuex'
 export default {
   data () {
     return {
-      scrolled: 0
+      scrolled: 0,
+      showPreView: false
     }
   },
   computed: {
@@ -45,16 +51,19 @@ export default {
       this.$router.replace('formList')
     },
     addTextQuestion () {
-      this.$store.commit('form/addTextQuestion')
+      this.$store.dispatch('form/addTextQuestion')
     },
     addCheckQuestion () {
-      this.$store.commit('form/addCheckQuestion')
+      this.$store.dispatch('form/addCheckQuestion')
     },
     addRadioQuestion () {
-      this.$store.commit('form/addRadioQuestion')
+      this.$store.dispatch('form/addRadioQuestion')
+    },
+    addFileQuestion () {
+      this.$store.dispatch('form/addFileQuestion')
     },
     saveForm () {
-      this.$store.dispatch('form/updateForm').then(() => {
+      return this.$store.dispatch('form/updateForm').then(() => {
         this.$message('保存成功')
       })
     },
@@ -66,7 +75,7 @@ export default {
     }
   },
   components: {
-    HeaderEdit, TextInput, Checkbox
+    HeaderEdit, TextInput, Checkbox, FileUpload, PreView
   },
   mounted () {
     this.$store.dispatch('form/getFormById', this.$route.query.itemId)
