@@ -1,12 +1,13 @@
 <template>
   <div class="container">
     <HeaderEdit :goback="save" />
-    <div class="main">
-        <div class="tool-bar">
-          <div @click="addRadioQuestion"><i class="el-icon-circle-check"></i>单选</div>
-          <div @click="addCheckQuestion"><i class="el-icon-circle-check"></i>多选</div>
-          <div @click="addTextQuestion"><i class="el-icon-edit"></i>单项填空</div>
-          <el-button @click="saveForm">保存</el-button>
+    <div @click.stop="disActiveQuestion">
+      <div class="main">
+        <div class="tool-bar" :class="{fixed: scrolled > 70}">
+          <div @click.stop="addRadioQuestion"><i class="el-icon-circle-check"></i>单选</div>
+          <div @click.stop="addCheckQuestion"><i class="el-icon-circle-check"></i>多选</div>
+          <div @click.stop="addTextQuestion"><i class="el-icon-edit"></i>单项填空</div>
+          <el-button class="save" :plain="true" type="info" @click.stop="saveForm">保存</el-button>
         </div>
         <div class="editor">
           <div class="title"><input type="text" v-model="form.title"/></div>
@@ -17,7 +18,16 @@
             <Checkbox :index="index" :question="item" v-if="item.qsType === 'radio'"/>
           </div>
         </div>
+          <transition-group name="list-complete" tag="p">
+            <div class="form list-complete-item" v-for="(item,index) in form.questions">
+            <TextInput :index="index" :question="item" v-if="item.qsType === 'text'"/>
+            <Checkbox :index="index" :question="item" v-if="item.qsType === 'check'"/>
+            <Checkbox :index="index" :question="item" v-if="item.qsType === 'radio'"/>
+          </div>
+          </span>
+        </transition-group>
     </div>
+     </div>
   </div>
 </template>
 
@@ -28,11 +38,14 @@ import Checkbox from './checkbox'
 import {mapGetters} from 'vuex'
 export default {
   data () {
-    return {}
+    return {
+      scrolled: 0
+    }
   },
   computed: {
     ...mapGetters({
-      form: 'form/getForm'
+      form: 'form/getForm',
+      activeQuestionIndex: 'form/getActiveQuestionIndex'
     })
   },
   methods: {
@@ -49,7 +62,15 @@ export default {
       this.$store.commit('form/addRadioQuestion')
     },
     saveForm () {
-      this.$store.dispatch('form/updateForm')
+      this.$store.dispatch('form/updateForm').then(() => {
+        this.$message('保存成功')
+      })
+    },
+    disActiveQuestion () {
+      this.$store.commit('form/disActiveQuestion', this.activeQuestionIndex)
+    },
+    handleScroll () {
+      this.scrolled = window.scrollY
     }
   },
   components: {
@@ -57,13 +78,32 @@ export default {
   },
   mounted () {
     this.$store.dispatch('form/getFormById', this.$route.query.itemId)
+    window.addEventListener('scroll', this.handleScroll)
   }
 }
 </script>
 
 <style lang="less" scoped>
+.list-complete-item {
+  transition: all 1s;
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-complete-enter, .list-complete-leave-active {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.list-complete-leave-active {
+  position: absolute;
+}
   .container {
     height: 100%
+  }
+  .fixed {
+    position: fixed;
+    width: 1024px;
+    top:0px;
+    z-index: 2;
   }
   .main {
     width: 1024px;
@@ -72,6 +112,11 @@ export default {
     .tool-bar {
       height: 45px;
       background: #2B71C2;
+      .save {
+        float: right;
+        margin-right: 10px;
+        margin-top: 5px;
+      }
       div {
         float: left;
         font-size: 14px;

@@ -7,7 +7,8 @@ export default {
   namespaced: true,
   state: {
     formList: [],  // 问卷列表
-    form: new FormModel() // 正在编辑的表单
+    form: new FormModel(), // 正在编辑的表单
+    activeQuestionIndex: -1
   },
   actions: {
     // 删除问卷
@@ -44,6 +45,9 @@ export default {
     },
     getForm (state) {
       return state.form
+    },
+    getActiveQuestionIndex (state) {
+      return state.activeQuestionIndex
     }
   },
   mutations: {
@@ -60,25 +64,37 @@ export default {
       state.formList.splice(index, 1)
     },
     activeQuestion (state, index) {
-      state.form.questions.forEach((item) => {
-        item.isActive = false
-      })
+      if (state.activeQuestionIndex !== -1) state.form.questions[state.activeQuestionIndex].isActive = false
       state.form.questions[index].isActive = true
+      state.activeQuestionIndex = index
     },
     disActiveQuestion (state, index) {
-      state.form.questions[index].isActive = false
+      if (state.activeQuestionIndex !== -1) state.form.questions[index].isActive = false
+      state.activeQuestionIndex = -1
     },
     addTextQuestion (state) {
       let textQuestion = new TextQuestionModel()
-      state.form.questions.push(textQuestion)
+      if (state.activeQuestionIndex > -1) {
+        state.form.questions.splice(state.activeQuestionIndex + 1, 0, textQuestion)
+      } else {
+        state.form.questions.push(textQuestion)
+      }
     },
     addCheckQuestion (state) {
       let checkQuestion = new SelectedQuestionModel({qsType: 'check'})
-      state.form.questions.push(checkQuestion)
+      if (state.activeQuestionIndex > -1) {
+        state.form.questions.splice(state.activeQuestionIndex + 1, 0, checkQuestion)
+      } else {
+        state.form.questions.push(checkQuestion)
+      }
     },
     addRadioQuestion (state) {
       let radioQuestion = new SelectedQuestionModel({qsType: 'radio'})
-      state.form.questions.push(radioQuestion)
+      if (state.activeQuestionIndex > -1) {
+        state.form.questions.splice(state.activeQuestionIndex + 1, 0, radioQuestion)
+      } else {
+        state.form.question.push(radioQuestion)
+      }
     },
     copyQuestion (state, index) {
       let copyObject = JSON.parse(JSON.stringify(state.form.questions[index]))

@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import tools from '../util/tools'
 export default {
   props: {
-    goback: Function
+    goback: Function,
+    perViewAction: Function
   },
   data () {
     return {
@@ -25,7 +25,7 @@ export default {
   methods: {
     deploy () {
       this.loading = true
-      this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
+      this.perViewAction().then(() => {
         setTimeout(() => {
           this.$emit('saveThemeSuccess')
           this.loading = false

@@ -1,5 +1,5 @@
 <template>
-  <div class="container" @click="setActive" :class="{active: question.isActive}">
+  <div class="container" @click.stop="setActive" :class="{active: question.isActive}">
     <div class="question">
       <div class="title">
         <span class="must" v-if="question.isMust">*</span>{{index + 1}}. {{question.title}}</div>
