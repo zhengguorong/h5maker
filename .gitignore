@@ -52,5 +52,5 @@ jspm_packages
 .idea/workspace.xml
 node_modules/
 public/upload
-public/*
+public/pages
 .DS_Store

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%=title%></title>
+  <link rel="stylesheet" href="/libs/css/mint.css">
+</head>
+<body>
+  <div id="app">
+    <p class="title" v-if="form.title">{{form.title}}</p>
+    <p class="description" v-if="form.description">{{form.description}}</p>
+    <div v-for="(item, index) in form.questions" class="item">
+      <span class="question">{{item.title}}<span v-if="item.isMust">（必填）</span></span>
+      <span class="ask">
+        <input type="text" v-model="result[index].ask" v-if="item.qsType=== 'text'" placeholder="请输入">
+        <span v-if="item.qsType=== 'radio'" v-for="(ask,i) in item.askList">
+          <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title">
+          <label :for="i + ask.title">{{ask.title}}</label>
+        </span>
+        <span v-if="item.qsType=== 'check'" v-for="(ask,i) in item.askList">
+          <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title">
+          <label :for="i + ask.title">{{ask.title}}</label>
+        </span>
+        <span v-if="item.qsType=== 'file'">
+          <span v-for="(item, i) in result[index].ask">
+            <img @click="removeImg(i, result[index].ask)" :src="item" alt="">
+          </span>
+          <input class="file-upload" type="file" @change="fileUpload($event, result[index])" />
+        </span>
+      </span>
+    </div>
+    <input class="submit" type="submit" value="提  交" @click="submit">
+  </div>
+</body>
+</html>
+  <script src="/libs/js/vue.js"></script>
+  <script src="/libs/js/axios.min.js"></script>
+  <script src="/libs/js/mint.js"></script>
+  <script src="/libs/js/lrz.all.bundle.js"></script>
+<script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        id: null,
+        form: {},
+        result: []
+      },
+      methods: {
+        getFormById (id) {
+          return axios.get('/api/form/' + id)
+        },
+        submit () {
+          //this.validate()
+          var self = this
+          axios.post('/api/submit', {formId: this.id, result: this.result}).then(function(res){
+            self.$toast('提交成功')
+          })
+        },
+        validate () {
+          for(var i=0;i<this.form.questions.length;i++) {
+            var question = this.form.questions[i]
+            var ask = this.result[i].ask
+            // 验证必填项
+            if (question.isMust && ask.length === 0) {
+              this.$toast('请填写'+question.title)
+              return
+            }
+            // 验证手机号
+            if (question.validate === 'phone' && ask.length > 0) {
+              this.$toast('手机号码格式错误')
+              return
+            }
+          }
+        },
+        getDefaultAsk (ask, type) {
+          var defaultAsk = []
+          for (var i=0;i<ask.length;i++) {
+            if (ask[i].isDefault) {
+              if (type === 'radio') {
+                return ask[i].title
+              } else {
+                defaultAsk.push(ask[i].title)
+              }
+            }
+          }
+          return defaultAsk
+        },
+        initResult (questions) {
+          // 组装问题答案数据结构
+          for (var i = 0;i < questions.length;i++) {
+            var question = questions[i]
+            if (questions[i].qsType === 'check'|| questions[i].qsType === 'radio') {
+              var defaultAsk = this.getDefaultAsk(question.askList, questions[i].qsType)
+              this.result.push({question:question.title, ask:defaultAsk})
+            } else if (questions[i].qsType === 'file') {
+              this.result.push({question:question.title, ask:[]})
+            } else {
+              this.result.push({question:question.title, ask:''})
+            }
+          }
+        },
+        fileUpload (event, item) {
+          let file = event.target.files[0]
+          if (file) {
+            lrz(file, { quality: 0.5 }).then(result => {
+              if (result.fileLen > 2 * 1024 * 1024) {
+                this.$message.error('请选择小于2M的文件')
+                return
+              }
+              axios.post('/api/upload', {imgData: result.base64}).then(function(res){
+                item.ask.push(res.data.filePath)
+              })
+            })
+          }
+        },
+        removeImg (index, ask) {
+          ask.splice(index, 1)
+        }
+      },
+      mounted () {
+        var url = window.location.href
+        var index = url.lastIndexOf("\/")
+        var dotIndex = url.lastIndexOf("\.")
+        this.id = url.substring(index + 1,dotIndex)
+        var self = this;
+        this.getFormById(this.id).then(function (res) {
+          self.form = res.data
+          self.initResult(res.data.questions)
+        })
+      }
+    })
+</script>
+<style>
+body {
+  margin: 0 auto;
+}
+#app {
+  font-size: 14px;
+}
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+.description {
+  text-indent:28px;
+  padding: 0 14px;
+}
+.item {
+  padding: 0 14px;
+  height: 50px;
+  line-height: 50px;
+  border-bottom: 1px #e9e9e9 solid;
+}
+.item .question {
+  float: left;
+  color: #666;
+}
+.item .ask {
+  float: right;
+}
+.item .ask input {
+  color: #333;
+  text-align: right;
+  font-size: 14px;
+  border: 0px;
+}
+.item .ask .file-upload {
+  width: 100px;
+}
+.item .ask span {
+  margin-left: 10px;
+}
+.item .ask img {
+  height: 48px;
+}
+.submit {
+  width: 100%;
+  height: 48px;
+  background: #256CE7;
+  border: 0px;
+  color: #fff;
+  font-size: 17px;
+  position: absolute;
+  bottom: 0px;
+}
+</style>
+

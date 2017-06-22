@@ -1,14 +1,15 @@
 var errors = require('./components/errors')
 
 module.exports = function (app) {
-  app.use('/api/users', require('./api/user'));
-  app.use('/api/pages', require('./api/pages'));
-  app.use('/api/form', require('./api/form'));
-  app.use('/api/upload', require('./api/file'));
+  app.use('/api/users', require('./api/user'))
+  app.use('/api/pages', require('./api/pages'))
+  app.use('/api/form', require('./api/form'))
+  app.use('/api/upload', require('./api/file'))
+  app.use('/api/submit', require('./api/submit'))
   app.use('/auth', require('./auth'))
   // 404错误处理
   app.route('/:url(api|auth|components|app|bower_components|assets)/*')
-    .get(errors[404]);
+    .get(errors[404])
 
   // 前端页面渲染路由
   app.route('/perview/:id').get(require('./render/preview'))
@@ -17,5 +18,5 @@ module.exports = function (app) {
   app.route('/*')
     .get((req, res) => {
       res.render('index')
-    });
+    })
 }

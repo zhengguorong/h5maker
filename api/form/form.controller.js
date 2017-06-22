@@ -1,4 +1,5 @@
 var Form = require('./form.model')
+var tools = require('../../util/tools')
 
 const respondWithResult = (res, statusCode) => {
   statusCode = statusCode || 200
@@ -71,6 +72,9 @@ module.exports.update = (req, res) => {
   if (req.body._id) {
     delete req.body._id
   }
+  tools.renderFile('form.html', req.body, (html) => {
+    tools.saveFile(req.params.id + '.html', html)
+  })
   return Form.findOneAndUpdate({ _id: req.params.id }, req.body, { upsert: true, setDefaultsOnInsert: true, runValidators: true }).exec()
     .then(respondWithResult(res))
     .catch(handleError(res))

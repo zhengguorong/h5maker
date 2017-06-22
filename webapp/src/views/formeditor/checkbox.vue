@@ -105,7 +105,7 @@ export default {
       this.$store.commit('form/deleteAsk', { questionIndex: this.index, askIndex: index })
     },
     save () {
-      if (!this.checkRadioDefault()) {
+      if (this.question.qsType === 'radio' && !this.checkRadioDefault()) {
         this.$message.error('单选问题不能多个默认值')
         return
       }
