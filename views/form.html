@@ -14,7 +14,20 @@
     <div v-for="(item, index) in form.questions" class="item">
       <span class="question">{{item.title}}<span v-if="item.isMust">（必填）</span></span>
       <span class="ask">
-        <input type="text" v-model="result[index].ask" v-if="item.qsType=== 'text'" placeholder="请输入">
+        <!--日期和时间类型--start-->
+        <span v-if="item.qsType=== 'text' && (item.validate === 'date' || item.validate === 'time')">
+         <input type="text" :value="result[index].ask | dtFormat(item.validate)"  placeholder="请输入" @click="openDTPicker(index)" readonly>
+         <mt-datetime-picker :ref="'dt' + index" :type="item.validate" v-model="result[index].ask"></mt-datetime-picker>
+        </span>
+        <!--日期和时间类型--end-->
+        <!--地区类型--start-->
+         <span v-if="item.qsType=== 'text' && item.validate === 'address'">
+         <input type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openDTPicker(index)" readonly>
+        </span>
+        <!--地区类型--end-->
+        <!--文本类型--start-->
+        <input type="text" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入">
+        <!--文本类型--end-->
         <span v-if="item.qsType=== 'radio'" v-for="(ask,i) in item.askList">
           <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title">
           <label :for="i + ask.title">{{ask.title}}</label>
@@ -39,6 +52,7 @@
   <script src="/libs/js/axios.min.js"></script>
   <script src="/libs/js/mint.js"></script>
   <script src="/libs/js/lrz.all.bundle.js"></script>
+  <script src="/libs/js/vaildate.js"></script>
 <script>
     var app = new Vue({
       el: '#app',
@@ -47,12 +61,33 @@
         form: {},
         result: []
       },
+      filters: {
+        dtFormat (v, type) {
+          if (typeof v === 'object' && v instanceof Date) {
+            if (type === 'date') {
+              // return v.toLocaleDateString() //在5s有兼容性问题，待验证
+              return v.getFullYear() + '-' + (v.getMonth() + 1) + '-' + v.getDate()
+            } else if (type === 'time') {
+              return v.getHours() + ':' + v.getMinutes()
+            } else {
+              return v
+            }
+          }
+        }
+      },
       methods: {
+        openDTPicker (index) {
+          this.$refs['dt'+index][0].open()
+        },
         getFormById (id) {
           return axios.get('/api/form/' + id)
         },
         submit () {
-          //this.validate()
+          console.log(validateFuns)
+          if (!this.validate()) {
+            console.log('验证不通过')
+            return
+          }
           var self = this
           axios.post('/api/submit', {formId: this.id, result: this.result}).then(function(res){
             self.$toast('提交成功')
@@ -68,11 +103,27 @@
               return
             }
             // 验证手机号
-            if (question.validate === 'phone' && ask.length > 0) {
-              this.$toast('手机号码格式错误')
+            if (ask.length > 0 && question.validate === 'phone' && !validateFuns.isMobile(ask)) {
+              this.$toast('手机号码格式不正确哦')
+              return
+            }
+            // 验证邮箱
+            if (ask.length > 0 && question.validate === 'email' && !validateFuns.isEmail(ask)) {
+              this.$toast('邮箱格式不正确哦')
+              return
+            }
+            // 验证数字
+            if (ask.length > 0 && question.validate === 'num' && !validateFuns.isNum(ask)) {
+              this.$toast('请输入纯数字哦')
+              return
+            }
+            // 验证上传图片张数限制
+            if (ask.length > 0 && question.qsType === 'file' && ask.length > question.count ) {
+              this.$toast('上传文件数超出限制啦')
               return
             }
           }
+          return true
         },
         getDefaultAsk (ask, type) {
           var defaultAsk = []

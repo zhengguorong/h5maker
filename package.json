@@ -7,7 +7,7 @@
   "scripts": {
     "start": "NODE_ENV=production node ./bin/www",
     "dev": "NODE_ENV=development node ./bin/www",
-    "local": "NODE_ENV=localhost node ./bin/www",
+    "local": "set NODE_ENV=localhost&&node ./bin/www",
     "build": "cd webapp && node build/build.js",
     "webapp": "cd webapp && node build/dev-server.js"
   },
