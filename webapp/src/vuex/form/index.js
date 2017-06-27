@@ -27,8 +27,12 @@ export default {
       })
     },
     // 获取表单
-    getFormById ({commit}, id) {
+    getFormById ({commit, state}, id) {
       api.getFormById(id).then(res => {
+        // 初始化选中元素
+        res.questions.forEach((item, index) => {
+          if (item.isActive) state.activeQuestionIndex = index
+        })
         commit('setForm', new FormModel(res))
       })
     },

@@ -80,6 +80,10 @@ export default {
   mounted () {
     this.$store.dispatch('form/getFormById', this.$route.query.itemId)
     window.addEventListener('scroll', this.handleScroll)
+    // window.onbeforeunload = () => false
+  },
+  destroyed () {
+    window.onbeforeunload = null
   }
 }
 </script>
