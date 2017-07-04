@@ -95,7 +95,7 @@ export default {
   },
   methods: {
     setActive () {
-      if (this.question.isActive === true) return
+      // if (this.question.isActive === true) return
       this.$store.commit('form/activeQuestion', this.index)
     },
     addAsk (index) {
