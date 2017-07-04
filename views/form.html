@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title><%=title%></title>
   <link rel="stylesheet" href="/libs/css/mint.css">
+  <link rel="stylesheet" href="/libs/css/bmui.css">
 </head>
 <body>
   <div id="app">
@@ -22,8 +23,9 @@
         <!--日期和时间类型--end-->
         <!--地区类型--start-->
          <span v-if="item.qsType=== 'text' && item.validate === 'address'">
-         <input type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openDTPicker(index)" readonly>
-        </span>
+         <input type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openRegion(index)" readonly>
+         <bm-region :ranks="3" @output-region="pccOutput" :ref="'pcc' + index"></bm-region>
+         </span>
         <!--地区类型--end-->
         <!--文本类型--start-->
         <input type="text" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入">
@@ -51,6 +53,7 @@
   <script src="/libs/js/vue.js"></script>
   <script src="/libs/js/axios.min.js"></script>
   <script src="/libs/js/mint.js"></script>
+  <script src="/libs/js/bmui.js"></script>
   <script src="/libs/js/lrz.all.bundle.js"></script>
   <script src="/libs/js/vaildate.js"></script>
 <script>
@@ -59,7 +62,8 @@
       data: {
         id: null,
         form: {},
-        result: []
+        result: [],
+        regionIndex: null // 激活的地区选择控件标识
       },
       filters: {
         dtFormat (v, type) {
@@ -72,10 +76,19 @@
             } else {
               return v
             }
+          } else {
+            return v
           }
         }
       },
       methods: {
+        openRegion (index) {
+          this.regionIndex = index
+          this.$refs['pcc'+ index][0].open()
+        },
+        pccOutput (data) {
+          this.result[this.regionIndex].ask = data.province.data.dname + data.city.data.dname + data.county.data.dname
+        },
         openDTPicker (index) {
           this.$refs['dt'+index][0].open()
         },
@@ -83,14 +96,17 @@
           return axios.get('/api/form/' + id)
         },
         submit () {
-          console.log(validateFuns)
           if (!this.validate()) {
             console.log('验证不通过')
-            return
+           return
           }
           var self = this
           axios.post('/api/submit', {formId: this.id, result: this.result}).then(function(res){
-            self.$toast('提交成功')
+            if (res.data.responseCode === 0) {
+              self.$toast(res.data.responseMsg || '提交失败')
+            } else {
+              self.$toast('提交成功')
+            }
           })
         },
         validate () {
