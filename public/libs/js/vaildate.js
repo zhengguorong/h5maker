@@ -72,10 +72,16 @@ const isMobilePhone = () => {
   return isIOS() || isAndriod()
 }
 
+const funDict = {
+  'phone': 'isMobile',
+  'email': 'isEmail',
+  'num': 'isNum'
+}
 var validateFuns = {
   isMobile,
   isEmail,
-  isNum
+  isNum,
+  funDict
 }
 ;(function () {
   if (typeof module === 'object' && module && typeof module.exports === 'object') {

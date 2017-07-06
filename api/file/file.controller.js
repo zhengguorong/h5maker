@@ -79,6 +79,7 @@ module.exports.getByThemeId = (req, res) => {
 
 // Creates a new File in the DB
 module.exports.create = (req, res) => {
+  console.log(req.files)
   var imageInfo = buildImgPath(req.body.themeId || 'all')
   if (req.body.imgData) {
     tools.base64ToImg(req.body.imgData, imageInfo.imagePath)
