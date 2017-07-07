@@ -39,6 +39,17 @@
       </div>
       <div class="row">
         <div class="item">
+          <span class="title">文件类型</span>
+          <el-select class="input" v-model="question.validate" placeholder="请选择">
+            <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+            </el-option>
+          </el-select>
+        </div>
+        <div class="item">
           <span class="title">数量限制</span>
           <el-input-number v-model="question.count"></el-input-number>
         </div>
@@ -53,6 +64,10 @@ export default {
   props: ['question', 'index'],
   data () {
     return {
+      options: [
+        {value: 'img', label: '图片'},
+        {value: 'pureFile', label: '文件'}
+      ]
     }
   },
   methods: {

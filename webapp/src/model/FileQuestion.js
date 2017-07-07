@@ -4,5 +4,6 @@ export default class FileQuestion extends Question {
     super(question)
     this.qsType = question.qsType || 'file' // 问题类型
     this.count = question.count || 1 // 数量限制
+    this.validate = question.validate || 'img' // 文件类型
   }
 }

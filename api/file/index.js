@@ -6,7 +6,8 @@ var controller = require('./file.controller')
 const auth = require('../../auth/auth.service')
 
 var router = express.Router()
-
+// var multipart = require('connect-multiparty')
+// var multipartMiddleware = multipart()
 router.get('/', auth.isAuthenticated(), controller.index)
 router.get('/theme/:id', auth.isAuthenticated(), controller.getByThemeId)
 router.get('/:id', controller.show)

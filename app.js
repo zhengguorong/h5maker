@@ -21,7 +21,6 @@ mongoose.connection.on('error', function (err) {
   process.exit(-1);
 })
 var app = express()
-
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'))
 // app.set('view engine', 'hbs'

@@ -13,7 +13,8 @@
     <p class="title" v-if="form.title">{{form.title}}</p>
     <p class="description" v-if="form.description">{{form.description}}</p>
     <div v-for="(item, index) in form.questions" class="item">
-      <div class="question"><span class="qContent">{{index+1}}、{{item.title}}<span v-if="item.isMust">（必填）</span></span>
+      <div v-if="item.isMust" class="isMustSign"></div>
+      <div class="question"><span :class="{qContent: true, errorTitle: errors[index]}">{{index+1}}、{{item.title}} <span v-if="item.qsType=== 'radio'">（单选）</span><span v-if="item.qsType=== 'check'">（多选）</span></span>
       <p v-if="item.tips" class="tips">{{item.tips}}</p>
       </div>
       <div class="ask">
@@ -32,8 +33,7 @@
          </div>
         <!--地区类型--end-->
         <!--文本类型--start-->
-        <input :class="{textWarp: true, errorInput: errors[index]}" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain">
-        <span class="errorMsg" v-if="errors[index]">{{errors[index]}}</span>
+        <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain">
         <!--文本类型--end-->
         <div class="radioWrap flex ai-center" v-if="item.qsType=== 'radio'" v-for="(ask,i) in item.askList">
           <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title">
@@ -43,14 +43,23 @@
            <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
           <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title">
         </div>
-        <div v-if="item.qsType=== 'file'" class="fileWrap">
+        <div v-if="item.qsType=== 'file' && item.validate === 'img'" class="fileWrap">
           <img @click="removeImg(i, result[index].ask)" style="float: left" :src="item" alt="" v-for="(item, i) in result[index].ask">
-          <div class="file-upload">
-            <input type="file" @change="fileUpload($event, result[index])" style="width:100%;height: 100%;opacity: 0"/>
+          <div class="img-upload">
+            <input type="file" name="inputFile" @change="fileUpload($event, result[index])" style="width:100%;height: 100%;opacity: 0"/>
           </div>
           <div style="clear: both"></div>
         </div>
+        <div v-if="item.qsType=== 'file' && item.validate === 'pureFile'" class="">
+          <div class="file-upload">
+            <div class="fu-msg"><span v-for="(item, i) in result[index].ask" v-if="result[index].ask.length > 0">
+              <a :href="item.path" @click.stop.prevent="removeImg(i, result[index].ask)">{{item.name }}</a>, </span>  <span v-if="result[index].ask.length === 0">请选择要上传的文件</span></div>
+            <input class="fu-btn" type="file" name="inputFile" @change="fileUpload($event, result[index])"/>
+            <img src="/img/arrow@2x.png" alt="" class="fu-arrow">
+          </div>
+        </div>
       </div>
+      <span class="errorMsg" v-if="errors[index]">{{errors[index]}}</span>
     </div>
     <input class="submit" type="submit" value="提  交" @click="submit">
   </div>
@@ -62,6 +71,7 @@
   <script src="/libs/js/bmui.js"></script>
   <script src="/libs/js/lrz.all.bundle.js"></script>
   <script src="/libs/js/vaildate.js"></script>
+  <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
     var app = new Vue({
       el: '#app',
@@ -195,22 +205,24 @@
                 this.$message.error('请选择小于2M的文件')
                 return
               }
-              axios.post('/api/upload', {imgData: result.base64}).then(function(res){
+              axios.post('/api/upload', {imgData: result.base64, themeId: this.id}).then(function(res){
                 item.ask.push(res.data.filePath)
                 self.validate()
               })
             })
-          } else {
+          } else if (file && !/^image/.test(file.type)){
             var form = new FormData()
-            form.append(file, file)
-            axios.post('/api/upload', form, {header: {'Content-Type': 'multipart/form-data'}}).then(function(res){
-              item.ask.push(res.data.filePath)
+            form.append('inputFile', file)
+            form.append('themeId', self.id)
+            axios.post('/api/upload', form, {header: {'Content-Type': false}}).then(function(res){
+              item.ask.push({path: res.data.filePath, name: res.data.fileName})
               self.validate()
             })
           }
         },
         removeImg (index, ask) {
           ask.splice(index, 1)
+          this.validate()
         }
       },
       mounted () {
@@ -249,6 +261,7 @@ body {
   padding: 0 14px;
 }
 .item {
+  position: relative;
   padding-top:16px;
   margin-bottom:10px;
   background-color: #FFF;
@@ -321,7 +334,7 @@ body {
   margin-right:10px;
   margin-bottom:10px;
 }
-.item .ask .file-upload {
+.item .ask .img-upload {
   float: left;
   width: 68px;
   height:68px;
@@ -330,7 +343,39 @@ body {
   background: url(/img/picUpLoad@2x.png) no-repeat;
   background-size: 68px 68px;
 }
-
+.item .ask .file-upload {
+  position: relative;
+  width:100%;
+  height:50px;
+}
+.item .ask .fu-btn {
+  position: absolute;
+  width: 100%;
+  height:50px;
+  opacity:0;
+  z-index: 10;
+}
+.item .ask .fu-msg {
+  position: absolute;
+  left:12px;
+  right:12px;
+  width: 70%;
+  height: 50px;
+  line-height:50px;
+  overflow: hidden;
+}
+.item .ask .fu-msg a {
+  position: relative;
+  z-index:11;
+}
+.item .ask .fu-arrow {
+  width:30px;
+  height:30px;
+  position: absolute;
+  right:8px;
+  top:50%;
+  margin-top:-15px;
+}
 .submit {
   width: 100%;
   height: 60px;
@@ -341,19 +386,37 @@ body {
   position: fixed;
   bottom: 0px;
 }
+.isMustSign{
+  position: absolute;
+  width: 2px;
+  height:8px;
+  background: #ff6c47;
+  left:10px;
+  top:22px;
+}
 /*----原子类start----*/
 input,select {
   outline: 0;
   -webkit-appearance: none;
   appearance: none;
 }
-.errorInput {
-  border-bottom:1px solid #f44336!important;
+.errorTitle {
+  color: #ff6c47!important;
 }
 .errorMsg {
+  position: absolute;
   display: inline-block;
-  margin: 5px 7px;
-  color:#f44336;
+  padding: 7px 10px;
+  color:#fff;
+  background: #ff6c47;
+  font-size: 12px;
+  z-index: 10;
+  top: -20px;
+  left:16px;
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
+  box-shadow: 0 3px 3px 0 rgba(0,0,0,.3);
 }
 /* 换行*/
 .breakWord{
