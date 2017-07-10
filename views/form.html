@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title><%=title%></title>
   <link rel="stylesheet" href="/libs/css/mint.css">
@@ -33,7 +33,7 @@
          </div>
         <!--地区类型--end-->
         <!--文本类型--start-->
-        <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain">
+        <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''">
         <!--文本类型--end-->
         <div class="radioWrap flex ai-center" v-if="item.qsType=== 'radio'" v-for="(ask,i) in item.askList">
           <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title">
