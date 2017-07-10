@@ -6,6 +6,7 @@ var File = require('./file.model')
 var tools = require('../../util/tools')
 var uuid = require('node-uuid')
 var multiparty = require('multiparty')
+var mkdirp = require('mkdirp')
 var fs = require('fs')
 
 const respondWithResult = (res, statusCode) => {
@@ -89,24 +90,24 @@ module.exports.create = (req, res) => {
         .then(respondWithResult(res, 201))
         .catch(handleError(res))
   } else {
-    console.log(req)
     var form = new multiparty.Form()
-    form.uploadDir = './public/upload/files/'
     form.parse(req, (err, fields, files) => {
+      // form.uploadDir = './public/upload/files/' + files.themeId
       var filesTmp = JSON.stringify(files, null, 2)
       if (err) {
         console.log(err)
       } else {
-        var fileInfo = buildFilePath(fields.themeId[0] || 'all')
         var inputFile = files.inputFile[0]
         var uploadedPath = inputFile.path
-        var dstPath = './public/upload/files/' + inputFile.originalFilename
-        fs.rename(uploadedPath, dstPath, function (error)  {
+        var extension = /\.[^\.]+$/.exec(inputFile.originalFilename)[0]
+        var fileInfo = buildFilePath(fields.themeId[0] || 'all', extension)
+        // var dstPath = './public/upload/files/' + inputFile.originalFilename
+        fs.rename(uploadedPath, fileInfo.filePath, function (error)  {
           if (error) {
             console.log(error)
           } else {
             console.log('rename ok')
-            return File.create({filePath: '/upload/files/' + inputFile.originalFilename, fileName: inputFile.originalFilename})
+            return File.create({filePath: fileInfo.accessPath, fileName: inputFile.originalFilename})
                 .then(respondWithResult(res, 201))
                 .catch(handleError(res))
           }
@@ -128,15 +129,21 @@ const buildImgPath = (themeId) => {
   return { accessPath: accessPath, imagePath: imagePath, dirPath: dirPath }
 }
 
-const buildFilePath = (themeId) => {
+const buildFilePath = (themeId, extension) => {
   // 文件使用uuid生成别名
-  var fileName = uuid.v1().replace(/-/g, '')
+  var fileName = uuid.v1().replace(/-/g, '') + extension
   // 文件目录
   var dirPath = 'public/upload/files/' + themeId
   // 文件保存路径
   var filePath = dirPath + '/' + fileName
   //  文件访问路径
   var accessPath = '/upload/files/' + themeId + '/' + fileName
+  //  建立文件目录
+  mkdirp(dirPath, (error) => {
+    if (error) {
+      console.log(error)
+    }
+  })
   return { accessPath: accessPath, filePath: filePath, dirPath: dirPath }
 }
 // Deletes a File from the DB

@@ -10,8 +10,8 @@
 </head>
 <body>
   <div id="app">
-    <p class="title" v-if="form.title">{{form.title}}</p>
-    <p class="description" v-if="form.description">{{form.description}}</p>
+    <!--<p class="title" v-if="form.title">{{form.title}}</p>-->
+    <!--<p class="description" v-if="form.description">{{form.description}}</p>-->
     <div v-for="(item, index) in form.questions" class="item">
       <div v-if="item.isMust" class="isMustSign"></div>
       <div class="question"><span :class="{qContent: true, errorTitle: errors[index]}">{{index+1}}、{{item.title}} <span v-if="item.qsType=== 'radio'">（单选）</span><span v-if="item.qsType=== 'check'">（多选）</span></span>
@@ -21,14 +21,14 @@
         <!--日期和时间类型--start-->
         <div v-if="item.qsType=== 'text' && (item.validate === 'date' || item.validate === 'time')" class="flex ai-center">
          <input class="textWarp" type="text" :value="result[index].ask | dtFormat(item.validate)"  placeholder="请选择" @click="openDTPicker(index)" readonly>
-          <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px">
+          <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px;margin-right: 8px">
           <mt-datetime-picker :ref="'dt' + index" :type="item.validate" v-model="result[index].ask"></mt-datetime-picker>
         </div>
         <!--日期和时间类型--end-->
         <!--地区类型--start-->
          <div v-if="item.qsType=== 'text' && item.validate === 'address'" class="flex ai-center">
          <input class="textWarp" type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openRegion(index)"  readonly>
-           <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px">
+           <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px;margin-right:8px;">
            <bm-region :ranks="3" @output-region="pccOutput" :ref="'pcc' + index"></bm-region>
          </div>
         <!--地区类型--end-->
@@ -46,7 +46,7 @@
         <div v-if="item.qsType=== 'file' && item.validate === 'img'" class="fileWrap">
           <img @click="removeImg(i, result[index].ask)" style="float: left" :src="item" alt="" v-for="(item, i) in result[index].ask">
           <div class="img-upload">
-            <input type="file" name="inputFile" @change="fileUpload($event, result[index])" style="width:100%;height: 100%;opacity: 0"/>
+            <input type="file" name="inputFile" @change="fileUpload($event, index)" style="width:100%;height: 100%;opacity: 0"/>
           </div>
           <div style="clear: both"></div>
         </div>
@@ -54,7 +54,7 @@
           <div class="file-upload">
             <div class="fu-msg"><span v-for="(item, i) in result[index].ask" v-if="result[index].ask.length > 0">
               <a :href="item.path" @click.stop.prevent="removeImg(i, result[index].ask)">{{item.name }}</a>, </span>  <span v-if="result[index].ask.length === 0">请选择要上传的文件</span></div>
-            <input class="fu-btn" type="file" name="inputFile" @change="fileUpload($event, result[index])"/>
+            <input class="fu-btn" type="file" name="inputFile" @change="fileUpload($event, index)"/>
             <img src="/img/arrow@2x.png" alt="" class="fu-arrow">
           </div>
         </div>
@@ -114,7 +114,9 @@
         },
         toValidateAgain (el) {
           if (JSON.stringify(this.errors) === '{}') return
-          if (validateFuns[validateFuns.funDict[el.target.align]](el.target.value)) {
+          if (typeof el === 'number') {
+            this.validate()
+          } else if (validateFuns[validateFuns.funDict[el.target.align]](el.target.value)) {
             delete this.errors[el.target.name]
             this.$forceUpdate()
           } else {
@@ -196,7 +198,8 @@
             }
           }
         },
-        fileUpload (event, item) {
+        fileUpload (event, index) {
+          let item = this.result[index]
           let file = event.target.files[0]
           let self = this
           if (file && /^image/.test(file.type)) {
@@ -207,7 +210,7 @@
               }
               axios.post('/api/upload', {imgData: result.base64, themeId: this.id}).then(function(res){
                 item.ask.push(res.data.filePath)
-                self.validate()
+                self.toValidateAgain(index)
               })
             })
           } else if (file && !/^image/.test(file.type)){
@@ -216,13 +219,13 @@
             form.append('themeId', self.id)
             axios.post('/api/upload', form, {header: {'Content-Type': false}}).then(function(res){
               item.ask.push({path: res.data.filePath, name: res.data.fileName})
-              self.validate()
+              self.toValidateAgain(index)
             })
           }
         },
         removeImg (index, ask) {
           ask.splice(index, 1)
-          this.validate()
+          this.toValidateAgain(index)
         }
       },
       mounted () {
@@ -275,6 +278,7 @@ body {
 }
 .item .tips {
   margin-top: 8px;
+  margin-bottom:0px;
   color: #999;
   font-size:12px;
 }
