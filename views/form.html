@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title><%=title%></title>
   <link rel="stylesheet" href="/libs/css/mint.css">
@@ -27,7 +27,7 @@
         <!--日期和时间类型--end-->
         <!--地区类型--start-->
          <div v-if="item.qsType=== 'text' && item.validate === 'address'" class="flex ai-center">
-         <input class="textWarp" type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openRegion(index)"  readonly>
+         <input class="textWarp" type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openRegion(index)" readonly>
            <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px;margin-right:8px;">
            <bm-region :ranks="3" @output-region="pccOutput" :ref="'pcc' + index"></bm-region>
          </div>
@@ -36,12 +36,12 @@
         <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''">
         <!--文本类型--end-->
         <div class="radioWrap flex ai-center" v-if="item.qsType=== 'radio'" v-for="(ask,i) in item.askList">
-          <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title">
+          <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title" @change="toValidateAgain(index)">
           <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
         </div>
         <div class="checkboxWrap flex ai-center" v-if="item.qsType=== 'check'" v-for="(ask,i) in item.askList">
            <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
-          <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title">
+          <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title" @change="toValidateAgain(index)">
         </div>
         <div v-if="item.qsType=== 'file' && item.validate === 'img'" class="fileWrap">
           <img @click="removeImg(i, result[index].ask)" style="float: left" :src="item" alt="" v-for="(item, i) in result[index].ask">
@@ -68,7 +68,7 @@
   <script src="/libs/js/vue.js"></script>
   <script src="/libs/js/axios.min.js"></script>
   <script src="/libs/js/mint.js"></script>
-  <script src="/libs/js/bmui-prod.js"></script>
+  <script src="/libs/js/bmui-dev.js"></script>
   <script src="/libs/js/lrz.all.bundle.js"></script>
   <script src="/libs/js/vaildate.js"></script>
   <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -105,6 +105,7 @@
         },
         pccOutput (data) {
           this.result[this.regionIndex].ask = data.province.data.dname + data.city.data.dname + data.county.data.dname
+          this.toValidateAgain(this.regionIndex)
         },
         openDTPicker (index) {
           this.$refs['dt'+index][0].open()
