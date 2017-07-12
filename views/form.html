@@ -22,7 +22,8 @@
         <div v-if="item.qsType=== 'text' && (item.validate === 'date' || item.validate === 'time')" class="flex ai-center">
          <input class="textWarp" type="text" :value="result[index].ask | dtFormat(item.validate)"  placeholder="请选择" @click="openDTPicker(index)" readonly>
           <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px;margin-right: 8px">
-          <mt-datetime-picker :ref="'dt' + index" :type="item.validate" v-model="result[index].ask"></mt-datetime-picker>
+          <mt-datetime-picker :ref="'dt' + index" :type="item.validate" :value="result[index].ask" :start-date="new Date(0)" @confirm="v => {result[index].ask = v}"></mt-datetime-picker>
+          <!--<mt-datetime-picker :ref="'dt' + index" :type="item.validate" :value="result[index].ask" v-if="item.validate === 'time'"></mt-datetime-picker>-->
         </div>
         <!--日期和时间类型--end-->
         <!--地区类型--start-->
