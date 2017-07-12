@@ -13,7 +13,7 @@
         <div class="editor">
           <div class="title"><input type="text" v-model="form.title"/></div>
           <p class="description"><textarea rows="4" v-model="form.description"/></p>
-          <draggable v-model="form.questions">
+          <draggable v-model="form.questions" :options="{filter: '.ignore-drag', preventOnFilter: false}">
             <div class="form list-complete-item"  v-for="(item,index) in form.questions" v-bind:key="index">
               <TextInput :index="index" :question="item" v-if="item.qsType === 'text'"/>
               <Checkbox :index="index" :question="item" v-if="item.qsType === 'check'"/>

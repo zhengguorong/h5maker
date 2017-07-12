@@ -35,13 +35,19 @@
         <!--文本类型--start-->
         <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''">
         <!--文本类型--end-->
-        <div class="radioWrap flex ai-center" v-if="item.qsType=== 'radio'" v-for="(ask,i) in item.askList">
-          <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title" @change="toValidateAgain(index)">
-          <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
+        <div v-for="(ask,i) in item.askList" class="radioWrap" v-if="item.qsType=== 'radio'">
+          <div class="flex ai-center">
+            <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title" @change="toValidateAgain(index)">
+            <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
+          </div>
+          <img :src="ask.imgPath" alt="" v-if="ask.imgPath" style="display:block;width:220px;margin: 5px auto">
         </div>
-        <div class="checkboxWrap flex ai-center" v-if="item.qsType=== 'check'" v-for="(ask,i) in item.askList">
-           <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
-          <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title" @change="toValidateAgain(index)">
+        <div v-for="(ask,i) in item.askList" class="checkboxWrap" v-if="item.qsType=== 'check'">
+          <div class="flex ai-center">
+            <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
+            <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title" @change="toValidateAgain(index)">
+          </div>
+          <img :src="ask.imgPath" alt="" v-if="ask.imgPath" style="display:block;width:220px;margin: 5px auto">
         </div>
         <div v-if="item.qsType=== 'file' && item.validate === 'img'" class="fileWrap">
           <img @click="removeImg(i, result[index].ask)" style="float: left" :src="item" alt="" v-for="(item, i) in result[index].ask">
