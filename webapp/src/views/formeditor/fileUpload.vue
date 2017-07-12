@@ -23,7 +23,7 @@
       <el-button @click.stop="moveTopQuestion" icon="d-arrow-left" :plain="true" size="small" type="info">最前</el-button>
       <el-button @click.stop="moveBottomQuestion" icon="d-arrow-right" :plain="true" size="small" type="info">最后</el-button>
     </div>
-    <div class="editor-panel"  v-show="question.isActive">
+    <div class="editor-panel ignore-drag"  v-show="question.isActive">
       <div class="row">
         <div class="item">
           <span class="title">问题标题</span>

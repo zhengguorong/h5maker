@@ -40,7 +40,7 @@
               </div>
             <el-button type="info" @click="copyUrl">复制链接</el-button>
           </div>
-          <div class="edit" @click="edit"><el-button style="width:180px" type="primary" icon="edit">编   辑</el-button></div>
+          <div class="edit" v-if="!isForm" @click="edit"><el-button style="width:180px" type="primary" icon="edit">编   辑</el-button></div>
         </div>
       </div>
       <div class="close" @click="close">
@@ -51,6 +51,7 @@
 </template>
 
 <style lang="less" scoped>
+::-webkit-scrollbar{width:0px}
 .wrap {
   position: fixed;
   top: 0;
@@ -166,7 +167,8 @@ export default {
       releaseUrl: appConst.BACKEND_DOMAIN + '/pages/' + this.itemId + '.html',
       title: this.$store.state.editor.editorTheme.title || '',
       description: this.$store.state.editor.editorTheme.description || '',
-      qrcodeSize: 500
+      qrcodeSize: 500,
+      isForm: window.location.hash.indexOf('form') > -1
     }
   },
   methods: {
@@ -181,8 +183,14 @@ export default {
     downQRcode () {
       QRCode.toDataURL(this.releaseUrl, {scale: Math.ceil(this.qrcodeSize / 40)}, (err, url) => {
         console.log(err)
-        url = url.replace(/^data:image\/[^;]/, 'data:application/octet-stream')
-        window.open(url)
+        var a = document.createElement('a')
+        a.setAttribute('href', url)
+        a.setAttribute('download', '')
+        var eventObj = document.createEvent('MouseEvents')
+        eventObj.initEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, true, false, 0, null)
+        a.dispatchEvent(eventObj)
+//        url = url.replace(/^data:image\/[^;]/, 'data:application/octet-stream')
+//        window.open(url)
       })
     },
     copyUrl () {

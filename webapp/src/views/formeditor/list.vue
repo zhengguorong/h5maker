@@ -22,7 +22,8 @@
                       <i @click.stop="deleteTheme(item,index)" class="el-icon-delete"></i>
                     </el-tooltip>
                   </div>
-                  <div class="preview" @click="showPreView(item._id)"><span>预 览</span></div>
+                  <div class="preview" @click="showPreView(item._id)" v-if="item.questions.length > 0"><span>预 览</span></div>
+                  <div class="preview" @click="toEditor(item)" v-else><span>编 辑</span></div>
                 </div>
               </div>
               <div class="footer">

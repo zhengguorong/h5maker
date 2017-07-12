@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title><%=title%></title>
   <link rel="stylesheet" href="/libs/css/mint.css">
@@ -10,8 +10,8 @@
 </head>
 <body>
   <div id="app">
-    <!--<p class="title" v-if="form.title">{{form.title}}</p>-->
-    <!--<p class="description" v-if="form.description">{{form.description}}</p>-->
+    <p class="title" v-if="form.title">{{form.title}}</p>
+    <p class="description keep-br" v-if="form.description">{{form.description}}</p>
     <div v-for="(item, index) in form.questions" class="item">
       <div v-if="item.isMust" class="isMustSign"></div>
       <div class="question"><span :class="{qContent: true, errorTitle: errors[index]}">{{index+1}}、{{item.title}} <span v-if="item.qsType=== 'radio'">（单选）</span><span v-if="item.qsType=== 'check'">（多选）</span></span>
@@ -27,21 +27,27 @@
         <!--日期和时间类型--end-->
         <!--地区类型--start-->
          <div v-if="item.qsType=== 'text' && item.validate === 'address'" class="flex ai-center">
-         <input class="textWarp" type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openRegion(index)"  readonly>
+         <input class="textWarp" type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openRegion(index)" readonly>
            <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px;margin-right:8px;">
            <bm-region :ranks="3" @output-region="pccOutput" :ref="'pcc' + index"></bm-region>
          </div>
         <!--地区类型--end-->
         <!--文本类型--start-->
-        <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain">
+        <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''">
         <!--文本类型--end-->
-        <div class="radioWrap flex ai-center" v-if="item.qsType=== 'radio'" v-for="(ask,i) in item.askList">
-          <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title">
-          <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
+        <div v-for="(ask,i) in item.askList" class="radioWrap" v-if="item.qsType=== 'radio'">
+          <div class="flex ai-center">
+            <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title" @change="toValidateAgain(index)">
+            <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
+          </div>
+          <img :src="ask.imgPath" alt="" v-if="ask.imgPath" style="display:block;width:220px;margin: 5px auto">
         </div>
-        <div class="checkboxWrap flex ai-center" v-if="item.qsType=== 'check'" v-for="(ask,i) in item.askList">
-           <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
-          <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title">
+        <div v-for="(ask,i) in item.askList" class="checkboxWrap" v-if="item.qsType=== 'check'">
+          <div class="flex ai-center">
+            <label :for="i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
+            <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title" @change="toValidateAgain(index)">
+          </div>
+          <img :src="ask.imgPath" alt="" v-if="ask.imgPath" style="display:block;width:220px;margin: 5px auto">
         </div>
         <div v-if="item.qsType=== 'file' && item.validate === 'img'" class="fileWrap">
           <img @click="removeImg(i, result[index].ask)" style="float: left" :src="item" alt="" v-for="(item, i) in result[index].ask">
@@ -53,13 +59,13 @@
         <div v-if="item.qsType=== 'file' && item.validate === 'pureFile'" class="">
           <div class="file-upload">
             <div class="fu-msg"><span v-for="(item, i) in result[index].ask" v-if="result[index].ask.length > 0">
-              <a :href="item.path" @click.stop.prevent="removeImg(i, result[index].ask)">{{item.name }}</a>, </span>  <span v-if="result[index].ask.length === 0">请选择要上传的文件</span></div>
+              <a :href="item.path" @click.stop.prevent="removeImg(i, result[index].ask)" style="color:#333">{{item.name }}</a>, </span>  <span v-if="result[index].ask.length === 0">请选择要上传的文件</span></div>
             <input class="fu-btn" type="file" name="inputFile" @change="fileUpload($event, index)"/>
             <img src="/img/arrow@2x.png" alt="" class="fu-arrow">
           </div>
         </div>
       </div>
-      <span class="errorMsg" v-if="errors[index]">{{errors[index]}}</span>
+      <span class="errorMsg" v-if="errors[index]">{{errors[index]}} <img src="/img/alertbox_corner@2x.png" alt="" class="errorTipsCorner"></span>
     </div>
     <input class="submit" type="submit" value="提  交" @click="submit">
   </div>
@@ -68,7 +74,7 @@
   <script src="/libs/js/vue.js"></script>
   <script src="/libs/js/axios.min.js"></script>
   <script src="/libs/js/mint.js"></script>
-  <script src="/libs/js/bmui.js"></script>
+  <script src="/libs/js/bmui-dev.js"></script>
   <script src="/libs/js/lrz.all.bundle.js"></script>
   <script src="/libs/js/vaildate.js"></script>
   <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -105,6 +111,7 @@
         },
         pccOutput (data) {
           this.result[this.regionIndex].ask = data.province.data.dname + data.city.data.dname + data.county.data.dname
+          this.toValidateAgain(this.regionIndex)
         },
         openDTPicker (index) {
           this.$refs['dt'+index][0].open()
@@ -260,7 +267,6 @@ body {
   text-align: center;
 }
 .description {
-  text-indent:28px;
   padding: 0 14px;
 }
 .item {
@@ -367,6 +373,9 @@ body {
   height: 50px;
   line-height:50px;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333;
 }
 .item .ask .fu-msg a {
   position: relative;
@@ -389,6 +398,7 @@ body {
   font-size: 17px;
   position: fixed;
   bottom: 0px;
+  z-index: 100;
 }
 .isMustSign{
   position: absolute;
@@ -417,10 +427,18 @@ input,select {
   z-index: 10;
   top: -20px;
   left:16px;
-  -webkit-border-radius:4px;
-  -moz-border-radius:4px;
-  border-radius:4px;
-  box-shadow: 0 3px 3px 0 rgba(0,0,0,.3);
+  -webkit-border-radius:4px 4px 4px 0;
+  -moz-border-radius:4px 4px 4px 0;
+  border-radius:4px 4px 4px 0;
+  box-shadow: 0 3px 3px 0 rgba(0,0,0,.2);
+}
+.errorTipsCorner{
+  position: absolute;
+  width:10px;
+  height:10px;
+  bottom: -9px;
+  left:0;
+  z-index: 10;
 }
 /* 换行*/
 .breakWord{
@@ -465,6 +483,14 @@ input,select {
 .flex-basis {
   -webkit-flex-basis:100%;
   flex-basis:100%;
+}
+
+.keep-br{
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
 }
 /*----原子类end----*/
 </style>

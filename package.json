@@ -8,6 +8,7 @@
     "start": "NODE_ENV=production node ./bin/www",
     "dev": "NODE_ENV=development node ./bin/www",
     "local": "set NODE_ENV=localhost&&node ./bin/www",
+    "local-https": "node ./bin/www-https",
     "build": "cd webapp && node build/build.js",
     "webapp": "cd webapp && node build/dev-server.js",
     "testBuild": "cd webapp && node build/test-build.js"
@@ -44,6 +45,7 @@
     "serve-favicon": "~2.3.0",
     "vue": "^2.3.3",
     "vue-router": "^2.5.3",
+    "vuedraggable": "^2.14.1",
     "vuex": "^2.3.0"
   },
   "devDependencies": {
