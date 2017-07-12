@@ -10,7 +10,8 @@
     "local": "set NODE_ENV=localhost&&node ./bin/www",
     "local-https": "node ./bin/www-https",
     "build": "cd webapp && node build/build.js",
-    "webapp": "cd webapp && node build/dev-server.js"
+    "webapp": "cd webapp && node build/dev-server.js",
+    "testBuild": "cd webapp && node build/test-build.js"
   },
   "dependencies": {
     "animate.css": "^3.5.2",
