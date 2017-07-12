@@ -11,7 +11,7 @@
 <body>
   <div id="app">
     <p class="title" v-if="form.title">{{form.title}}</p>
-    <p class="description" v-if="form.description">{{form.description}}</p>
+    <p class="description keep-br" v-if="form.description">{{form.description}}</p>
     <div v-for="(item, index) in form.questions" class="item">
       <div v-if="item.isMust" class="isMustSign"></div>
       <div class="question"><span :class="{qContent: true, errorTitle: errors[index]}">{{index+1}}、{{item.title}} <span v-if="item.qsType=== 'radio'">（单选）</span><span v-if="item.qsType=== 'check'">（多选）</span></span>
@@ -267,7 +267,6 @@ body {
   text-align: center;
 }
 .description {
-  text-indent:28px;
   padding: 0 14px;
 }
 .item {
@@ -484,6 +483,14 @@ input,select {
 .flex-basis {
   -webkit-flex-basis:100%;
   flex-basis:100%;
+}
+
+.keep-br{
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
 }
 /*----原子类end----*/
 </style>
