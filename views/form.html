@@ -18,14 +18,21 @@
       <p v-if="item.tips" class="tips">{{item.tips}}</p>
       </div>
       <div class="ask">
-        <!--日期和时间类型--start-->
-        <div v-if="item.qsType=== 'text' && (item.validate === 'date' || item.validate === 'time')" class="flex ai-center">
+        <!--时间类型--start-->
+        <div v-if="item.qsType=== 'text' && item.validate === 'time'" class="flex ai-center">
          <input class="textWarp" type="text" :value="result[index].ask | dtFormat(item.validate)"  placeholder="请选择" @click="openDTPicker(index)" readonly>
           <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px;margin-right: 8px">
-          <mt-datetime-picker :ref="'dt' + index" :type="item.validate" :value="result[index].ask" :start-date="new Date(0)" @confirm="v => {result[index].ask = v}"></mt-datetime-picker>
+          <mt-datetime-picker :ref="'dt' + index" :type="item.validate" :value="result[index].ask"  @confirm="v => {result[index].ask = v}"></mt-datetime-picker>
           <!--<mt-datetime-picker :ref="'dt' + index" :type="item.validate" :value="result[index].ask" v-if="item.validate === 'time'"></mt-datetime-picker>-->
         </div>
-        <!--日期和时间类型--end-->
+        <!--时间类型--end-->
+        <!--日期类型--start-->
+        <div v-if="item.qsType=== 'text' && item.validate === 'date'" class="flex ai-center" style="padding-left: 12px;padding-bottom: 12px;">
+          <input class="date-input" style="width:60px" type="number" :value="result[index].ask | dtFormat(item.validate)"  placeholder="年" onkeyup="if(event.keyCode === 8)return;if(value > 9999 || value < 0) value = '';if(value.length>=4)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[0]">-
+          <input class="date-input" style="width:44px" type="number" placeholder="月" onkeyup="if(event.keyCode === 8)return;if(value > 12 || value < 0) value = '';if(value.length>=2)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[1]">-
+          <input class="date-input" style="width:44px" type="number" placeholder="日" oninput="if(value.length>2)value=value.slice(0,2);if(value > 31 || value < 0) value = ''" v-model="result[index].ask[2]">
+        </div>
+        <!--日期类型--end-->
         <!--地区类型--start-->
          <div v-if="item.qsType=== 'text' && item.validate === 'address'" class="flex ai-center">
          <input class="textWarp" type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openRegion(index)" readonly>
@@ -124,7 +131,7 @@
           if (JSON.stringify(this.errors) === '{}') return
           if (typeof el === 'number') {
             this.validate()
-          } else if (validateFuns[validateFuns.funDict[el.target.align]](el.target.value)) {
+          } else if (el.target.align !== 'text' && validateFuns[validateFuns.funDict[el.target.align]](el.target.value)) {
             delete this.errors[el.target.name]
             this.$forceUpdate()
           } else {
@@ -147,14 +154,20 @@
           })
         },
         validate () {
-          for(var i=0;i<this.form.questions.length;i++) {
+          for(let i=0;i<this.form.questions.length;i++) {
             var question = this.form.questions[i]
             var ask = this.result[i].ask
             // 验证必填项
             if (question.isMust && ask.length === 0) {
               this.errors[i] = '该项是必填项'
             }
-            if (question.isMust && ask.length !== 0) {
+            if (question.isMust && question.validate === 'date' && (ask[0] === '' || ask[1] === '' || ask[2] === '')) {
+              this.errors[i] = '该项是必填项'
+            }
+            if (question.isMust && question.validate === 'date' && (ask[0] !== '' && ask[1] !== '' && ask[2] !== '')) {
+              delete this.errors[i]
+            }
+            if (question.isMust && ask.length !== 0 && question.validate !== 'date') {
               delete this.errors[i]
             }
             if (!question.isMust && ask.length === 0) {
@@ -201,6 +214,8 @@
               this.result.push({question:question.title, ask:defaultAsk})
             } else if (questions[i].qsType === 'file') {
               this.result.push({question:question.title, ask:[]})
+            } else if (questions[i].qsType === 'text' && questions[i].validate === 'date') {
+              this.result.push({question:question.title, ask:['', '', '']})
             } else {
               this.result.push({question:question.title, ask:''})
             }
@@ -298,7 +313,12 @@ body {
   border: 0;
   text-align: left;
 }
-
+.item .ask .date-input {
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+}
 .item .radioWrap,.item .checkboxWrap {
   padding: 12px 16px;
   border-bottom: 1px solid #e5e5e5;
