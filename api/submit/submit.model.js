@@ -7,7 +7,8 @@ var SubmitSchema = new mongoose.Schema({
   },
   createDate: { type: Number, default: Date.now },
   loginId: String,
-  formId: String
+  formId: String,
+  ip: String
 })
 
 module.exports = mongoose.model('Submit', SubmitSchema)
