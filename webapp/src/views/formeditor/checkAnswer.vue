@@ -128,7 +128,7 @@
         }).then((result) => {
           this.answerCollection = result.records
           this.total = result.count
-          this.answerListArr = result.records.map((item, index) => { return {createDate: item.createDate, IP: '127.0.0.1（本地）', sourceChannel: '微信'} })
+          this.answerListArr = result.records.map((item, index) => { return {createDate: item.createDate, IP: item.ip || '', sourceChannel: '微信'} })
         })
       }
     },

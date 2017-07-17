@@ -1,5 +1,6 @@
 var Submit = require('./submit.model')
 var Form = require('../form/form.model')
+var request = require('request')
 var validateFuns = require('../../public/libs/js/vaildate')
 const respondWithResult = (res, statusCode) => {
   statusCode = statusCode || 200
@@ -54,6 +55,7 @@ module.exports.create = (req, res) => {
  else {
    validate(req.body).then((valiRes) => {
      if (!valiRes) {
+       // 保存用户请求的ip地址
        let ipAddress
        let forwardedIpsStr = req.header('x-forwarded-for')
        if (forwardedIpsStr) {
@@ -63,10 +65,22 @@ module.exports.create = (req, res) => {
        if (!ipAddress) {
          ipAddress = req.connection.remoteAddress
        }
-       req.body.ip = ipAddress
-       return Submit.create(req.body)
-           .then(respondWithResult(res, 201))
-           .catch(handleError(res))
+       let url = 'http://int.dpool.sina.com.cn/iplookup/iplookup.php?ip=' + ipAddress + '&format=json'
+       // 解析ip地址的地理位置
+       return request(url, function (error, response, body) {
+                 if (!error && response.statusCode === 200) {
+                   if(body == -2) {
+                     ipAddress= ipAddress + '(本地局域网)'
+                   } else {
+                     body = JSON.parse(body)
+                     ipAddress= ipAddress + '(' + body.province +  body.city + ')'
+                   }
+                   req.body.ip = ipAddress
+                   return Submit.create(req.body)
+                      .then(respondWithResult(res, 201))
+                      .catch(handleError(res))
+                }
+               })
      } else {
        res.json(Object.assign(valiRes, {responseCode: 0}))
      }
