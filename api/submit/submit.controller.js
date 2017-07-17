@@ -63,7 +63,7 @@ module.exports.create = (req, res) => {
        if (!ipAddress) {
          ipAddress = req.connection.remoteAddress
        }
-       console.log(ipAddress)
+       req.body.ip = ipAddress
        return Submit.create(req.body)
            .then(respondWithResult(res, 201))
            .catch(handleError(res))
