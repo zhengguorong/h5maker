@@ -23,7 +23,11 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
+/**
+ * Begin accepting connections on the specified port and hostname.
+ * If the hostname is omitted, the server will accept connections on any IPv6 address (::) when IPv6 is available,
+ * or any IPv4 address (0.0.0.0) otherwise
+ */
 server.listen(port, '0.0.0.0');
 server.on('error', onError);
 server.on('listening', onListening);
