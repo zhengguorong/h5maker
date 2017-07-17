@@ -69,7 +69,7 @@ module.exports.create = (req, res) => {
        // 解析ip地址的地理位置
        return request(url, function (error, response, body) {
                  if (!error && response.statusCode === 200) {
-                   if(body == -2) {
+                   if(body == -2 || body.ret == -1) {
                      ipAddress= ipAddress + '(本地局域网)'
                    } else {
                      body = JSON.parse(body)
