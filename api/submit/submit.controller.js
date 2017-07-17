@@ -54,6 +54,16 @@ module.exports.create = (req, res) => {
  else {
    validate(req.body).then((valiRes) => {
      if (!valiRes) {
+       let ipAddress
+       let forwardedIpsStr = req.header('x-forwarded-for')
+       if (forwardedIpsStr) {
+         let forwardedIps = forwardedIpsStr.split(',')
+         ipAddress = forwardedIps[0]
+       }
+       if (!ipAddress) {
+         ipAddress = req.connection.remoteAddress
+       }
+       console.log(ipAddress)
        return Submit.create(req.body)
            .then(respondWithResult(res, 201))
            .catch(handleError(res))

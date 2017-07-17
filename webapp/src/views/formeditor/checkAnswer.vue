@@ -4,39 +4,24 @@
   <div class="main">
     <template>
       <el-table
-          :data="tableData4"
+          :data="answerListArr"
           border
           style="width: 100%"
           max-height="300">
         <el-table-column
-            prop="date"
-            label="日期"
-            width="150">
+            prop="createDate"
+            label="提交时间"
+            width="250">
         </el-table-column>
         <el-table-column
-            prop="name"
-            label="姓名"
-            width="120">
+            prop="IP"
+            label="所在地IP"
+            width="400">
         </el-table-column>
         <el-table-column
-            prop="province"
-            label="省份"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="city"
-            label="市区"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="address"
-            label="地址"
-            width="300">
-        </el-table-column>
-        <el-table-column
-            prop="zip"
-            label="邮编"
-            width="120">
+            prop="sourceChannel"
+            label="来源渠道"
+            width="200">
         </el-table-column>
         <el-table-column
             fixed="right"
@@ -62,7 +47,7 @@
             :page-sizes="[5, 20, 100, 200, 500, 1000]"
             :page-size="5"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="1000">
+            :total="total">
         </el-pagination>
       </div>
     </template>
@@ -70,13 +55,9 @@
       <p>答卷详情</p>
       <div class="title-wrap"><span class="mr-20">序号：1</span> <span class="mr-20">提交时间：2016/12/16 21:34:43</span> <span class="mr-20">所在地IP：122.12.23.43(广州)</span><span class="mr-20">来源渠道：手机</span><span class="mr-20">来源详情：微信昵称</span></div>
       <div class="content">
-        <el-row>
-          <el-col :span="12"><div class="grid-content">1.你的姓名是：</div></el-col>
-          <el-col :span="12"><div class="grid-content">曾文东</div></el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12"><div class="grid-content">2.你在哪里工作：</div></el-col>
-          <el-col :span="12"><div class="grid-content">蓝月亮</div></el-col>
+        <el-row v-for="(item, index) in QAArr">
+          <el-col :span="12"><div class="grid-content">{{index + 1}}.{{item.question}}</div></el-col>
+          <el-col :span="12"><div class="grid-content">{{item.ask}}</div></el-col>
         </el-row>
       </div>
     </div>
@@ -116,86 +97,43 @@
    * Created by Wesdint on 2017/7/14.
    */
   import HeaderOpera from '../../components/HeaderOpera.vue'
+  import api from '../../api/form'
   export default {
     data () {
       return {
-        currentPage: 4,
-        tableData4: [{
-          date: '2016-05-03',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          province: '上海',
-          city: '普陀区',
-          address: '上海市普陀区金沙江路 1518 弄',
-          zip: 200333
-        }]
+        currentPage: 1,
+        pageSize: 5,
+        answerListArr: [],
+        answerCollection: [],
+        QAArr: [],
+        total: 0
       }
     },
     methods: {
       checkAnswer (index) {
-        console.log(index)
+        this.QAArr = this.answerCollection[index].result
       },
-      handleSizeChange () {
-
+      handleSizeChange (val) {
+        this.pageSize = val
       },
-      handleCurrentChange () {
-
+      handleCurrentChange (val) {
+        this.currentPage = val
+        this.loadData()
+      },
+      loadData () {
+        api.getAnswer({
+          id: this.$route.query.formId,
+          pageSize: this.pageSize,
+          pageIndex: this.currentPage
+        }).then((result) => {
+          this.answerCollection = result.records
+          this.total = result.count
+          this.answerListArr = result.records.map((item, index) => { return {createDate: item.createDate, IP: '127.0.0.1（本地）', sourceChannel: '微信'} })
+        })
       }
+    },
+    mounted () {
+      this.loadData()
     },
     components: {HeaderOpera}
   }
