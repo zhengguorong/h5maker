@@ -11,9 +11,13 @@ const state = {
   editorTheme: {
     title: '蓝月亮',
     description: '蓝月亮',
-    canvasHeight: 504
+    canvasHeight: 504,
+    musicLink: null,
+    musicName: null
   }, // 正在编辑的主题
-  picList: [] // 图片列表
+  picList: [], // 图片列表
+  musicList: [], // 音乐列表
+  musicPlaying: true // 音乐播放
 }
 
 export default{

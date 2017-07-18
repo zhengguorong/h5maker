@@ -8,5 +8,7 @@ export default class Theme {
     this.pages = theme.pages || []
     this.type = theme.type || 'h5'
     this.canvasHeight = theme.canvasHeight || 504
+    this.musicName = theme.musicName || ''
+    this.musicLink = theme.musicLink || ''
   }
 }
