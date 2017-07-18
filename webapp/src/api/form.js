@@ -24,6 +24,10 @@ const uploadPic = (data) => {
   return http.post('/api/upload', {imgData: data})
 }
 
+const getAnswer = (data) => {
+  return http.post('/api/checkAnswer', {formId: data.id, pageIndex: data.pageIndex, pageSize: data.pageSize})
+}
+
 module.exports = {
-  createForm, deleteForm, getFormList, getFormById, updateForm, uploadPic
+  createForm, deleteForm, getFormList, getFormById, updateForm, uploadPic, getAnswer
 }

@@ -41,4 +41,8 @@ export default [{
   path: '/formeditor',
   name: 'formeditor',
   component: require('./views/formeditor/index.vue')
+}, {
+  path: '/checkAnswer',
+  name: 'checkAnswer',
+  component: require('./views/formeditor/checkAnswer.vue')
 }]
