@@ -1,6 +1,7 @@
 import * as types from './mutation-type'
 import app from '../../util/appConst'
 import Element from '../../model/Element'
+import Music from '../../model/Music'
 
 const mutations = {
   [types.SET_CUR_EDITOR_ELEMENT] (state, data) {
@@ -78,6 +79,9 @@ const mutations = {
     state.editorTheme.description = description
     state.editorTheme.canvasHeight = canvasHeight
   },
+  [types.UPDATE_THEME_MUSIC] (state, {musicName, musicLink}) {
+    state.editorTheme = {...state.editorTheme, musicLink, musicName}
+  },
   [types.DELETE_ELEMENT] (state, data) {
     state.editorPage.elements.findIndex((value, index, arr) => {
       if (value === data) {
@@ -146,6 +150,21 @@ const mutations = {
     state.editorPage.elements.forEach((v, i, arr) => {
       arr[i]['zindex'] = i + 1
     })
+  },
+  [types.UPDATE_MUSIC_LIST] (state, index) {
+    state.musicList.splice(index, 1)
+  },
+  [types.UPDATE_MUSIC_LIST_PLAYING] (state, {index, isPlaying}) {
+    state.musicList[index].isPlaying = isPlaying
+  },
+  [types.PUSH_MUSIC_LIST] (state, data) {
+    state.musicList.push(new Music(data))
+  },
+  [types.CLEAN_MUSIC_LIST] (state) {
+    state.musicList = []
+  },
+  [types.UPDATE_MUSIC_PLAYING] (state, musicPlaying) {
+    state.musicPlaying = musicPlaying
   }
 }
 export default mutations

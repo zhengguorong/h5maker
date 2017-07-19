@@ -18,6 +18,7 @@ Vue.use(ElementUI)
 import 'normalize.css'
 import 'element-ui/lib/theme-default/index.css'
 import './style/main.css'
+import './style/iconfont.css'
 
 // 初始化
 /* eslint-disable no-new */
