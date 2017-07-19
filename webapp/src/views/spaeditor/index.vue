@@ -517,7 +517,8 @@
          align-items: center;
          justify-content: space-between;
          border-bottom:1px solid #ddd;
-         cursor:pointer
+         cursor:pointer;
+         font-size:16px;
        }
       .active{
         color:#20a0ff;
@@ -540,7 +541,9 @@
           display:flex;
           align-items: center;
           justify-content: space-between;
-          cursor:pointer
+          cursor:pointer;
+          padding:0 15px;
+          font-size:14px;
         }
       }
     }
