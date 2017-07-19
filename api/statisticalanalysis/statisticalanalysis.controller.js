@@ -58,7 +58,7 @@ module.exports.downloadExcel = (req, res) => {
               inItem.ask.forEach((dateItem) => {
                 dateStr = dateStr + '-' + dateItem
               })
-              itemArr.push(dateStr)
+              itemArr.push(dateStr.replace('-', ''))
             } else if (qsType === 'check') {
               let checkboxStr = ''
               inItem.ask.forEach((checkboxItem) => {
