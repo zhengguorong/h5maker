@@ -45,7 +45,7 @@
             @current-change="handleCurrentChange"
             :current-page="currentPage"
             :page-sizes="[5, 20, 100, 200, 500, 1000]"
-            :page-size="5"
+            :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total">
         </el-pagination>
@@ -122,6 +122,7 @@
       handleSizeChange (val) {
         this.detailDisplay = false
         this.pageSize = val
+        this.loadData()
       },
       handleCurrentChange (val) {
         this.detailDisplay = false
