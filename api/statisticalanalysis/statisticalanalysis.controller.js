@@ -54,9 +54,17 @@ module.exports.downloadExcel = (req, res) => {
             let qsType = questionData[0].questions[inIndex].qsType
             let validate = questionData[0].questions[inIndex].validate
             if (qsType === 'text' && validate === 'date') {
-              itemArr.push(JSON.stringify(inItem.ask).replace(/"/g, '').replace(/[/g, '').replace(/]/g, '').replace(/,/g, '-'))
+              let dateStr = ''
+              inItem.ask.forEach((dateItem) => {
+                dateStr = dateStr + '-' + dateItem
+              })
+              itemArr.push(dateStr.replace('-', ''))
             } else if (qsType === 'check') {
-              itemArr.push(JSON.stringify(inItem.ask).replace(/[/g, '').replace(/]/g, '').replace(/,/g, '|'))
+              let checkboxStr = ''
+              inItem.ask.forEach((checkboxItem) => {
+                checkboxStr = checkboxStr + ' | ' + checkboxItem
+              })
+              itemArr.push((checkboxStr))
             } else if (qsType === 'file' && validate === 'img') {
               let imgStr = ''
               inItem.ask.forEach((imgItem) => {
@@ -79,7 +87,7 @@ module.exports.downloadExcel = (req, res) => {
         const file = new xlsx.File();
         const sheet = file.addSheet('Sheet1');
         const data = excelContent
-
+        console.log(excelContent)
         function border(cell, top, left, bottom, right) {
           const light = 'ffded9d4';
           const dark = 'ff7e6a54';

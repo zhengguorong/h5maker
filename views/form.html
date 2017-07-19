@@ -10,8 +10,19 @@
 </head>
 <body>
   <div id="app">
-    <p class="title" v-if="form.title">{{form.title}}</p>
-    <p class="description keep-br" v-if="form.description">{{form.description}}</p>
+   <div class="mask" v-show="!QADisplay">
+     <img src="/img/bg@3x.png" height="100%"/>
+     <div>
+        <img class="before-logo" src="/img/logo_big@2x.png" height="40" width="114"/>
+        <div class="before-title">
+          <p class="pri">{{form.title}}</p>
+          <p class="sec keep-br">{{form.description}}</p>
+        </div>
+        <div class="entry-btn" @click="openQ">打开问卷</div>
+      </div>
+   </div>
+  <div v-show="QADisplay">
+    <div style="text-align: right;padding: 10px 16px;"><img src="/img/logo_small@2x.png" height="18" width="46"/></div>
     <div v-for="(item, index) in form.questions" class="item">
       <div v-if="item.isMust" class="isMustSign"></div>
       <div class="question"><span :class="{qContent: true, errorTitle: errors[index]}">{{index+1}}、{{item.title}} <span v-if="item.qsType=== 'radio'">（单选）</span><span v-if="item.qsType=== 'check'">（多选）</span></span>
@@ -77,6 +88,7 @@
     </div>
     <input class="submit" type="submit" value="提  交" @click="submit">
   </div>
+  </div>
 </body>
 </html>
   <script src="/libs/js/vue.js"></script>
@@ -94,7 +106,8 @@
         form: {},
         result: [],
         regionIndex: null, // 激活的地区选择控件标识
-        errors: {}
+        errors: {},
+        QADisplay: false
       },
       filters: {
         dtFormat (v, type) {
@@ -113,6 +126,9 @@
         }
       },
       methods: {
+        openQ () {
+          this.QADisplay = true
+        },
         openRegion (index) {
           this.regionIndex = index
           this.$refs['pcc'+ index][0].open()
@@ -317,6 +333,55 @@ html{
 body {
   margin: 0 auto;
   background-color: #F2F2F2;
+}
+.mask {
+  position: fixed;
+  left:0;
+  bottom:0;
+  right:0;
+  top:0;
+}
+.mask .before-logo{
+  position: absolute;
+  top: 44px;
+  left: 50%;
+  right: 50%;
+  margin-left: -57px;
+}
+.mask .before-title {
+  position: absolute;
+  left: 0;
+  right:0;
+  top: 120px;
+  padding: 0 20px;
+}
+.mask .before-title .pri {
+  color: #fff;
+  font-size: 15px;
+  text-align: center;
+  font-weight:bold;
+}
+.mask .before-title .sec {
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 20px;
+}
+.mask .entry-btn {
+  position: absolute;
+  left: 38px;
+  right: 38px;
+  bottom: 80px;
+  background: transparent;
+  text-align: center;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #fff;
+  padding: 17px 0;
+}
+.mask .entry-btn:hover:active {
+  background-color: rgba(255,255,255,.4);
 }
 #app {
   font-size: 14px;

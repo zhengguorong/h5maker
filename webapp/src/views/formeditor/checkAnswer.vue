@@ -62,7 +62,7 @@
       <div class="content">
         <el-row v-for="(item, index) in QAArr">
           <el-col :span="12"><div class="grid-content">{{index + 1}}.{{item.question}}</div></el-col>
-          <el-col :span="12"><div class="grid-content">{{item.ask.length == 0 ? '未填写' : item.ask}}</div></el-col>
+          <el-col :span="12"><div class="grid-content">{{item.ask.length == 0 ? '未填写' : item.ask instanceof Array}}</div></el-col>
         </el-row>
       </div>
     </div>
