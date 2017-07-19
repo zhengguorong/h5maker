@@ -64,6 +64,7 @@ module.exports.downloadExcel = (req, res) => {
               inItem.ask.forEach((checkboxItem) => {
                 checkboxStr = checkboxStr + ' | ' + checkboxItem
               })
+              itemArr.push((checkboxStr))
             } else if (qsType === 'file' && validate === 'img') {
               let imgStr = ''
               inItem.ask.forEach((imgItem) => {
@@ -86,7 +87,7 @@ module.exports.downloadExcel = (req, res) => {
         const file = new xlsx.File();
         const sheet = file.addSheet('Sheet1');
         const data = excelContent
-
+        console.log(excelContent)
         function border(cell, top, left, bottom, right) {
           const light = 'ffded9d4';
           const dark = 'ff7e6a54';
