@@ -12,7 +12,7 @@
   <div id="app">
    <div class="mask" v-show="!QADisplay">
      <img src="/img/bg@3x.png" height="100%"/>
-     <div>
+     <div v-show="entryDisplay">
         <img class="before-logo" src="/img/logo_big@2x.png" height="40" width="114"/>
         <div class="before-title">
           <p class="pri">{{form.title}}</p>
@@ -20,6 +20,12 @@
         </div>
         <div class="entry-btn" @click="openQ">打开问卷</div>
       </div>
+     <div v-show="!entryDisplay" class="success">
+       <img src="/img/tick@2x.png" height="80" width="80"/>
+       <p style="margin-top:24px;font-size: 15px; color:#fff; font-weight: bold;">
+         提交成功<br>感谢您的宝贵时间
+       </p>
+     </div>
    </div>
   <div v-show="QADisplay">
     <div style="text-align: right;padding: 10px 16px;"><img src="/img/logo_small@2x.png" height="18" width="46"/></div>
@@ -107,7 +113,8 @@
         result: [],
         regionIndex: null, // 激活的地区选择控件标识
         errors: {},
-        QADisplay: false
+        QADisplay: false,
+        entryDisplay: true
       },
       filters: {
         dtFormat (v, type) {
@@ -165,6 +172,8 @@
             if (res.data.responseCode === 0) {
               self.$toast(res.data.responseMsg || '提交失败')
             } else {
+              self.entryDisplay = false
+              self.QADisplay = false
               self.$toast('提交成功')
             }
           })
@@ -382,6 +391,13 @@ body {
 }
 .mask .entry-btn:hover:active {
   background-color: rgba(255,255,255,.4);
+}
+.mask .success {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right:0;
+  text-align: center;
 }
 #app {
   font-size: 14px;
