@@ -76,6 +76,9 @@ module.exports.create = (req, res) => {
                      ipAddress= ipAddress + '(' + body.province +  body.city + ')'
                    }
                    req.body.ip = ipAddress
+                   Form.update({ '_id': req.body.formId}, {$inc: {answerNum: 1}}, function (err, result) {
+                     console.log(err)
+                   })
                    return Submit.create(req.body)
                       .then(respondWithResult(res, 201))
                       .catch(handleError(res))

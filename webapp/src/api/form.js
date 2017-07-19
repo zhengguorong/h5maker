@@ -19,7 +19,9 @@ const getFormList = () => {
 const getFormById = (id) => {
   return http.get('/api/form/' + id)
 }
-
+const downloadExcelById = (id) => {
+  return http.get('/api/downloadExcel/' + id)
+}
 const uploadPic = (data) => {
   return http.post('/api/upload', {imgData: data})
 }
@@ -29,5 +31,5 @@ const getAnswer = (data) => {
 }
 
 module.exports = {
-  createForm, deleteForm, getFormList, getFormById, updateForm, uploadPic, getAnswer
+  createForm, deleteForm, getFormList, getFormById, downloadExcelById, updateForm, uploadPic, getAnswer
 }

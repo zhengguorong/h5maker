@@ -9,9 +9,14 @@
           style="width: 100%"
           max-height="300">
         <el-table-column
+            prop="listIndex"
+            label="序号"
+            width="80">
+        </el-table-column>
+        <el-table-column
             prop="createDate"
             label="提交时间"
-            width="250">
+            width="220">
         </el-table-column>
         <el-table-column
             prop="IP"
@@ -19,7 +24,7 @@
             width="400">
         </el-table-column>
         <el-table-column
-            prop="sourceChannel"
+            prop="sourcePlatform"
             label="来源渠道"
             width="200">
         </el-table-column>
@@ -45,19 +50,19 @@
             @current-change="handleCurrentChange"
             :current-page="currentPage"
             :page-sizes="[5, 20, 100, 200, 500, 1000]"
-            :page-size="5"
+            :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total">
         </el-pagination>
       </div>
     </template>
-    <div class="detail">
+    <div class="detail" v-if="answerListArr.length > 0 && detailDisplay">
       <p>答卷详情</p>
-      <div class="title-wrap"><span class="mr-20">序号：1</span> <span class="mr-20">提交时间：2016/12/16 21:34:43</span> <span class="mr-20">所在地IP：122.12.23.43(广州)</span><span class="mr-20">来源渠道：手机</span><span class="mr-20">来源详情：微信昵称</span></div>
+      <div class="title-wrap"><span class="mr-20">序号：{{ordinal}}</span> <span class="mr-20">提交时间：{{answerListArr[currentIndex].createDate}}</span> <span class="mr-20">所在地IP：{{answerListArr[currentIndex].IP || '未知'}}</span><span class="mr-20">来源渠道：{{answerListArr[currentIndex].sourcePlatform || '未知'}}</span></div>
       <div class="content">
         <el-row v-for="(item, index) in QAArr">
           <el-col :span="12"><div class="grid-content">{{index + 1}}.{{item.question}}</div></el-col>
-          <el-col :span="12"><div class="grid-content">{{item.ask}}</div></el-col>
+          <el-col :span="12"><div class="grid-content">{{item.ask.length == 0 ? '未填写' : item.ask}}</div></el-col>
         </el-row>
       </div>
     </div>
@@ -106,17 +111,26 @@
         answerListArr: [],
         answerCollection: [],
         QAArr: [],
-        total: 0
+        total: 0,
+        ordinal: 1,
+        currentIndex: 0,
+        detailDisplay: false
       }
     },
     methods: {
       checkAnswer (index) {
+        this.currentIndex = index
+        this.ordinal = this.pageSize * (this.currentPage - 1) + index + 1
         this.QAArr = this.answerCollection[index].result
+        this.detailDisplay = true
       },
       handleSizeChange (val) {
+        this.detailDisplay = false
         this.pageSize = val
+        this.loadData()
       },
       handleCurrentChange (val) {
+        this.detailDisplay = false
         this.currentPage = val
         this.loadData()
       },
@@ -128,7 +142,7 @@
         }).then((result) => {
           this.answerCollection = result.records
           this.total = result.count
-          this.answerListArr = result.records.map((item, index) => { return {createDate: item.createDate, IP: item.ip || '', sourceChannel: '微信'} })
+          this.answerListArr = result.records.map((item, index) => { return {listIndex: this.pageSize * (this.currentPage - 1) + index + 1, createDate: new Date(item.createDate).toLocaleString().replace(/:\d{1,2}$/, ' '), IP: item.ip || '未知', sourcePlatform: item.sourcePlatform || '未知'} })
         })
       }
     },

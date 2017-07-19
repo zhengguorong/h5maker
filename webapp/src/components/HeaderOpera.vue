@@ -16,6 +16,7 @@
   /**
    * Created by Wesdint on 2017/7/14.
    */
+import appConst from '../util/appConst'
   export default {
     data () {
       return {
@@ -24,7 +25,8 @@
     },
     methods: {
       opera () {
-
+        let formId = this.$route.query.formId
+        window.location = appConst.BACKEND_DOMAIN + '/api/downloadExcel/' + formId
       },
       goback () {
         this.$router.replace('formList')

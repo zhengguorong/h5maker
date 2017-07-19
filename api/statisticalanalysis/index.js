@@ -6,5 +6,6 @@ var controller = require('./statisticalanalysis.controller')
 var router = express.Router()
 
 router.post('/', controller.findAnswerById)
+router.get('/:id', controller.downloadExcel)
 
 module.exports = router
