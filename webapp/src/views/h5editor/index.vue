@@ -201,12 +201,22 @@
           }
         } else { // 音乐栏
           if (list.musicName) {
-            this.musicList.map((item, itemIndex) => {
-              if (list.musicName === item.name) {
-                this.toggleMusic(audio, itemIndex)
-                return
+            if (this.musicList.length > 0) {
+              this.musicList.map((item, itemIndex) => {
+                if (list.musicName === item.name) {
+                  this.toggleMusic(audio, itemIndex)
+                  return
+                }
+              })
+            } else {
+              if (audio.paused) { // 播放
+                audio.play()
+                this.$store.commit('UPDATE_MUSIC_PLAYING', true)
+              } else { // 暂停
+                audio.pause()
+                this.$store.commit('UPDATE_MUSIC_PLAYING', false)
               }
-            })
+            }
           }
         }
       },
@@ -285,17 +295,19 @@
         this.$store.dispatch('playAnimate')
       },
       save () {
+        // 暂停音乐
         let audio = document.getElementById('audio')
-        if (this.editorTheme.musicName) {
-          console.log(this.editorTheme.musicName)
-          this.musicList.map((item, itemIndex) => {
-            if (this.editorTheme.musicName === item.name && !audio.paused) {
-              audio.pause()
-              this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: itemIndex, isPlaying: false})
-              this.$store.commit('UPDATE_MUSIC_PLAYING', false)
-              return
-            }
-          })
+        if (this.editorTheme.musicName && !audio.paused) {
+          if (this.musicList.length > 0) {
+            this.musicList.map((item, itemIndex) => {
+              if (this.editorTheme.musicName === item.name) {
+                this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: itemIndex, isPlaying: false})
+                return
+              }
+            })
+          }
+          audio.pause()
+          this.$store.commit('UPDATE_MUSIC_PLAYING', false)
         }
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
@@ -345,6 +357,11 @@
         this.$store.dispatch('cleanPicList')
       }
       this.$store.commit('CLEAN_MUSIC_LIST')
+      if (this.editorTheme.musicName) {
+        let audio = document.getElementById('audio')
+        audio.pause()
+        this.$store.commit('UPDATE_MUSIC_PLAYING', false)
+      }
       document.addEventListener('keyup', this.deleteListener)
       window.onbeforeunload = () => false
     },
