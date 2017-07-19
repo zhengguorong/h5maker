@@ -285,6 +285,18 @@
         this.$store.dispatch('playAnimate')
       },
       save () {
+        let audio = document.getElementById('audio')
+        if (this.editorTheme.musicName) {
+          console.log(this.editorTheme.musicName)
+          this.musicList.map((item, itemIndex) => {
+            if (this.editorTheme.musicName === item.name && !audio.paused) {
+              audio.pause()
+              this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: itemIndex, isPlaying: false})
+              this.$store.commit('UPDATE_MUSIC_PLAYING', false)
+              return
+            }
+          })
+        }
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
             message: '保存成功',
@@ -332,6 +344,7 @@
         this.$store.dispatch('addPage')
         this.$store.dispatch('cleanPicList')
       }
+      this.$store.commit('CLEAN_MUSIC_LIST')
       document.addEventListener('keyup', this.deleteListener)
       window.onbeforeunload = () => false
     },
