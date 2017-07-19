@@ -54,9 +54,16 @@ module.exports.downloadExcel = (req, res) => {
             let qsType = questionData[0].questions[inIndex].qsType
             let validate = questionData[0].questions[inIndex].validate
             if (qsType === 'text' && validate === 'date') {
-              itemArr.push(JSON.stringify(inItem.ask).replace(/"/g, '').replace(/[/g, '').replace(/]/g, '').replace(/,/g, '-'))
+              let dateStr = ''
+              inItem.ask.forEach((dateItem) => {
+                dateStr = dateStr + '-' + dateItem
+              })
+              itemArr.push(dateStr)
             } else if (qsType === 'check') {
-              itemArr.push(JSON.stringify(inItem.ask).replace(/[/g, '').replace(/]/g, '').replace(/,/g, '|'))
+              let checkboxStr = ''
+              inItem.ask.forEach((checkboxItem) => {
+                checkboxStr = checkboxStr + ' | ' + checkboxItem
+              })
             } else if (qsType === 'file' && validate === 'img') {
               let imgStr = ''
               inItem.ask.forEach((imgItem) => {
