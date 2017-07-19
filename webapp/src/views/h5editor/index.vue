@@ -66,6 +66,9 @@
                 <span @click.stop="clearMusic(editorTheme, -1)"><i class="iconfont">&#xe62f;</i>清除</span>
               </div>
             </div>
+            <ul class="panel-music-default-music">
+              <li v-for="list in defaultMusicList" :class="{active: false}" @click="toggleDefaultMusicList(list)">{{list.style}}</li>
+            </ul>
             <ul class="panel-music-content">
               <li v-for="(list,index) in musicList" class="music-list" @click.stop="playMusic(list, index)" :class="{active: editorTheme.musicName===list.name}">
                 <div class="left">
@@ -160,9 +163,18 @@
       },
       musicPlaying () {
         return this.$store.state.editor.musicPlaying
+      },
+      defaultMusicList () {
+        return this.$store.state.editor.defaultMusicList
       }
     },
     methods: {
+      toggleDefaultMusicList (list) {
+        this.$store.commit('CLEAN_MUSIC_LIST')
+        list.music.map(item => {
+          this.$store.commit('PUSH_MUSIC_LIST', item)
+        })
+      },
       fileUpload (event) { // 上传音乐
         let upload = true
         let file = event.target.files[0]
@@ -506,11 +518,32 @@
         align-items: center;
         justify-content: space-between;
         border-bottom:1px solid #ddd;
-        cursor:pointer
+        cursor:pointer;
+        font-size:16px;
        }
       .active{
-        color:#20a0ff;
+        color:#50bfff;
       }
+      &-default-music{
+        padding-bottom:15px;
+        display:flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        border-bottom:1px solid #ddd;
+        li{
+          font-size: 14px;
+          border:1px solid #aaa;
+          border-radius:4px;
+          padding:5px 8px;
+          margin:15px 10px 0;
+          cursor:pointer;
+        }
+        li.active{
+          background:#50bfff;
+          color:#fff;
+          border:1px solid #50bfff;
+        }
+       }
       &-upload{
          position:relative;
          margin-top:10px;
@@ -529,7 +562,9 @@
         display:flex;
         align-items: center;
         justify-content: space-between;
-        cursor:pointer
+        cursor:pointer;
+        padding:0 15px;
+        font-size:14px;
       }
      }
     }

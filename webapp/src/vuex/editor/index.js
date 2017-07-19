@@ -17,7 +17,17 @@ const state = {
   }, // 正在编辑的主题
   picList: [], // 图片列表
   musicList: [], // 音乐列表
-  musicPlaying: true // 音乐播放
+  musicPlaying: true, // 音乐播放
+  defaultMusicList: [ // 默认音乐列表
+    {style: '默认', choose: false, music: []},
+    {style: '复古', choose: false, music: [{name: '古典回味', link: '/music/fugu/gudianhuiwei.mp3'}, {name: '诙谐轻快', link: '/music/fugu/huixieqingkuai.mp3'}]},
+    {style: '节日', choose: false, music: []},
+    {style: '大气', choose: false, music: []},
+    {style: '治愈', choose: false, music: []},
+    {style: '浪漫', choose: false, music: []},
+    {style: '轻松', choose: false, music: []},
+    {style: '商务', choose: false, music: []}
+  ]
 }
 
 export default{
