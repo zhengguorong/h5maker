@@ -9,9 +9,14 @@
           style="width: 100%"
           max-height="300">
         <el-table-column
+            prop="listIndex"
+            label="序号"
+            width="80">
+        </el-table-column>
+        <el-table-column
             prop="createDate"
             label="提交时间"
-            width="250">
+            width="220">
         </el-table-column>
         <el-table-column
             prop="IP"
@@ -137,7 +142,7 @@
         }).then((result) => {
           this.answerCollection = result.records
           this.total = result.count
-          this.answerListArr = result.records.map((item, index) => { return {createDate: item.createDate, IP: item.ip || '未知', sourcePlatform: item.sourcePlatform || '未知'} })
+          this.answerListArr = result.records.map((item, index) => { return {listIndex: this.pageSize * (this.currentPage - 1) + index + 1, createDate: new Date(item.createDate).toLocaleString().replace(/:\d{1,2}$/, ' '), IP: item.ip || '未知', sourcePlatform: item.sourcePlatform || '未知'} })
         })
       }
     },
