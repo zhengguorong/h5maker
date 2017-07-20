@@ -79,8 +79,11 @@ const mutations = {
     state.editorTheme.description = description
     state.editorTheme.canvasHeight = canvasHeight
   },
-  [types.UPDATE_THEME_MUSIC] (state, {musicName, musicLink}) {
-    state.editorTheme = {...state.editorTheme, musicLink, musicName}
+  [types.UPDATE_THEME_MUSIC] (state, {musicName, musicLink, musicStyle}) {
+    state.editorTheme = {...state.editorTheme, musicName, musicLink, musicStyle}
+  },
+  [types.SET_THEME_MUSIC_LIST] (state, data) {
+    state.editorTheme.uploadMusicList = data
   },
   [types.DELETE_ELEMENT] (state, data) {
     state.editorPage.elements.findIndex((value, index, arr) => {
@@ -166,8 +169,14 @@ const mutations = {
   [types.UPDATE_MUSIC_PLAYING] (state, musicPlaying) {
     state.musicPlaying = musicPlaying
   },
-  [types.UPDATE_DEFAULT_MUSIC_LIST] (state) {
-    state.defaultMusicList
+  [types.PUSH_DEFAULT_MUSIC_LIST] (state, data) {
+    state.defaultMusicList[0].music.push(data)
+  },
+  [types.SET_DEFAULT_MUSIC_LIST] (state, data) {
+    state.defaultMusicList[0].music = data
+  },
+  [types.UPDATE_DEFAULT_MUSIC_LIST] (state, index) {
+    state.defaultMusicList[0].music.splice(index, 1)
   }
 }
 export default mutations
