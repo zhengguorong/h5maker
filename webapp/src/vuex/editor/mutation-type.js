@@ -29,3 +29,4 @@ export const CLEAN_MUSIC_LIST = 'CLEAN_MUSIC_LIST' // 清空背景音乐
 export const UPDATE_THEME_MUSIC = 'UPDATE_THEME_MUSIC' // 更新音乐
 export const UPDATE_MUSIC_PLAYING = 'UPDATE_MUSIC_PLAYING' // 更新音乐播放状态
 export const UPDATE_MUSIC_LIST_PLAYING = 'UPDATE_MUSIC_LIST_PLAYING' // 更新音乐列表播放状态
+export const UPDATE_DEFAULT_MUSIC_LIST = 'UPDATE_DEFAULT_MUSIC_LIST' // 更新默认音乐列表的风格
