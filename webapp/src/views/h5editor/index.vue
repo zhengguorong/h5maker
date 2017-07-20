@@ -67,7 +67,11 @@
               </div>
             </div>
             <ul class="panel-music-default-music">
-              <li v-for="list in defaultMusicList" :class="{active: false}" @click="toggleDefaultMusicList(list)">{{list.style}}</li>
+              <li v-for="(list,index) in defaultMusicList" @click="toggleDefaultMusicList(list,index)">
+                <input type="radio" name="defaultMusic">
+                <span>{{list.style}}</span>
+              </li>
+              <!--<li v-for="(list,index) in defaultMusicList" :class="{active: false}" >{{list.style}}</li>-->
             </ul>
             <ul class="panel-music-content">
               <li v-for="(list,index) in musicList" class="music-list" @click.stop="playMusic(list, index)" :class="{active: editorTheme.musicName===list.name}">
@@ -169,7 +173,7 @@
       }
     },
     methods: {
-      toggleDefaultMusicList (list) {
+      toggleDefaultMusicList (list, index) {
         this.$store.commit('CLEAN_MUSIC_LIST')
         list.music.map(item => {
           this.$store.commit('PUSH_MUSIC_LIST', item)
@@ -532,16 +536,28 @@
         border-bottom:1px solid #ddd;
         li{
           font-size: 14px;
-          border:1px solid #aaa;
-          border-radius:4px;
-          padding:5px 8px;
-          margin:15px 10px 0;
           cursor:pointer;
-        }
-        li.active{
-          background:#50bfff;
-          color:#fff;
-          border:1px solid #50bfff;
+          position:relative;
+          span{
+            display:block;
+            border:1px solid #aaa;
+            border-radius:4px;
+            padding:5px 8px;
+            margin:15px 10px 0;
+          }
+          input[type='radio']{
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            z-index:4;
+          }
+          input[type='radio']:checked + span{
+            background:#50bfff;
+            color:#fff;
+            border:1px solid #50bfff;
+          }
         }
        }
       &-upload{

@@ -19,6 +19,7 @@
     "axios": "^0.15.3",
     "better-xlsx": "^0.3.4",
     "bluebird": "^3.4.6",
+    "blueimp-load-image": "^2.13.1",
     "body-parser": "~1.15.2",
     "composable-middleware": "^0.3.0",
     "connect-multiparty": "^2.0.0",

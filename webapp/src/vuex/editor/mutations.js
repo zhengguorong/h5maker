@@ -165,6 +165,9 @@ const mutations = {
   },
   [types.UPDATE_MUSIC_PLAYING] (state, musicPlaying) {
     state.musicPlaying = musicPlaying
+  },
+  [types.UPDATE_DEFAULT_MUSIC_LIST] (state) {
+    state.defaultMusicList
   }
 }
 export default mutations
