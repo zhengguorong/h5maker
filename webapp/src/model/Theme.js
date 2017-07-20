@@ -10,5 +10,7 @@ export default class Theme {
     this.canvasHeight = theme.canvasHeight || 504
     this.musicName = theme.musicName || null
     this.musicLink = theme.musicLink || null
+    this.musicStyle = theme.musicStyle || '默认'
+    this.uploadMusicList = theme.uploadMusicList || []
   }
 }

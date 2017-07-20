@@ -26,21 +26,21 @@
         </div>
         <div class="wrapper custom-scrollbar">
           <!-- 设置背景 0 -->
-        <div class="panel panel-bg">
-          <div class="clearfix"
-              v-if="panelTabState !== 1">
-            <el-button class="btn"
-                      type="success"
-                      @click="panelTabState = 1">更换背景</el-button>
-            <el-button class="btn"
-                      type="danger"
-                      @click="cleanBG">移除背景</el-button>
+          <div class="panel panel-bg">
+            <div class="clearfix"
+                 v-if="panelTabState !== 1">
+              <el-button class="btn"
+                         type="success"
+                         @click="panelTabState = 1">更换背景</el-button>
+              <el-button class="btn"
+                         type="danger"
+                         @click="cleanBG">移除背景</el-button>
+            </div>
+            <div class="clearfix"
+                 v-if="panelTabState === 1">
+              <ImgPanel  :selectedImg="addBG"/>
+            </div>
           </div>
-          <div class="clearfix"
-              v-if="panelTabState === 1">
-            <ImgPanel  :selectedImg="addBG"/>
-          </div>
-        </div>
           <!-- 添加文字 1 -->
           <div class="panel panel-text" v-show="panelState === 1">
             <div class="btn" @click="addTextElement('title')" style="font-size: 32px; font-weight: bold;">插入标题</div>
@@ -67,11 +67,10 @@
               </div>
             </div>
             <ul class="panel-music-default-music">
-              <li v-for="(list,index) in defaultMusicList" @click="toggleDefaultMusicList(list,index)">
-                <input type="radio" name="defaultMusic">
+              <li v-for="(list,index) in defaultMusicList" @click="toggleDefaultMusicList(list)">
+                <input type="radio" v-model="defaultMusicStyle" :value="list.style">
                 <span>{{list.style}}</span>
               </li>
-              <!--<li v-for="(list,index) in defaultMusicList" :class="{active: false}" >{{list.style}}</li>-->
             </ul>
             <ul class="panel-music-content">
               <li v-for="(list,index) in musicList" class="music-list" @click.stop="playMusic(list, index)" :class="{active: editorTheme.musicName===list.name}">
@@ -83,11 +82,11 @@
                 <div class="right">
                   <span class="play" v-if="editorTheme.musicName===list.name && list.isPlaying"><i class="iconfont">&#xe695;</i>暂停</span>
                   <span class="play" v-else><i class="iconfont">&#xe674;</i>播放</span>
-                  <span @click.stop="clearMusic(list, index)"><i class="iconfont">&#xe62f;</i>清除</span>
+                  <span @click.stop="clearMusic(list, index)" v-if="defaultMusicStyle === '默认'"><i class="iconfont">&#xe62f;</i>清除</span>
                 </div>
               </li>
             </ul>
-            <div class="panel-music-upload">
+            <div class="panel-music-upload" v-if="defaultMusicStyle === '默认'">
               <input type="file" name="inputFile" @change="fileUpload"/>
               <el-button type="primary" icon="upload2">上传音乐</el-button>
             </div>
@@ -113,6 +112,7 @@
   import ImgPanel from '../../components/ImgPanel'
   import appConst from '../../util/appConst'
   import api from '../../api/editor'
+  import Vue from 'vue'
 
   export default {
     data () {
@@ -127,7 +127,8 @@
         http: appConst.BACKEND_DOMAIN,
         releaseUrl: '',
         showPreView: false,
-        isLoadingPreview: false
+        isLoadingPreview: false,
+        defaultMusicStyle: '默认'
       }
     },
     watch: {
@@ -173,7 +174,7 @@
       }
     },
     methods: {
-      toggleDefaultMusicList (list, index) {
+      toggleDefaultMusicList (list) {
         this.$store.commit('CLEAN_MUSIC_LIST')
         list.music.map(item => {
           this.$store.commit('PUSH_MUSIC_LIST', item)
@@ -186,7 +187,7 @@
           this.$message('请上传正确的音乐格式！')
           return
         }
-        this.musicList.map(music => {
+        this.defaultMusicList[0].music.map(music => {
           if (file.name === music.name) {
             this.$message('不能上传同样的音乐')
             upload = false
@@ -199,6 +200,7 @@
           form.append('themeId', this.themeId)
           api.uploadPic(form).then((res) => {
             this.$store.commit('PUSH_MUSIC_LIST', {name: res.fileName, link: res.filePath})
+            this.$store.commit('PUSH_DEFAULT_MUSIC_LIST', {name: res.fileName, link: res.filePath})
           })
         }
       },
@@ -208,29 +210,31 @@
           if (list.name === this.editorTheme.musicName) {
             this.toggleMusic(audio, index)
           } else {
-            this.$store.commit('UPDATE_THEME_MUSIC', {musicName: list.name, musicLink: appConst.BACKEND_DOMAIN + list.link})
+            this.$store.commit('UPDATE_THEME_MUSIC', {musicName: list.name, musicLink: appConst.BACKEND_DOMAIN + list.link, musicStyle: this.defaultMusicStyle})
             this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: index, isPlaying: true})
             this.$store.commit('UPDATE_MUSIC_PLAYING', true)
-            this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
+            Vue.nextTick(() => {
               audio.play()
             })
           }
         } else { // 音乐栏
           if (list.musicName) {
             if (this.musicList.length > 0) {
-              this.musicList.map((item, itemIndex) => {
-                if (list.musicName === item.name) {
-                  this.toggleMusic(audio, itemIndex)
-                  return
+              if (this.editorTheme.musicStyle === this.defaultMusicStyle) {
+                this.musicList.map((item, itemIndex) => {
+                  if (list.musicName === item.name) {
+                    this.toggleMusic(audio, itemIndex)
+                    return
+                  }
+                })
+              } else {
+                if (audio.paused) { // 播放
+                  audio.play()
+                  this.$store.commit('UPDATE_MUSIC_PLAYING', true)
+                } else { // 暂停
+                  audio.pause()
+                  this.$store.commit('UPDATE_MUSIC_PLAYING', false)
                 }
-              })
-            } else {
-              if (audio.paused) { // 播放
-                audio.play()
-                this.$store.commit('UPDATE_MUSIC_PLAYING', true)
-              } else { // 暂停
-                audio.pause()
-                this.$store.commit('UPDATE_MUSIC_PLAYING', false)
               }
             }
           }
@@ -249,13 +253,13 @@
       },
       clearMusic (list, index) { // 删除音乐
         let audio = document.getElementById('audio')
-        if (list.musicName || list.name === this.editorTheme.musicName) {
-          audio.pause()
-          this.$store.commit('UPDATE_THEME_MUSIC', {musicName: null, musicLink: null})
-          this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme))
-        }
         if (index > -1) {
           this.$store.commit('UPDATE_MUSIC_LIST', index)
+          this.$store.commit('UPDATE_DEFAULT_MUSIC_LIST', index)
+        }
+        if (list.musicName || list.name === this.editorTheme.musicName) {
+          audio.pause()
+          this.$store.commit('UPDATE_THEME_MUSIC', {musicName: null, musicLink: null, musicStyle: '默认'})
         }
       },
       dialogSave () {
@@ -325,6 +329,7 @@
           audio.pause()
           this.$store.commit('UPDATE_MUSIC_PLAYING', false)
         }
+        this.$store.commit('SET_THEME_MUSIC_LIST', this.defaultMusicList[0].music)
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
             message: '保存成功',
@@ -373,6 +378,18 @@
         this.$store.dispatch('cleanPicList')
       }
       this.$store.commit('CLEAN_MUSIC_LIST')
+      if (this.editorTheme.uploadMusicList) {
+        this.$store.commit('SET_DEFAULT_MUSIC_LIST', this.editorTheme.uploadMusicList)
+      }
+      if (this.editorTheme.musicStyle) {
+        this.defaultMusicStyle = this.editorTheme.musicStyle
+        this.defaultMusicList.map(item => {
+          if (item.style === this.defaultMusicStyle) {
+            this.toggleDefaultMusicList(item)
+            return
+          }
+        })
+      }
       if (this.editorTheme.musicName) {
         let audio = document.getElementById('audio')
         audio.pause()
@@ -450,65 +467,65 @@
         border: 1px solid #d6d6d6;
         border-radius: 3px 0px 0px 3px;
         &:hover {
-          color: #000;
-        }
+           color: #000;
+         }
         &.active {
-          border-right: 1px solid #ececec;
-          background-color: #ececec;
-          color: #000;
+           border-right: 1px solid #ececec;
+           background-color: #ececec;
+           color: #000;
         }
       }
     }
 
-    .wrapper {
-      height: 100%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      position: relative;
+  .wrapper {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .panel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    min-height: 100%;
+    width: 100%;
+    padding: 10px;
+    z-index: 2;
+    background-color: #ececec;
+  }
+  .panel-bg {
+    .btn {
+      float: left;
+      width: 48%;
+      margin-left: 1%;
+      margin-right: 1%;
     }
-    .panel {
-      position: absolute;
-      left: 0;
-      top: 0;
-      min-height: 100%;
-      width: 100%;
-      padding: 10px;
-      z-index: 2;
-      background-color: #ececec;
-    }
-    .panel-bg {
-      .btn {
-        float: left;
-        width: 48%;
-        margin-left: 1%;
-        margin-right: 1%;
-      }
-      .bgs {
-        float: left;
-        width: 80px;
-        height: 80px;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
-        margin: 5px 5px;
-        &:hover {
-          border: 2px solid #18ccc0;
-          cursor: pointer;
-        }
-      }
-    }
-    .panel-text {
-      .btn {
-        height: 50px;
-        line-height: 50px;
-        text-align: center;
-        border: 2px solid transparent;
-        &:hover {
-          cursor: pointer;
-          border-color: #04b9c4;
-        }
+    .bgs {
+      float: left;
+      width: 80px;
+      height: 80px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      margin: 5px 5px;
+      &:hover {
+         border: 2px solid #18ccc0;
+         cursor: pointer;
       }
     }
+  }
+  .panel-text {
+    .btn {
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      border: 2px solid transparent;
+      &:hover {
+         cursor: pointer;
+         border-color: #04b9c4;
+      }
+    }
+  }
     .panel-music{
       .play{
         margin-right:10px;
@@ -517,14 +534,14 @@
         padding-right:10px;
       }
       &-bg-music{
-        height:60px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom:1px solid #ddd;
-        cursor:pointer;
-        font-size:16px;
-       }
+         height:60px;
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         border-bottom:1px solid #ddd;
+         cursor:pointer;
+         font-size:16px;
+      }
       .active{
         color:#50bfff;
       }
@@ -552,6 +569,7 @@
             width:100%;
             height:100%;
             z-index:4;
+            cursor:pointer;
           }
           input[type='radio']:checked + span{
             background:#50bfff;
@@ -559,30 +577,30 @@
             border:1px solid #50bfff;
           }
         }
-       }
-      &-upload{
-         position:relative;
-         margin-top:10px;
-         input[type='file']{
-           opacity:0;
-           position:absolute;
-           top:0;
-           left:0;
-           width:108px;
-           height:36px;
-         }
-       }
-     &-content{
-      li{
-        height:40px;
-        display:flex;
-        align-items: center;
-        justify-content: space-between;
-        cursor:pointer;
-        padding:0 15px;
-        font-size:14px;
       }
-     }
+      &-upload{
+        position:relative;
+        margin-top:10px;
+        input[type='file']{
+          opacity:0;
+          position:absolute;
+          top:0;
+          left:0;
+          width:108px;
+          height:36px;
+        }
+      }
+      &-content{
+        li{
+          height:40px;
+          display:flex;
+          align-items: center;
+          justify-content: space-between;
+          cursor:pointer;
+          padding:0 15px;
+          font-size:14px;
+        }
+      }
     }
   }
 </style>

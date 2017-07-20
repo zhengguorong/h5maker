@@ -19,7 +19,9 @@ var PageSchema = new mongoose.Schema({
   },
   canvasHeight: Number,
   musicLink: String,
-  musicName: String
+  musicName: String,
+  musicStyle: String,
+  uploadMusicList: Array
 })
 
 module.exports = mongoose.model('Page', PageSchema)
