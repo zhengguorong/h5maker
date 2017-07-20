@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/libs/css/bmui.css">
 </head>
 <body>
-  <div id="app">
+  <div id="app" style="display: none">
    <div class="mask" v-show="!QADisplay">
      <img src="/img/bg@3x.png" height="100%" v-if="!QADisplay"/>
      <!--<div v-show="entryDisplay">-->
@@ -338,6 +338,7 @@
           self.initResult(res.data.questions)
           self.QADisplay =true
           self.$indicator.close()
+          document.getElementById('app').style.display = 'block'
         }).catch((err) => {
           console.log(err)
           self.$indicator.close()
