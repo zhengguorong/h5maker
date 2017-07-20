@@ -25,7 +25,7 @@
       <div class="row">
         <div class="item">
           <span class="title">问题标题</span>
-          <el-input class="input" v-model="question.title"></el-input>
+          <el-input class="input" v-model="question.title" @focus="removeTips(question.title)"></el-input>
         </div>
         <div class="item">
           <el-checkbox v-model="question.isTips">填写提示</el-checkbox>
@@ -79,6 +79,11 @@ export default {
     }
   },
   methods: {
+    removeTips (v) {
+      if (v === '请输入问题内容') {
+        this.question.title = ''
+      }
+    },
     setActive () {
       if (this.question.isActive === true) return
       this.$store.commit('form/activeQuestion', this.index)
