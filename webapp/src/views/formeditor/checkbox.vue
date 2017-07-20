@@ -41,6 +41,14 @@
         <div class="item">
           <el-checkbox v-model="question.isMust">必填项</el-checkbox>
         </div>
+
+      </div>
+      <div class="row">
+        <div class="item">
+          <span class="title">问题类型</span>
+          <el-radio class="radio" v-model="question.qsType" label="radio">单选</el-radio>
+          <el-radio class="radio" v-model="question.qsType" label="check">多选</el-radio>
+        </div>
       </div>
       <div class="row">
         <el-table style="width: 100%" :data="question.askList">
@@ -64,8 +72,7 @@
           </el-table-column>
           <el-table-column label="默认选中" width="100">
             <template scope="scope">
-              <el-switch @change="" v-model="scope.row.isDefault">
-              </el-switch>
+              <el-switch @change="" v-model="scope.row.isDefault"></el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作">
