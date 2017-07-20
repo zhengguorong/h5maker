@@ -338,6 +338,10 @@
           self.initResult(res.data.questions)
           self.QADisplay =true
           self.$indicator.close()
+        }).catch((err) => {
+          console.log(err)
+          self.$indicator.close()
+          self.$toast('问卷已失效')
         })
       }
     })
