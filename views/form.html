@@ -11,16 +11,16 @@
 <body>
   <div id="app">
    <div class="mask" v-show="!QADisplay">
-     <img src="/img/bg@3x.png" height="100%"/>
-     <div v-show="entryDisplay">
-        <img class="before-logo" src="/img/logo_big@2x.png" height="40" width="114"/>
-        <div class="before-title">
-          <p class="pri">{{form.title}}</p>
-          <p class="sec keep-br">{{form.description}}</p>
-        </div>
-        <div class="entry-btn" @click="openQ">打开问卷</div>
-      </div>
-     <div v-show="!entryDisplay" class="success">
+     <img src="/img/bg@3x.png" height="100%" v-if="!QADisplay"/>
+     <!--<div v-show="entryDisplay">-->
+        <!--<img class="before-logo" src="/img/logo_big@2x.png" height="40" width="114"/>-->
+        <!--<div class="before-title">-->
+          <!--<p class="pri">{{form.title}}</p>-->
+          <!--<p class="sec keep-br">{{form.description}}</p>-->
+        <!--</div>-->
+        <!--<div class="entry-btn" @click="openQ">打开问卷</div>-->
+      <!--</div>-->
+     <div v-show="successDisplay" class="success">
        <img src="/img/tick@2x.png" height="80" width="80"/>
        <p style="margin-top:24px;font-size: 15px; color:#fff; font-weight: bold;">
          提交成功<br>感谢您的宝贵时间
@@ -114,7 +114,7 @@
         regionIndex: null, // 激活的地区选择控件标识
         errors: {},
         QADisplay: false,
-        entryDisplay: true
+        successDisplay: false
       },
       filters: {
         dtFormat (v, type) {
@@ -172,7 +172,7 @@
             if (res.data.responseCode === 0) {
               self.$toast(res.data.responseMsg || '提交失败')
             } else {
-              self.entryDisplay = false
+              self.successDisplay = true
               self.QADisplay = false
               self.$toast('提交成功')
             }
@@ -323,6 +323,7 @@
         }
       },
       mounted () {
+        this.$indicator.open()
         var url = window.location.href
         var index = url.lastIndexOf("\/")
         var dotIndex = url.lastIndexOf("\.")
@@ -331,6 +332,8 @@
         this.getFormById(this.id).then(function (res) {
           self.form = res.data
           self.initResult(res.data.questions)
+          self.QADisplay =true
+          self.$indicator.close()
         })
       }
     })
