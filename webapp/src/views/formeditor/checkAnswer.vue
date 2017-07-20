@@ -62,9 +62,13 @@
       <div class="content">
         <el-row v-for="(item, index) in QAArr">
           <el-col :span="12"><div class="grid-content">{{index + 1}}.{{item.question}}</div></el-col>
-          <el-col :span="12">
-            <div class="grid-content" v-if="questionInfoList[index].validate !== 'img'">{{item.ask.length == 0 ? '未填写' : item.ask}}</div>
-            <div v-else><img :src="appConst.BACKEND_DOMAIN + imgItem" width="100" style="margin-right:5px;" alt="" v-for="imgItem in item.ask"></div>
+          <el-col :span="12" v-if="formList.length > 0 ">
+           <div v-if="questionInfoList[index].validate === 'img'"><img :src="appConst.BACKEND_DOMAIN + imgItem" width="100" style="margin-right:5px;" alt="" v-for="imgItem in item.ask"></div>
+           <div v-if="questionInfoList[index].validate === 'pureFile'"><a :href="appConst.BACKEND_DOMAIN + fileItem.path" target="_blank" v-for="(fileItem, index) in item.ask" style="margin-right:8px;color: #0a58cc">{{fileItem.name}}</a></div>
+           <div class="grid-content" v-if="questionInfoList[index].qsType !== 'file'">{{item.ask.length == 0 ? '未填写' : item.ask}}</div>
+          </el-col>
+          <el-col :span="12" v-else>
+            <div class="grid-content">{{item.ask.length == 0 ? '未填写' : item.ask}}</div>
           </el-col>
         </el-row>
       </div>
@@ -141,50 +145,52 @@
               this.questionInfoList = this.formList[i].questions
             }
           }
-        }
-        for (let j = 0; j < this.QAArr.length; j++) {
-          let questionInfo = this.questionInfoList[j]
-           // /////////////// //
-          if (questionInfo.qsType === 'text' && questionInfo.validate === 'date') {
-            let dateStr = ''
-            if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
-            this.QAArr[j].ask.forEach((dateItem) => {
-              dateStr = dateStr + '-' + dateItem
-            })
-            this.QAArr[j].question += '【填空题】'
-            this.QAArr[j].ask = dateStr.replace('-', '')
-          } else if (questionInfo.qsType === 'check') {
-            let checkboxStr = ''
-            if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
-            this.QAArr[j].ask.forEach((checkboxItem) => {
-              checkboxStr = checkboxStr + ' | ' + checkboxItem
-            })
-            this.QAArr[j].question += '【多选题】'
-            this.QAArr[j].ask = checkboxStr
-          } else if (questionInfo.qsType === 'file' && questionInfo.validate === 'img') {
+          for (let j = 0; j < this.QAArr.length; j++) {
+            let questionInfo = this.questionInfoList[j]
+            // /////////////// //
+            if (questionInfo.qsType === 'text' && questionInfo.validate === 'date') {
+              let dateStr = ''
+              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
+              this.QAArr[j].ask.forEach((dateItem) => {
+                dateStr = dateStr + '-' + dateItem
+              })
+              this.QAArr[j].question += '【填空题】'
+              this.QAArr[j].ask = dateStr.replace('-', '')
+            } else if (questionInfo.qsType === 'check') {
+              let checkboxStr = ''
+              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
+              this.QAArr[j].ask.forEach((checkboxItem) => {
+                checkboxStr = checkboxStr + ' | ' + checkboxItem
+              })
+              this.QAArr[j].question += '【多选题】'
+              this.QAArr[j].ask = checkboxStr
+            } else if (questionInfo.qsType === 'file' && questionInfo.validate === 'img') {
 //            let imgStr = ''
 //            if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
 //            this.QAArr[j].ask.forEach((imgItem) => {
 //              imgStr = imgStr + appConst.BACKEND_DOMAIN + imgItem
 //            })
-            if (this.QAArr[j].question.indexOf('【图片上传】') === -1) {
-              this.QAArr[j].question += '【图片上传】'
-            }
+              if (this.QAArr[j].question.indexOf('【图片上传】') === -1) {
+                this.QAArr[j].question += '【图片上传】'
+              }
 //            this.QAArr[j].ask = imgStr
-          } else if (questionInfo.qsType === 'file' && questionInfo.validate === 'pureFile') {
-            let fileStr = ''
-            if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
-            this.QAArr[j].ask.forEach((fileItem) => {
-              fileStr = fileStr + appConst.BACKEND_DOMAIN + fileItem.path
-            })
-            this.QAArr[j].question += '【文件上传】'
-            this.QAArr[j].ask = fileStr
-          } else {
-            if (this.QAArr[j].question.indexOf('【填空题】') === -1) {
-              this.QAArr[j].question += '【填空题】'
+            } else if (questionInfo.qsType === 'file' && questionInfo.validate === 'pureFile') {
+//              let fileStr = ''
+//              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
+//              this.QAArr[j].ask.forEach((fileItem) => {
+//                fileStr = fileStr + appConst.BACKEND_DOMAIN + fileItem.path
+//              })
+              if (this.QAArr[j].question.indexOf('【文件上传】') === -1) {
+                this.QAArr[j].question += '【文件上传】'
+              }
+//              this.QAArr[j].ask = fileStr
+            } else {
+              if (this.QAArr[j].question.indexOf('【填空题】') === -1) {
+                this.QAArr[j].question += '【填空题】'
+              }
             }
+            // //////////////// //
           }
-          // //////////////// //
         }
       },
       handleSizeChange (val) {
