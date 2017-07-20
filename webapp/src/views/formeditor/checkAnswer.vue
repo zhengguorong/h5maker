@@ -35,7 +35,7 @@
           <template scope="scope">
             <el-button
                 @click.native.prevent="checkAnswer(scope.$index)"
-                type="text"
+                type="primary"
                 size="small">
               查看
             </el-button>
@@ -184,6 +184,10 @@
                 this.QAArr[j].question += '【文件上传】'
               }
 //              this.QAArr[j].ask = fileStr
+            } else if (questionInfo.qsType === 'radio') {
+              if (this.QAArr[j].question.indexOf('【单选题】') === -1) {
+                this.QAArr[j].question += '【单选题】'
+              }
             } else {
               if (this.QAArr[j].question.indexOf('【填空题】') === -1) {
                 this.QAArr[j].question += '【填空题】'
