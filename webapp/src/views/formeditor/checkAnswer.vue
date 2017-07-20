@@ -216,6 +216,9 @@
       }
     },
     mounted () {
+      if (this.formList.length === 0) {
+        this.$router.replace('/formList')
+      }
       this.loadData()
     },
     components: {HeaderOpera}
