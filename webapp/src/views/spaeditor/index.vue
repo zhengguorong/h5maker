@@ -69,6 +69,12 @@
                 <span @click.stop="clearMusic(editorTheme, -1)"><i class="iconfont">&#xe62f;</i>清除</span>
               </div>
             </div>
+            <ul class="panel-music-default-music">
+              <li v-for="(list,index) in defaultMusicList" @click="toggleDefaultMusicList(list)">
+                <input type="radio" v-model="defaultMusicStyle" :value="list.style">
+                <span>{{list.style}}</span>
+              </li>
+            </ul>
             <ul class="panel-music-content">
               <li v-for="(list,index) in musicList" class="music-list" @click.stop="playMusic(list, index)" :class="{active: editorTheme.musicName===list.name}">
                 <div class="left">
@@ -79,12 +85,12 @@
                 <div class="right">
                   <span class="play" v-if="editorTheme.musicName===list.name && list.isPlaying"><i class="iconfont">&#xe695;</i>暂停</span>
                   <span class="play" v-else><i class="iconfont">&#xe674;</i>播放</span>
-                  <span @click.stop="clearMusic(list, index)"><i class="iconfont">&#xe62f;</i>清除</span>
+                  <span @click.stop="clearMusic(list, index)" v-if="defaultMusicStyle === '默认'"><i class="iconfont">&#xe62f;</i>清除</span>
                 </div>
               </li>
-            </ul>
-            <div class="panel-music-upload">
-              <input type="file" name="inputFile" @change="fileUpload"/>
+          </ul>
+          <div class="panel-music-upload" v-if="defaultMusicStyle === '默认'">
+            <input type="file" name="inputFile" @change="fileUpload"/>
               <el-button type="primary" icon="upload2">上传音乐</el-button>
             </div>
           </div>
@@ -109,6 +115,8 @@
   import ImgPanel from '../../components/ImgPanel'
   import appConst from '../../util/appConst'
   import api from '../../api/editor'
+  import Vue from 'vue'
+
   export default {
     data () {
       return {
@@ -122,7 +130,8 @@
         releaseUrl: '',
         showPreView: false,
         isLoadingPreview: false,
-        panelTabState: 0
+        panelTabState: 0,
+        defaultMusicStyle: '默认'
       }
     },
     watch: {
@@ -167,9 +176,18 @@
       },
       musicPlaying () {
         return this.$store.state.editor.musicPlaying
+      },
+      defaultMusicList () {
+        return this.$store.state.editor.defaultMusicList
       }
     },
     methods: {
+      toggleDefaultMusicList (list) {
+        this.$store.commit('CLEAN_MUSIC_LIST')
+        list.music.map(item => {
+          this.$store.commit('PUSH_MUSIC_LIST', item)
+        })
+      },
       fileUpload (event) { // 上传音乐
         let upload = true
         let file = event.target.files[0]
@@ -177,7 +195,7 @@
           this.$message('请上传正确的音乐格式！')
           return
         }
-        this.musicList.map(music => {
+        this.defaultMusicList[0].music.map(music => {
           if (file.name === music.name) {
             this.$message('不能上传同样的音乐')
             upload = false
@@ -190,6 +208,7 @@
           form.append('themeId', this.themeId)
           api.uploadPic(form).then((res) => {
             this.$store.commit('PUSH_MUSIC_LIST', {name: res.fileName, link: res.filePath})
+            this.$store.commit('PUSH_DEFAULT_MUSIC_LIST', {name: res.fileName, link: res.filePath})
           })
         }
       },
@@ -199,29 +218,31 @@
           if (list.name === this.editorTheme.musicName) {
             this.toggleMusic(audio, index)
           } else {
-            this.$store.commit('UPDATE_THEME_MUSIC', {musicName: list.name, musicLink: appConst.BACKEND_DOMAIN + list.link})
+            this.$store.commit('UPDATE_THEME_MUSIC', {musicName: list.name, musicLink: appConst.BACKEND_DOMAIN + list.link, musicStyle: this.defaultMusicStyle})
             this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: index, isPlaying: true})
             this.$store.commit('UPDATE_MUSIC_PLAYING', true)
-            this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
+            Vue.nextTick(() => {
               audio.play()
             })
           }
         } else { // 音乐栏
           if (list.musicName) {
             if (this.musicList.length > 0) {
-              this.musicList.map((item, itemIndex) => {
-                if (list.musicName === item.name) {
-                  this.toggleMusic(audio, itemIndex)
-                  return
+              if (this.editorTheme.musicStyle === this.defaultMusicStyle) {
+                this.musicList.map((item, itemIndex) => {
+                  if (list.musicName === item.name) {
+                    this.toggleMusic(audio, itemIndex)
+                    return
+                  }
+                })
+              } else {
+                if (audio.paused) { // 播放
+                  audio.play()
+                  this.$store.commit('UPDATE_MUSIC_PLAYING', true)
+                } else { // 暂停
+                  audio.pause()
+                  this.$store.commit('UPDATE_MUSIC_PLAYING', false)
                 }
-              })
-            } else {
-              if (audio.paused) { // 播放
-                audio.play()
-                this.$store.commit('UPDATE_MUSIC_PLAYING', true)
-              } else { // 暂停
-                audio.pause()
-                this.$store.commit('UPDATE_MUSIC_PLAYING', false)
               }
             }
           }
@@ -240,13 +261,13 @@
       },
       clearMusic (list, index) { // 删除音乐
         let audio = document.getElementById('audio')
-        if (list.musicName || list.name === this.editorTheme.musicName) {
-          audio.pause()
-          this.$store.commit('UPDATE_THEME_MUSIC', {musicName: null, musicLink: null})
-          this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme))
-        }
         if (index > -1) {
           this.$store.commit('UPDATE_MUSIC_LIST', index)
+          this.$store.commit('UPDATE_DEFAULT_MUSIC_LIST', index)
+        }
+        if (list.musicName || list.name === this.editorTheme.musicName) {
+          audio.pause()
+          this.$store.commit('UPDATE_THEME_MUSIC', {musicName: null, musicLink: null, musicStyle: '默认'})
         }
       },
       dialogSave () {
@@ -325,6 +346,7 @@
           audio.pause()
           this.$store.commit('UPDATE_MUSIC_PLAYING', false)
         }
+        this.$store.commit('SET_THEME_MUSIC_LIST', this.defaultMusicList[0].music)
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
             message: '保存成功',
@@ -372,6 +394,18 @@
         this.$store.dispatch('cleanPicList')
       }
       this.$store.commit('CLEAN_MUSIC_LIST')
+      if (this.editorTheme.uploadMusicList) {
+        this.$store.commit('SET_DEFAULT_MUSIC_LIST', this.editorTheme.uploadMusicList)
+      }
+      if (this.editorTheme.musicStyle) {
+        this.defaultMusicStyle = this.editorTheme.musicStyle
+        this.defaultMusicList.map(item => {
+          if (item.style === this.defaultMusicStyle) {
+            this.toggleDefaultMusicList(item)
+            return
+          }
+        })
+      }
       if (this.editorTheme.musicName) {
         let audio = document.getElementById('audio')
         audio.pause()
@@ -522,6 +556,39 @@
        }
       .active{
         color:#20a0ff;
+      }
+      &-default-music{
+         padding-bottom:15px;
+         display:flex;
+         flex-wrap: wrap;
+         justify-content: flex-start;
+         border-bottom:1px solid #ddd;
+        li{
+          font-size: 14px;
+          cursor:pointer;
+          position:relative;
+          span{
+            display:block;
+            border:1px solid #aaa;
+            border-radius:4px;
+            padding:5px 8px;
+            margin:15px 10px 0;
+          }
+          input[type='radio']{
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            z-index:4;
+            cursor:pointer;
+          }
+          input[type='radio']:checked + span{
+            background:#50bfff;
+            color:#fff;
+            border:1px solid #50bfff;
+          }
+        }
       }
       &-upload{
          position:relative;
