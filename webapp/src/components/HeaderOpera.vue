@@ -7,7 +7,7 @@
                  class="preview"
                  type="info"
                  :loading="loading"
-                 icon="upload2">下载问卷</el-button>
+                 icon="document">导出Excel</el-button>
     </div>
   </header>
 </template>
