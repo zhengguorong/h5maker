@@ -7,7 +7,6 @@
   <title><%=title%></title>
   <link rel="stylesheet" href="/libs/css/mint.css">
   <link rel="stylesheet" href="/libs/css/bmui.css">
-  <script src="http://wechatfe.github.io/vconsole/lib/vconsole.min.js?v=2.5.2"></script>
 </head>
 <body>
   <div id="app" style="display: none">
@@ -58,7 +57,7 @@
         <div v-if="item.qsType=== 'text' && item.validate === 'date'" class="flex ai-center" style="padding-left: 12px;padding-bottom: 12px;">
           <input class="date-input" style="width:60px" type="number" :value="result[index].ask | dtFormat(item.validate)"  placeholder="年" onkeyup="if(event.keyCode === 8)return;if(value > 9999 || value < 0) value = '';if(value.length>=4)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[0]">-
           <input class="date-input" style="width:44px" type="number" placeholder="月" onkeyup="if(event.keyCode === 8)return;if(value > 12 || value < 0) value = '';if(value.length>=2)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[1]">-
-          <input class="date-input" style="width:44px" type="number" placeholder="日" oninput="if(value.length>2)value=value.slice(0,2);if(value > 31 || value < 0) value = ''" v-model="result[index].ask[2]">
+          <input class="date-input" style="width:44px" type="number" placeholder="日" onkeyup="if(value.length>2)value=value.slice(0,2);if(value > 31 || value < 0) value = ''" v-model="result[index].ask[2]">
         </div>
         <!--日期类型--end-->
         <!--地区类型--start-->
