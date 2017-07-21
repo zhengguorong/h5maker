@@ -78,10 +78,10 @@ var funDict = {
   'num': 'isNum'
 }
 var validateFuns = {
-  isMobile,
-  isEmail,
-  isNum,
-  funDict
+  isMobile: isMobile,
+  isEmail: isEmail,
+  isNum: isNum,
+  funDict: funDict
 }
 ;(function () {
   if (typeof module === 'object' && module && typeof module.exports === 'object') {

@@ -189,7 +189,7 @@
           })
         },
         validate: function() {
-          for(let i=0;i<this.form.questions.length;i++) {
+          for(var i=0;i<this.form.questions.length;i++) {
             var question = this.form.questions[i]
             var ask = this.result[i].ask
             // 验证必填项
@@ -257,9 +257,9 @@
           }
         },
         fileUpload: function(event, index) {
-          let item = this.result[index]
-          let file = event.target.files[0]
-          let self = this
+          var item = this.result[index]
+          var file = event.target.files[0]
+          var self = this
           if (file && /^image/.test(file.type)) {
             lrz(file, { quality: 0.5 }).then(function (result) {
               if (result.fileLen > 2 * 1024 * 1024) {
