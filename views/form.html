@@ -20,10 +20,16 @@
         <!--</div>-->
         <!--<div class="entry-btn" @click="openQ">打开问卷</div>-->
       <!--</div>-->
-     <div v-show="successDisplay" class="success">
+     <div v-if="successDisplay" class="success">
        <img src="/img/tick@2x.png" height="80" width="80"/>
        <p style="margin-top:24px;font-size: 15px; color:#fff; font-weight: bold;">
          提交成功<br>感谢您的宝贵时间
+       </p>
+     </div>
+     <div v-else class="success">
+       <img src="/img/tick@2x.png" height="80" width="80"/>
+       <p style="margin-top:24px;font-size: 15px; color:#fff; font-weight: bold;">
+         问卷已失效
        </p>
      </div>
    </div>
@@ -121,7 +127,7 @@
         successDisplay: false
       },
       filters: {
-        dtFormat (v, type) {
+        dtFormat: function(v, type) {
           if (typeof v === 'object' && v instanceof Date) {
             if (type === 'date') {
               // return v.toLocaleDateString() //在5s有兼容性问题，待验证
@@ -137,24 +143,24 @@
         }
       },
       methods: {
-        openQ () {
+        openQ: function() {
           this.QADisplay = true
         },
-        openRegion (index) {
+        openRegion: function(index) {
           this.regionIndex = index
           this.$refs['pcc'+ index][0].open()
         },
-        pccOutput (data) {
+        pccOutput: function(data) {
           this.result[this.regionIndex].ask = data.province.data.dname + data.city.data.dname + data.county.data.dname
           this.toValidateAgain(this.regionIndex)
         },
-        openDTPicker (index) {
+        openDTPicker: function(index) {
           this.$refs['dt'+index][0].open()
         },
-        getFormById (id) {
+        getFormById: function(id) {
           return axios.get('/api/form/' + id)
         },
-        toValidateAgain (el) {
+        toValidateAgain: function(el) {
           if (JSON.stringify(this.errors) === '{}') return
           if (typeof el === 'number') {
             this.validate()
@@ -165,7 +171,7 @@
             this.validate()
           }
         },
-        submit () {
+        submit: function() {
           this.validate()
           if (JSON.stringify(this.errors) !== '{}') {
             this.$toast('请检查你的输入是否合法')
@@ -182,7 +188,7 @@
             }
           })
         },
-        validate () {
+        validate: function() {
           for(let i=0;i<this.form.questions.length;i++) {
             var question = this.form.questions[i]
             var ask = this.result[i].ask
@@ -221,7 +227,7 @@
           }
           this.$forceUpdate()
         },
-        getDefaultAsk (ask, type) {
+        getDefaultAsk: function(ask, type) {
           var defaultAsk = []
           for (var i=0;i<ask.length;i++) {
             if (ask[i].isDefault) {
@@ -234,7 +240,7 @@
           }
           return defaultAsk
         },
-        initResult (questions) {
+        initResult: function(questions) {
           // 组装问题答案数据结构
           for (var i = 0;i < questions.length;i++) {
             var question = questions[i]
@@ -250,12 +256,12 @@
             }
           }
         },
-        fileUpload (event, index) {
+        fileUpload: function(event, index) {
           let item = this.result[index]
           let file = event.target.files[0]
           let self = this
           if (file && /^image/.test(file.type)) {
-            lrz(file, { quality: 0.5 }).then(result => {
+            lrz(file, { quality: 0.5 }).then(function (result) {
               if (result.fileLen > 2 * 1024 * 1024) {
                 this.$message.error('请选择小于2M的文件')
                 return
@@ -275,11 +281,11 @@
             })
           }
         },
-        removeImg (index, ask) {
+        removeImg: function(index, ask) {
           ask.splice(index, 1)
           this.toValidateAgain(index)
         },
-        runPlatform () {
+        runPlatform: function() {
           var browser = {
             versions: function () {
               var u = navigator.userAgent, app = navigator.appVersion
@@ -343,6 +349,9 @@
           console.log(err)
           self.$indicator.close()
           self.$toast('问卷已失效')
+          self.QADisplay = false
+          self.successDisplay = false
+          document.getElementById('app').style.display = 'block'
         })
       }
     })
