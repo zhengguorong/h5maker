@@ -101,6 +101,8 @@
 }
 .grid-content{
   padding-right:10px;
+  font-size: 14px;
+  color: #333
 }
 </style>
 
@@ -150,7 +152,7 @@
             // /////////////// //
             if (questionInfo.qsType === 'text' && questionInfo.validate === 'date') {
               let dateStr = ''
-              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
+              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') continue
               this.QAArr[j].ask.forEach((dateItem) => {
                 dateStr = dateStr + '-' + dateItem
               })
@@ -158,7 +160,7 @@
               this.QAArr[j].ask = dateStr.replace('-', '')
             } else if (questionInfo.qsType === 'check') {
               let checkboxStr = ''
-              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
+              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') continue
               this.QAArr[j].ask.forEach((checkboxItem) => {
                 checkboxStr = checkboxStr + ' | ' + checkboxItem
               })

@@ -45,7 +45,7 @@
       </div>
       <div class="row">
         <div class="item">
-          <span class="title">问题类型</span>
+          <span class="title" style="margin-right:15px">问题类型</span>
           <el-radio class="radio" v-model="question.qsType" label="radio">单选</el-radio>
           <el-radio class="radio" v-model="question.qsType" label="check">多选</el-radio>
         </div>
