@@ -55,8 +55,8 @@
         <!--时间类型--end-->
         <!--日期类型--start-->
         <div v-if="item.qsType=== 'text' && item.validate === 'date'" class="flex ai-center" style="padding-left: 12px;padding-bottom: 12px;">
-          <input class="date-input" style="width:60px" type="number" :value="result[index].ask | dtFormat(item.validate)"  placeholder="年" onkeyup="if(event.keyCode === 8)return;if(Number(value) > 9999 || Number(value) < 0 || typeof value !== 'number') value = '';if(value.length>=4)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[0]">-
-          <input class="date-input" style="width:44px" type="number" placeholder="月" onkeyup="if(event.keyCode === 8)return;if(Number(value) > 12 || Number(value) < 0 || typeof value !== 'number') value = '';if(value.length>=2)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[1]">-
+          <input class="date-input" style="width:60px" type="number" :value="result[index].ask | dtFormat(item.validate)"  placeholder="年" onkeyup="if(event.keyCode === 8)return;if(Number(value) > 9999 || Number(value) < 0 || typeof Number(value) !== 'number') value = '';if(value.length>=4)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[0]">-
+          <input class="date-input" style="width:44px" type="number" placeholder="月" onkeyup="if(event.keyCode === 8)return;if(Number(value) > 12 || Number(value) < 0 || typeof Number(value) !== 'number') value = '';if(value.length>=2)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[1]">-
           <input class="date-input" style="width:44px" type="number" placeholder="日" onkeyup="if(value.length>2)value=value.slice(0,2);if(Number(value) > 31 || Number(value) < 0 || typeof value !== 'number') value = ''" v-model="result[index].ask[2]">
         </div>
         <!--日期类型--end-->
