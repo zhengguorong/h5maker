@@ -51,12 +51,12 @@ var isInteger = function(value, options) {
 /**
  * 是否匹配长度，options接收max、min参数
  */
-var isMatchLength = function(value, options) {
-  options = options || {}
-  let maxCheck = !options.hasOwnProperty('max') || value.length <= Number(options.max)
-  let minCheck = !options.hasOwnProperty('min') || value.length >= Number(options.min)
-  return maxCheck && minCheck
-}
+// var isMatchLength = function(value, options) {
+//   options = options || {}
+//   let maxCheck = !options.hasOwnProperty('max') || value.length <= Number(options.max)
+//   let minCheck = !options.hasOwnProperty('min') || value.length >= Number(options.min)
+//   return maxCheck && minCheck
+// }
 
 var isIOS = function() {
   var ua = navigator.userAgent.toLowerCase()
