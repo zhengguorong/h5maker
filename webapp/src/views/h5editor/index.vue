@@ -219,22 +219,20 @@
           }
         } else { // 音乐栏
           if (list.musicName) {
-            if (this.musicList.length > 0) {
-              if (this.editorTheme.musicStyle === this.defaultMusicStyle) {
-                this.musicList.map((item, itemIndex) => {
-                  if (list.musicName === item.name) {
-                    this.toggleMusic(audio, itemIndex)
-                    return
-                  }
-                })
-              } else {
-                if (audio.paused) { // 播放
-                  audio.play()
-                  this.$store.commit('UPDATE_MUSIC_PLAYING', true)
-                } else { // 暂停
-                  audio.pause()
-                  this.$store.commit('UPDATE_MUSIC_PLAYING', false)
+            if (this.editorTheme.musicStyle === this.defaultMusicStyle) {
+              this.musicList.map((item, itemIndex) => {
+                if (list.musicName === item.name) {
+                  this.toggleMusic(audio, itemIndex)
+                  return
                 }
+              })
+            } else {
+              if (audio.paused) { // 播放
+                audio.play()
+                this.$store.commit('UPDATE_MUSIC_PLAYING', true)
+              } else { // 暂停
+                audio.pause()
+                this.$store.commit('UPDATE_MUSIC_PLAYING', false)
               }
             }
           }
