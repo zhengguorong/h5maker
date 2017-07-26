@@ -122,6 +122,7 @@
         result: [],
         regionIndex: null, // 激活的地区选择控件标识
         errors: {},
+        timeStamp: 0,
         QADisplay: false,
         successDisplay: false
       },
@@ -177,7 +178,7 @@
            return
           }
           var self = this
-          axios.post('/api/submit', {formId: this.id, sourcePlatform: this.runPlatform(), result: this.result}).then(function(res){
+          axios.post('/api/submit', {formId: this.id, sourcePlatform: this.runPlatform(), timeStamp: this.timeStamp, result: this.result}).then(function(res){
             if (res.data.responseCode === 0) {
               self.$toast(res.data.responseMsg || '提交失败')
             } else {
@@ -284,6 +285,12 @@
           ask.splice(index, 1)
           this.toValidateAgain(index)
         },
+        timer: function () {
+          var self = this
+          setInterval(function () {
+            self.timeStamp++
+          }, 1000)
+        },
         runPlatform: function() {
           var browser = {
             versions: function() {
@@ -343,6 +350,7 @@
           self.initResult(res.data.questions)
           self.QADisplay =true
           self.$indicator.close()
+          self.timer()
           document.getElementById('app').style.display = 'block'
         }).catch(function(err) {
           console.log(err)

@@ -19,14 +19,19 @@
             width="220">
         </el-table-column>
         <el-table-column
+            prop="timeStamp"
+            label="答题时长(秒)"
+            width="120">
+        </el-table-column>
+        <el-table-column
             prop="IP"
             label="所在地IP"
-            width="400">
+            width="300">
         </el-table-column>
         <el-table-column
             prop="sourcePlatform"
             label="来源渠道"
-            width="200">
+            width="180">
         </el-table-column>
         <el-table-column
             fixed="right"
@@ -35,7 +40,8 @@
           <template scope="scope">
             <el-button
                 @click.native.prevent="checkAnswer(scope.$index)"
-                type="primary"
+                type="success"
+                :plain="true"
                 size="small">
               查看
             </el-button>
@@ -58,10 +64,10 @@
     </template>
     <div class="detail" v-if="answerListArr.length > 0 && detailDisplay">
       <p>答卷详情</p>
-      <div class="title-wrap"><span class="mr-20">序号：{{ordinal}}</span> <span class="mr-20">提交时间：{{answerListArr[currentIndex].createDate}}</span> <span class="mr-20">所在地IP：{{answerListArr[currentIndex].IP || '未知'}}</span><span class="mr-20">来源渠道：{{answerListArr[currentIndex].sourcePlatform || '未知'}}</span></div>
+      <div class="title-wrap"><span class="mr-20">序号：{{ordinal}}</span> <span class="mr-20">提交时间：{{answerListArr[currentIndex].createDate}}</span><span class="mr-20">答题时长(秒)：{{answerListArr[currentIndex].timeStamp}}</span> <span class="mr-20">所在地IP：{{answerListArr[currentIndex].IP || '未知'}}</span><span class="mr-20">来源渠道：{{answerListArr[currentIndex].sourcePlatform || '未知'}}</span></div>
       <div class="content">
         <el-row v-for="(item, index) in QAArr">
-          <el-col :span="12"><div class="grid-content">{{index + 1}}.{{item.question}}</div></el-col>
+          <el-col :span="12"><div class="grid-content">{{index + 1}}.{{item.question.content}} <span style="color: #0a58cc">{{item.question.type}}</span></div></el-col>
           <el-col :span="12" v-if="formList.length > 0 ">
            <div v-if="questionInfoList[index].validate === 'img'"><a :href="appConst.BACKEND_DOMAIN + imgItem" target="_blank" style="margin-right:8px;" v-for="imgItem in item.ask"><img :src="appConst.BACKEND_DOMAIN + imgItem" width="100" alt=""></a><span v-if="item.ask.length === 0">未上传图片</span></div>
            <div v-if="questionInfoList[index].validate === 'pureFile'"><a :href="appConst.BACKEND_DOMAIN + fileItem.path" target="_blank" v-for="(fileItem, index) in item.ask" style="margin-right:8px;color: #0a58cc">{{fileItem.name}}</a><span v-if="item.ask.length === 0">未上传文件</span></div>
@@ -91,8 +97,12 @@
   .title-wrap{
     padding: 20px;
     font-size: 15px;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 2px solid #e5e5e5;
   }
+.detail {
+  background: #f6f6f6;
+  padding: 10px 5px;
+}
 .el-row {
   padding: 10px 15px;
 &:last-child {
@@ -156,7 +166,12 @@
               this.QAArr[j].ask.forEach((dateItem) => {
                 dateStr = dateStr + '-' + dateItem
               })
-              this.QAArr[j].question += '【填空题】'
+              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Object]') {
+                this.QAArr[j].question = {
+                  content: this.QAArr[j].question,
+                  type: '【填空题】'
+                }
+              }
               this.QAArr[j].ask = dateStr.replace('-', '')
             } else if (questionInfo.qsType === 'check') {
               let checkboxStr = ''
@@ -164,7 +179,12 @@
               this.QAArr[j].ask.forEach((checkboxItem) => {
                 checkboxStr = checkboxStr + ' | ' + checkboxItem
               })
-              this.QAArr[j].question += '【多选题】'
+              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Object]') {
+                this.QAArr[j].question = {
+                  content: this.QAArr[j].question,
+                  type: '【多选题】'
+                }
+              }
               this.QAArr[j].ask = checkboxStr
             } else if (questionInfo.qsType === 'file' && questionInfo.validate === 'img') {
 //            let imgStr = ''
@@ -172,8 +192,11 @@
 //            this.QAArr[j].ask.forEach((imgItem) => {
 //              imgStr = imgStr + appConst.BACKEND_DOMAIN + imgItem
 //            })
-              if (this.QAArr[j].question.indexOf('【图片上传】') === -1) {
-                this.QAArr[j].question += '【图片上传】'
+              if (Object.prototype.toString.call(this.QAArr[j].question) !== '[object Object]') {
+                this.QAArr[j].question = {
+                  content: this.QAArr[j].question,
+                  type: '【图片上传】'
+                }
               }
 //            this.QAArr[j].ask = imgStr
             } else if (questionInfo.qsType === 'file' && questionInfo.validate === 'pureFile') {
@@ -182,17 +205,26 @@
 //              this.QAArr[j].ask.forEach((fileItem) => {
 //                fileStr = fileStr + appConst.BACKEND_DOMAIN + fileItem.path
 //              })
-              if (this.QAArr[j].question.indexOf('【文件上传】') === -1) {
-                this.QAArr[j].question += '【文件上传】'
+              if (Object.prototype.toString.call(this.QAArr[j].question) !== '[object Object]') {
+                this.QAArr[j].question = {
+                  content: this.QAArr[j].question,
+                  type: '【文件上传】'
+                }
               }
 //              this.QAArr[j].ask = fileStr
             } else if (questionInfo.qsType === 'radio') {
-              if (this.QAArr[j].question.indexOf('【单选题】') === -1) {
-                this.QAArr[j].question += '【单选题】'
+              if (Object.prototype.toString.call(this.QAArr[j].question) !== '[object Object]') {
+                this.QAArr[j].question = {
+                  content: this.QAArr[j].question,
+                  type: '【单选题】'
+                }
               }
             } else {
-              if (this.QAArr[j].question.indexOf('【填空题】') === -1) {
-                this.QAArr[j].question += '【填空题】'
+              if (Object.prototype.toString.call(this.QAArr[j].question) !== '[object Object]') {
+                this.QAArr[j].question = {
+                  content: this.QAArr[j].question,
+                  type: '【填空题】'
+                }
               }
             }
             // //////////////// //
@@ -217,7 +249,7 @@
         }).then((result) => {
           this.answerCollection = result.records
           this.total = result.count
-          this.answerListArr = result.records.map((item, index) => { return {listIndex: this.pageSize * (this.currentPage - 1) + index + 1, createDate: new Date(item.createDate).toLocaleString().replace(/:\d{1,2}$/, ' '), IP: item.ip || '未知', sourcePlatform: item.sourcePlatform || '未知'} })
+          this.answerListArr = result.records.map((item, index) => { return {listIndex: this.pageSize * (this.currentPage - 1) + index + 1, createDate: new Date(item.createDate).toLocaleString().replace(/:\d{1,2}$/, ' '), IP: item.ip || '未知', sourcePlatform: item.sourcePlatform || '未知', timeStamp: item.timeStamp || '未知'} })
         })
       }
     },
