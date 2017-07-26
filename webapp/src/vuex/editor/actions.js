@@ -185,3 +185,37 @@ export const deleteTheme = ({commit}, theme) => {
   }))
 }
 
+// 更新音乐列表
+export const updateMusicList = ({commit}, index) => {
+  commit(types.UPDATE_MUSIC_LIST, index)
+  commit(types.UPDATE_DEFAULT_MUSIC_LIST, index)
+}
+
+// 上传音乐
+export const uploadMusic = ({commit}, form) => {
+  api.uploadPic(form).then((res) => {
+    commit(types.PUSH_MUSIC_LIST, {name: res.fileName, link: res.filePath})
+    commit(types.PUSH_DEFAULT_MUSIC_LIST, {name: res.fileName, link: res.filePath})
+  })
+}
+
+// 更新主题音乐
+export const updateThemeMusic = ({commit}, data) => {
+  commit(types.UPDATE_THEME_MUSIC, data)
+}
+
+// 更新音乐列表播放状态
+export const updateMusicListStatus = ({commit}, data) => {
+  commit(types.UPDATE_MUSIC_LIST_PLAYING, data)
+}
+
+// 更新音乐栏播放状态
+export const updateMusicStatus = ({commit}, data) => {
+  commit(types.UPDATE_MUSIC_PLAYING, data)
+}
+
+// 更新所有音乐播放状态
+export const updateAllMusicStatus = ({dispatch}, data) => {
+  dispatch('updateMusicListStatus', data)
+  dispatch('updateMusicStatus', data.isPlaying)
+}

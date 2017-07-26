@@ -54,3 +54,20 @@ var loader = (function () {
   })
 })()
 loader.start()
+
+// 音乐
+let audio = document.getElementById('audio')
+let musicBtn = document.getElementById('music-btn')
+if (!audio.getAttribute('src')) {
+  musicBtn.style.display = 'none'
+}
+musicBtn.addEventListener("click", function () {
+  if (audio.paused) { // 播放
+    audio.play()
+    musicBtn.setAttribute('src', '../img/music-open.png')
+  } else { // 暂停
+    audio.pause()
+    musicBtn.setAttribute('src', '../img/music-close.png')
+  }
+})
+

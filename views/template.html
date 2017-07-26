@@ -28,7 +28,8 @@
         <span id="loadingTxt" class="mediate">0%</span>
       </div>
     </div>
-    <audio src="<%=musicLink%>" loop="true" autoplay="autoplay"></audio>
+    <audio src="<%=musicLink%>" loop="true" autoplay="autoplay" id="audio"></audio>
+    <img src="/img/music-open.png" id="music-btn"/>
     <div class="swiper-container" style="opacity: 0;">
       <div class="swiper-wrapper">
         <% pages.forEach(function (page) { %>
