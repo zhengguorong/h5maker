@@ -4,6 +4,8 @@ import Page from '../../model/Page'
 import Theme from '../../model/Theme'
 import Element from '../../model/Element'
 import tools from '../../util/tools'
+import appConst from '../../util/appConst'
+import Vue from 'vue'
 
 /**
  * 保存页面数据
@@ -185,37 +187,119 @@ export const deleteTheme = ({commit}, theme) => {
   }))
 }
 
-// 更新音乐列表
-export const updateMusicList = ({commit}, index) => {
-  commit(types.UPDATE_MUSIC_LIST, index)
-  commit(types.UPDATE_DEFAULT_MUSIC_LIST, index)
+// 上传音乐
+export const uploadMusic = ({commit, state}, file) => {
+  let upload = true
+  if (!/^audio/.test(file.type)) {
+    Vue.prototype.$message('请上传正确的音乐格式！')
+    return
+  }
+  state.defaultMusicList[0].music.map(music => {
+    if (file.name === music.name) {
+      Vue.prototype.$message('不能上传同样的音乐')
+      upload = false
+      return
+    }
+  })
+  if (upload) {
+    let form = new window.FormData()
+    form.append('inputFile', file)
+    form.append('themeId', state.editorTheme._id)
+    api.uploadPic(form).then((res) => {
+      commit(types.PUSH_MUSIC_LIST, {name: res.fileName, link: res.filePath})
+      commit(types.PUSH_DEFAULT_MUSIC_LIST, {name: res.fileName, link: res.filePath})
+    })
+  }
 }
 
-// 上传音乐
-export const uploadMusic = ({commit}, form) => {
-  api.uploadPic(form).then((res) => {
-    commit(types.PUSH_MUSIC_LIST, {name: res.fileName, link: res.filePath})
-    commit(types.PUSH_DEFAULT_MUSIC_LIST, {name: res.fileName, link: res.filePath})
+// 更新音乐播放状态
+export const updateMusicStatus = ({commit}, data) => {
+  commit(types.UPDATE_MUSIC_LIST_PLAYING, data)
+  commit(types.UPDATE_MUSIC_PLAYING, data.isPlaying)
+}
+
+// 删除音乐
+export const delMusic = ({state, commit}, {list, index}) => {
+  if (index > -1) {
+    commit(types.UPDATE_MUSIC_LIST, index)
+    commit(types.UPDATE_DEFAULT_MUSIC_LIST, index)
+  }
+  if (list.musicName || list.name === state.editorTheme.musicName) {
+    commit(types.UPDATE_MUSIC_PLAYING, false)
+    commit(types.UPDATE_THEME_MUSIC, {musicName: null, musicLink: null, musicStyle: '默认'})
+  }
+}
+
+// 保存音乐
+export const saveMusic = ({dispatch, commit, state}, defaultMusicStyle) => {
+  commit(types.UPDATE_MUSIC_PLAYING, false)
+  dispatch('updateMusicListStatus', defaultMusicStyle)
+  commit('SET_THEME_MUSIC_LIST', state.defaultMusicList[0].music)
+}
+
+// 切换音乐风格
+export const toggleDefaultMusicList = ({dispatch, commit}, {list, defaultMusicStyle}) => {
+  commit('CLEAN_MUSIC_LIST')
+  list.music.map(item => {
+    commit('PUSH_MUSIC_LIST', item)
+  })
+  dispatch('updateMusicListStatus', defaultMusicStyle)
+}
+
+// 播放音乐栏
+export const playMusic = ({dispatch, state}, defaultMusicStyle) => {
+  if (!state.editorTheme.musicName) return
+  if (state.editorTheme.musicStyle !== defaultMusicStyle) {
+    dispatch('toggleMusic', -1)
+    return
+  }
+  state.musicList.map((item, itemIndex) => {
+    if (state.editorTheme.musicName === item.name) {
+      dispatch('toggleMusic', itemIndex)
+      return
+    }
   })
 }
 
-// 更新主题音乐
-export const updateThemeMusic = ({commit}, data) => {
-  commit(types.UPDATE_THEME_MUSIC, data)
+// 播放音乐列表
+export const playMusicList = ({dispatch, state, commit}, {list, index, defaultMusicStyle}) => {
+  if (list.name !== state.editorTheme.musicName) {
+    commit(types.UPDATE_THEME_MUSIC, {musicName: list.name, musicLink: appConst.BACKEND_DOMAIN + list.link, musicStyle: defaultMusicStyle})
+    return true
+  } else {
+    dispatch('toggleMusic', index)
+    return false
+  }
 }
 
-// 更新音乐列表播放状态
-export const updateMusicListStatus = ({commit}, data) => {
-  commit(types.UPDATE_MUSIC_LIST_PLAYING, data)
+// 初始化音乐
+export const initMusic = ({dispatch, commit, state}, defaultMusicStyle) => {
+  commit('CLEAN_MUSIC_LIST')
+  commit('SET_DEFAULT_MUSIC_LIST', state.editorTheme.uploadMusicList)
+  state.defaultMusicList.map(list => {
+    if (list.style === state.editorTheme.musicStyle) {
+      dispatch('toggleDefaultMusicList', {list, defaultMusicStyle})
+      return
+    }
+  })
 }
 
-// 更新音乐栏播放状态
-export const updateMusicStatus = ({commit}, data) => {
-  commit(types.UPDATE_MUSIC_PLAYING, data)
+// 更新音乐列表状态
+export const updateMusicListStatus = ({state, commit}, defaultMusicStyle) => {
+  if (state.musicList.length > 0 && defaultMusicStyle === state.editorTheme.musicStyle) {
+    state.musicList.map((item, itemIndex) => {
+      if (state.editorTheme.musicName === item.name) {
+        commit(types.UPDATE_MUSIC_LIST_PLAYING, {index: itemIndex, isPlaying: state.musicPlaying})
+        return
+      }
+    })
+  }
 }
 
-// 更新所有音乐播放状态
-export const updateAllMusicStatus = ({dispatch}, data) => {
-  dispatch('updateMusicListStatus', data)
-  dispatch('updateMusicStatus', data.isPlaying)
+export const toggleMusic = ({dispatch, state}, itemIndex) => {
+  if (state.musicPlaying) { // 暂停
+    dispatch('updateMusicStatus', {index: itemIndex, isPlaying: false})
+  } else { // 播放
+    dispatch('updateMusicStatus', {index: itemIndex, isPlaying: true})
+  }
 }

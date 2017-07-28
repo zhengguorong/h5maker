@@ -158,6 +158,7 @@ const mutations = {
     state.musicList.splice(index, 1)
   },
   [types.UPDATE_MUSIC_LIST_PLAYING] (state, {index, isPlaying}) {
+    if (index === -1) return
     state.musicList[index].isPlaying = isPlaying
   },
   [types.PUSH_MUSIC_LIST] (state, data) {

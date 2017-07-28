@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="panel-music-bg-music" :class="{active: editorTheme.musicLink}" @click="playMusic(editorTheme, -1)">
+  <div class="panel-music-bg-music" :class="{active: editorTheme.musicLink}" @click="playMusic()">
     <div class="left">
       <audio :src="editorTheme.musicLink" id="audio" loop="true"></audio>
       <i class="iconfont" v-if="musicPlaying">&#xe61b;</i>
@@ -11,7 +11,7 @@
     <div class="right">
       <span class="play" v-if="editorTheme.musicName && this.musicPlaying"><i class="iconfont">&#xe695;</i>暂停</span>
       <span class="play" v-else><i class="iconfont">&#xe674;</i>播放</span>
-      <span @click.stop="clearMusic(editorTheme, -1)"><i class="iconfont">&#xe62f;</i>清除</span>
+      <span @click.stop="delMusic(editorTheme, -1)"><i class="iconfont">&#xe62f;</i>清除</span>
     </div>
   </div>
   <ul class="panel-music-default-music">
@@ -21,7 +21,7 @@
     </li>
   </ul>
   <ul class="panel-music-content">
-    <li v-for="(list,index) in musicList" class="music-list" @click.stop="playMusic(list, index)" :class="{active: editorTheme.musicName===list.name}">
+    <li v-for="(list,index) in musicList" class="music-list" @click.stop="playMusicList(list, index)" :class="{active: editorTheme.musicName===list.name}">
       <div class="left">
         <i class="iconfont" v-if="list.isPlaying">&#xe61b;</i>
         <i class="iconfont" v-else>&#xe74b;</i>
@@ -30,7 +30,7 @@
       <div class="right">
         <span class="play" v-if="editorTheme.musicName===list.name && list.isPlaying"><i class="iconfont">&#xe695;</i>暂停</span>
         <span class="play" v-else><i class="iconfont">&#xe674;</i>播放</span>
-        <span @click.stop="clearMusic(list, index)" v-if="defaultMusicStyle === '默认'"><i class="iconfont">&#xe62f;</i>清除</span>
+        <span @click.stop="delMusic(list, index)" v-if="defaultMusicStyle === '默认'"><i class="iconfont">&#xe62f;</i>清除</span>
       </div>
     </li>
   </ul>
@@ -152,13 +152,20 @@
   /**
    * Created by tracy on 2017/7/25.
    */
-  import appConst from '../util/appConst'
-  import Vue from 'vue'
-
   export default {
     data () {
       return {
         defaultMusicStyle: '默认'
+      }
+    },
+    watch: {
+      musicPlaying (val) {
+        let audio = document.getElementById('audio')
+        if (val) {
+          audio.play()
+        } else {
+          audio.pause()
+        }
       }
     },
     computed: {
@@ -179,126 +186,33 @@
       }
     },
     methods: {
-      toggleDefaultMusicList (list) {
-        this.$store.commit('CLEAN_MUSIC_LIST')
-        list.music.map(item => {
-          this.$store.commit('PUSH_MUSIC_LIST', item)
-        })
-        this.updateMusicListStatus()
-      },
       fileUpload (event) { // 上传音乐
-        let upload = true
         let file = event.target.files[0]
-        if (!/^audio/.test(file.type)) {
-          this.$message('请上传正确的音乐格式！')
-          return
-        }
-        this.defaultMusicList[0].music.map(music => {
-          if (file.name === music.name) {
-            this.$message('不能上传同样的音乐')
-            upload = false
-            return
-          }
+        this.$store.dispatch('uploadMusic', file)
+      },
+      toggleDefaultMusicList (list) { // 切换音乐风格
+        this.$store.dispatch('toggleDefaultMusicList', {list, defaultMusicStyle: this.defaultMusicStyle})
+      },
+      playMusic () { // 播放音乐栏
+        this.$store.dispatch('playMusic', this.defaultMusicStyle)
+      },
+      playMusicList (list, index) { // 播放音乐列表
+        this.$store.dispatch('playMusicList', {list, index, defaultMusicStyle: this.defaultMusicStyle}).then((res) => {
+          if (!res) return
+          this.$store.dispatch('updateMusicStatus', {index: index, isPlaying: true})
+          document.getElementById('audio').play()
         })
-        if (upload) {
-          let form = new window.FormData()
-          form.append('inputFile', file)
-          form.append('themeId', this.themeId)
-          this.$store.dispatch('uploadMusic', form)
-        }
       },
-      playMusic (list, index) { // 播放音乐
-        let audio = document.getElementById('audio')
-        if (index > -1) { // 列表
-          if (list.name === this.editorTheme.musicName) {
-            this.toggleMusic(audio, index)
-          } else {
-            this.$store.dispatch('updateThemeMusic', {musicName: list.name, musicLink: appConst.BACKEND_DOMAIN + list.link, musicStyle: this.defaultMusicStyle})
-            this.$store.dispatch('updateAllMusicStatus', {index: index, isPlaying: true})
-            Vue.nextTick(() => {
-              audio.play()
-            })
-          }
-        } else { // 音乐栏
-          if (list.musicName) {
-            if (this.editorTheme.musicStyle === this.defaultMusicStyle) {
-              this.musicList.map((item, itemIndex) => {
-                if (list.musicName === item.name) {
-                  this.toggleMusic(audio, itemIndex)
-                  return
-                }
-              })
-            } else {
-              if (audio.paused) { // 播放
-                audio.play()
-                this.$store.dispatch('updateMusicStatus', true)
-              } else { // 暂停
-                audio.pause()
-                this.$store.dispatch('updateMusicStatus', false)
-              }
-            }
-          }
-        }
+      delMusic (list, index) { // 删除音乐
+        this.$store.dispatch('delMusic', {list, index})
       },
-      toggleMusic (audio, itemIndex) {
-        if (audio.paused) { // 播放
-          audio.play()
-          this.$store.dispatch('updateAllMusicStatus', {index: itemIndex, isPlaying: true})
-        } else { // 暂停
-          audio.pause()
-          this.$store.dispatch('updateAllMusicStatus', {index: itemIndex, isPlaying: false})
-        }
-      },
-      clearMusic (list, index) { // 删除音乐
-        let audio = document.getElementById('audio')
-        if (index > -1) {
-          this.$store.dispatch('updateMusicList', index)
-        }
-        if (list.musicName || list.name === this.editorTheme.musicName) {
-          audio.pause()
-          this.$store.dispatch('updateThemeMusic', {musicName: null, musicLink: null, musicStyle: '默认'})
-        }
-      },
-      updateMusicListStatus () { // 更新音乐列表状态
-        if (this.musicList.length > 0 && this.defaultMusicStyle === this.editorTheme.musicStyle) {
-          this.musicList.map((item, itemIndex) => {
-            if (this.editorTheme.musicName === item.name) {
-              this.$store.dispatch('updateMusicListStatus', {index: itemIndex, isPlaying: this.musicPlaying})
-              return
-            }
-          })
-        }
-      },
-      saveMusic () {
-        // 暂停音乐
-        let audio = document.getElementById('audio')
-        if (this.editorTheme.musicName && !audio.paused) {
-          audio.pause()
-          this.$store.dispatch('updateMusicStatus', false)
-          this.updateMusicListStatus()
-        }
-        this.$store.commit('SET_THEME_MUSIC_LIST', this.defaultMusicList[0].music)
+      saveMusic () { // 保存音乐
+        this.$store.dispatch('saveMusic', this.defaultMusicStyle)
       }
     },
     mounted () {
-      this.$store.commit('CLEAN_MUSIC_LIST')
-      if (this.editorTheme.uploadMusicList) {
-        this.$store.commit('SET_DEFAULT_MUSIC_LIST', this.editorTheme.uploadMusicList)
-      }
-      if (this.editorTheme.musicStyle) {
-        this.defaultMusicStyle = this.editorTheme.musicStyle
-        this.defaultMusicList.map(item => {
-          if (item.style === this.defaultMusicStyle) {
-            this.toggleDefaultMusicList(item)
-            return
-          }
-        })
-      }
-      if (this.editorTheme.musicName) {
-        let audio = document.getElementById('audio')
-        audio.pause()
-        this.$store.dispatch('updateMusicStatus', false)
-      }
+      this.defaultMusicStyle = this.editorTheme.musicStyle
+      this.$store.dispatch('initMusic', this.defaultMusicStyle)
     }
   }
 </script>
