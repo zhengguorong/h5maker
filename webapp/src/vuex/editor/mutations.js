@@ -13,11 +13,18 @@ const mutations = {
   [types.SET_BG_ELEMENT] (state, data) {
     let haveBG = false
     state.editorPage.elements.findIndex((value, index, arr) => {
-      if (value.type === 'bg') {
+      if ((data.type === 'bgColor' && value.type === 'bg') || (data.type === 'bgColor' && value.type === 'bgColor')) {
+        haveBG = true
+        value.imgSrc = ''
+        value.bg = data.bg
+        value.type = 'bgColor'
+        return
+      }
+      if ((data.type === 'bg' && value.type === 'bg') || (data.type === 'bg' && value.type === 'bgColor')) {
         haveBG = true
         value.imgSrc = data.imgSrc
-        value.width = data.width
-        value.height = data.height
+        value.bg = ''
+        value.type = 'bg'
       }
     })
     if (!haveBG) {
@@ -125,6 +132,12 @@ const mutations = {
   },
   [types.CLEAN_PIC_LIST] (state) {
     state.picList = []
+  },
+  [types.CLEAN_BG_LIST] (state) {
+    state.bgList = []
+  },
+  [types.PUSH_BG_LIST] (state, ele) {
+    state.bgList.push(ele)
   },
   [types.SORTELEMENTS] (state, data) {
     let element = state.editorPage.elements[data.start]

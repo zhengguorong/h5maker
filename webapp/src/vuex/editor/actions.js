@@ -95,10 +95,14 @@ export const addBGElement = ({commit}, data) => {
  * @param commit
  * @param data
  */
-export const savePic = ({commit}, data) => {
-  api.uploadPic(data).then((res) => {
+export const savePic = ({commit}, {imgData, themeId, width, height, type}) => {
+  api.uploadPic({imgData, themeId, width, height}).then((res) => {
     // commit(types.SAVE_PIC, res)
-    commit(types.PUSH_PIC_LIST, res)
+    if (type === 'elementImg') {
+      commit(types.PUSH_PIC_LIST, res)
+    } else {
+      commit(types.PUSH_BG_LIST, res)
+    }
   })
 }
 /**
@@ -177,6 +181,9 @@ export const cleanPicList = ({commit}) => {
   commit(types.CLEAN_PIC_LIST)
 }
 
+export const cleanBgList = ({commit}) => {
+  commit(types.CLEAN_BG_LIST)
+}
 export const sortElementsByZindex = ({commit}, location) => {
   commit(types.SORTELEMENTS_BY_ZINDEX, location)
 }

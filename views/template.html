@@ -37,14 +37,21 @@
             <% page.elements.forEach(function (element) { %>
               <% if (element.type === 'bg') { %>
                 <img class="ele-bg" pre-src="<%= element['imgSrc'] %>">
-              <% } %>
+              <% } else if (element.type === 'bgColor') { %>
+                <div class="ele-bg" style="width:100%;background:<%= element['bg'] %>">
+            <% } %>
             <% }) %>
             <div class="resize-container mediate flat">
               <% page.elements.forEach(function (element) { %>
                 <% if (element.type === 'pic') { %>
                   <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; height: <%= element['height'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px;">
                     <div class="<%= element['animatedName'] && 'ani ' %><%= element['loop'] && 'loop ' %>" swiper-animate-effect="<%= element['animatedName'] %>" swiper-animate-duration="<%= element['duration'] && element['duration'] + 's' %>" swiper-animate-delay="<%= element['delay'] && element['delay'] + 's' %>">
-                      <% if (element.href) { %><a target="_blank" href="http://<%= element['href'] %>"><img class="ele-img" pre-src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"></a><%} else {%><img class="ele-img" pre-src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"><%}%>
+                      <% if (element.href) { %>
+                      <a target="_blank" href="http://<%= element['href'] %>">
+                        <img class="ele-img" pre-src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"></a>
+                      <%}else {%>
+                      <img class="ele-img" pre-src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)">
+                      <%}%>
                     </div>
                   </div>
                 <% } %>

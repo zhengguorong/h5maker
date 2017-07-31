@@ -6,6 +6,8 @@
           <img :src="http + element.imgSrc" alt="" style="width: 100%;height: 100%;">
         </div>
       </div>
+      <div v-if="element.type==='bgColor'" class="bg-layer" :style="{background:element.bg}">
+      </div>
       <div @click.stop="selectedElement(element)">
         <PicElement :type="type" v-if="element.type==='pic'" :class="[element.playing?'animated ' + element.animatedName:'',element.loop?'infinite':'']" :element="element"
                     :style="{transform:'rotate('+element.transform+'deg)','z-index':element.zindex,opacity:element.opacity/100,width:element.width+'px',height:element.height+'px',top:element.top+'px',left:element.left + 'px','animation-duration':element.duration + 's','-webkit-animation-duration':element.duration + 's','animation-delay':element.delay + 's','-webkit-animation-delay':element.delay + 's'}"

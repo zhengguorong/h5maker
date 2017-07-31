@@ -2,10 +2,14 @@
   <div>
     <PicPicker class="ele"
                @uploaded="uploadImage"></PicPicker>
-    <div class="ele"
+    <div class="ele" v-if="type==='elementImg'"
          :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }"
          @click="selectedImg(element)"
          v-for="element in picList"></div>
+    <div class="ele" v-if="type==='bg'"
+         :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }"
+         @click="selectedImg(element)"
+         v-for="element in bgList"></div>
   </div>
 </template>
 
@@ -16,6 +20,10 @@ export default {
   props: {
     selectedImg: {
       type: Function
+    },
+    type: {
+      type: String,
+      default: 'elementImg'
     }
   },
   data () {
@@ -26,6 +34,9 @@ export default {
   computed: {
     picList () {
       return this.$store.state.editor.picList
+    },
+    bgList () {
+      return this.$store.state.editor.bgList
     }
   },
   methods: {
@@ -34,7 +45,8 @@ export default {
         'imgData': data['base64'],
         'themeId': this.themeId,
         'width': data['width'],
-        'height': data['height']
+        'height': data['height'],
+        'type': this.type
       })
     }
   },
