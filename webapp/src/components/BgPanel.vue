@@ -6,7 +6,7 @@
   </div>
   <div class="item clearfix">
     <label><i class="iconfont">&#xe621;</i>背景图</label>
-    <el-button class="btn" type="danger" @click="cleanBG" v-if="bgList.length>0">移除背景图</el-button>
+    <el-button class="btn" type="danger" @click="cleanBG">移除背景图</el-button>
   </div>
   <div class="clearfix">
     <ImgPanel :selectedImg="addBG" type="bg"/>
@@ -47,17 +47,10 @@
         bgColor: ''
       }
     },
-    computed: {
-      editorPage () {
-        return this.$store.state.editor.editorPage
-      },
-      bgList () {
-        return this.$store.state.editor.bgList
-      }
-    },
     components: {
       ImgPanel
     },
+    props: ['editorPage', 'element'],
     methods: {
       cleanBG () {
         this.$store.dispatch('cleanBG')
@@ -79,6 +72,11 @@
         })
         if (watch) {
           this.$store.dispatch('addBGElement', {type: 'bgColor', bg: val})
+        }
+      },
+      element (val) {
+        if (val.type === 'bgColor') {
+          this.bgColor = val.bg
         }
       }
     }

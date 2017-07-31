@@ -32,7 +32,7 @@
         <div class="wrapper custom-scrollbar">
           <!-- 设置背景 0 -->
           <div class="panel panel-bg" v-show="panelState === 0">
-            <BgPanel/>
+            <BgPanel :editorPage="editorPage" :element="element"/>
           </div>
           <!-- 添加文字 1 -->
           <div class="panel panel-text" v-show="panelState === 1">
@@ -97,8 +97,10 @@
           case 'pic':
             this.panelState = 12
             break
+          case 'bgColor':
           case 'bg':
             this.panelState = 0
+            break
         }
       }
     },

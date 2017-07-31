@@ -26,6 +26,9 @@
       <div v-for="layer in layersBg" class="layer" :class="{ active: editingLayer === layer}" @click="setEditingLayer($event, layer)">
         <span class="thumb" :style="{ backgroundImage: 'url(' + http + layer.imgSrc + ')' }"></span>{{ layer.type }}
       </div>
+      <div v-for="layer in layersBgColor" class="layer" :class="{ active: editingLayer === layer}" @click="setEditingLayer($event, layer)">
+        <span class="thumb" :style="{background: layer.bg}"></span>{{ layer.type }}
+      </div>
     </div>
     <button class="add el-icon-plus" @click="addPage"></button>
   </div>
@@ -57,10 +60,13 @@
         return this.editingPage['elements']
       },
       layersNoBg () {
-        return this.layers && this.layers.filter(v => v['type'] !== 'bg').reverse()
+        return this.layers && this.layers.filter(v => v['type'] !== 'bg' && v['type'] !== 'bgColor').reverse()
       },
       layersBg () {
         return this.layers && this.layers.filter(v => v['type'] === 'bg')
+      },
+      layersBgColor () {
+        return this.layers && this.layers.filter(v => v['type'] === 'bgColor')
       },
       editingLayer () {
         return this.vxEditor['editorElement']
