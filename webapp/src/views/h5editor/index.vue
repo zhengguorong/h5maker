@@ -67,7 +67,7 @@
   import SvgPanel from '../../components/SvgPanel'
   import ImgPanel from '../../components/ImgPanel'
   import MusicPanel from '../../components/MusicPanel'
-  import BgPanel from '../../components/bgPanel'
+  import BgPanel from '../../components/BgPanel'
   import appConst from '../../util/appConst'
 
   export default {
