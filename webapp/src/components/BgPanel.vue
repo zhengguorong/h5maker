@@ -25,7 +25,7 @@
       float:left;
       i{
         font-size: 16px;
-        margin-right:5px;
+        margin-right:10px;
       }
     }
   }
@@ -50,7 +50,7 @@
     components: {
       ImgPanel
     },
-    props: ['editorPage', 'element'],
+    props: ['editorPage', 'elements'],
     methods: {
       cleanBG () {
         this.$store.dispatch('cleanBG')
@@ -74,10 +74,14 @@
           this.$store.dispatch('addBGElement', {type: 'bgColor', bg: val})
         }
       },
-      element (val) {
-        if (val.type === 'bgColor') {
-          this.bgColor = val.bg
-        }
+      elements (val) {
+        val.map(item => {
+          if (item.type === 'bgColor') {
+            this.bgColor = item.bg
+          } else {
+            this.bgColor = ''
+          }
+        })
       }
     }
   }

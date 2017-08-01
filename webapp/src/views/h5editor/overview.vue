@@ -19,7 +19,9 @@
       <ul>
         <li v-for="layer in layersNoBg">
           <div class="layer" :class="{ active: editingLayer === layer}" @click="setEditingLayer($event, layer)" @mousedown="moveLayer">
-            <span class="thumb" :style="{ backgroundImage: 'url(' + http + layer.imgSrc + ')' }"></span>{{ layer.type }}
+            <span class="thumb" v-if="layer.type==='pic'" :style="{ backgroundImage: 'url(' + http + layer.imgSrc + ')' }"></span>
+            <span class="thumb" v-else></span>
+            {{ layer.type }}
           </div>
         </li>
       </ul>

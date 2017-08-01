@@ -32,7 +32,7 @@
         <div class="wrapper custom-scrollbar">
           <!-- 设置背景 0 -->
           <div class="panel panel-bg" v-show="panelState === 0">
-            <BgPanel :editorPage="editorPage" :element="element"/>
+            <BgPanel :editorPage="editorPage" :elements="editorPage.elements"/>
           </div>
           <!-- 添加文字 1 -->
           <div class="panel panel-text" v-show="panelState === 1">
