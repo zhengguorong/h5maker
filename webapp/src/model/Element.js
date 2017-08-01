@@ -20,7 +20,7 @@ export default class Element {
     this.text = ele.text || ''
     this.textAlign = ele.textAlign || 'left'
     this.iconKey = ele.iconKey || ''
-    this.bg = ele.bg || ''
+    this.bg = ele.bg || '#ffffff'
     this.fontSize = ele.fontSize || 18
     this.fontFamily = ele.fontFamily || '微软雅黑'
     this.fontWeight = ele.fontWeight || 'normal'

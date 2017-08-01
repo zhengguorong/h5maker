@@ -23,7 +23,6 @@ const mutations = {
       if ((data.type === 'bg' && value.type === 'bg') || (data.type === 'bg' && value.type === 'bgColor')) {
         haveBG = true
         value.imgSrc = data.imgSrc
-        value.bg = ''
         value.type = 'bg'
       }
     })

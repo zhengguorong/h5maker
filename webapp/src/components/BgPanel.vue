@@ -44,7 +44,7 @@
   export default {
     data () {
       return {
-        bgColor: ''
+        bgColor: '#ffffff'
       }
     },
     components: {
@@ -57,7 +57,7 @@
       },
       addBG (file) {
         this.$store.dispatch('addBGElement', { type: 'bg', imgSrc: file.filePath }).then(() => {
-          this.bgColor = ''
+          this.bgColor = '#ffffff'
         })
       }
     },
@@ -65,7 +65,7 @@
       bgColor (val) {
         let watch = true
         this.editorPage.elements.map(item => {
-          if (item.type === 'bg' && !val) {
+          if (item.type === 'bg' && val === '#ffffff') {
             watch = false
             return
           }
@@ -79,7 +79,7 @@
           if (item.type === 'bgColor') {
             this.bgColor = item.bg
           } else {
-            this.bgColor = ''
+            this.bgColor = '#ffffff'
           }
         })
       }
