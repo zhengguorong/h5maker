@@ -204,9 +204,9 @@ module.exports.downloadExcel = (req, res) => {
 
 // 生成报表数组
 module.exports.generateReport = (req, res) => {
-var questionInfoList = []
-     Form.find({_id: req.body.formId}).then((formResult)=> {
-       questionInfoList = formResult[0][questions]
-
-     })
+  res.json('建设中')
+// var questionInfoList = []
+//      Form.find({_id: req.body.formId}).then((formResult)=> {
+//        questionInfoList = formResult[0][questions]
+//      })
 }

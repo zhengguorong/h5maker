@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="content">
       <div style="overflow-y: auto;height: 100%">
-
+        <h2>建设中。。。</h2>
       </div>
       <div class="close" @click="close">
         <i class="el-icon-close"></i>
