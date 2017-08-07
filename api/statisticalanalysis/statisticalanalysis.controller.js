@@ -5,7 +5,7 @@ var Answer = require('../submit/submit.model')
 var Form = require('../form/form.model')
 var async = require('async')
 const fs = require('fs')
-const xlsx = require('better-xlsx')
+const xlsx = require('better-xlsx') // github: https://github.com/d-band/better-xlsx
 module.exports.findAnswerById = (req, res) => {
   let formId = req.body.formId
   let pageIndex = req.body.pageIndex
@@ -31,7 +31,7 @@ module.exports.findAnswerById = (req, res) => {
 module.exports.downloadExcel = (req, res) => {
   Form.find({_id: req.params.id}).exec().then((questionData) => Answer.find({formId: req.params.id}).exec()
       .then((answerData) => {
-        let excelHeader = ['序号', '提交时间', '所在地IP', '来源渠道']
+        let excelHeader = ['序号', '提交时间', '答题时长', '所在地IP', '来源渠道']
         let excelContent = []
         questionData[0].questions.forEach((item, index) => {
           if (item.qsType === 'radio') {
@@ -48,6 +48,7 @@ module.exports.downloadExcel = (req, res) => {
           let itemArr = []
           itemArr.push(index+1)
           itemArr.push(new Date(item.createDate).toLocaleString().replace(/:\d{1,2}$/,' '))
+          itemArr.push(item.timeStamp)
           itemArr.push(item.ip)
           itemArr.push(item.sourcePlatform)
           item.result.forEach((inItem, inIndex) => {
@@ -87,7 +88,6 @@ module.exports.downloadExcel = (req, res) => {
         const file = new xlsx.File();
         const sheet = file.addSheet('Sheet1');
         const data = excelContent
-        console.log(excelContent)
         function border(cell, top, left, bottom, right) {
           const light = 'ffded9d4';
           const dark = 'ff7e6a54';
@@ -200,4 +200,13 @@ module.exports.downloadExcel = (req, res) => {
             .on('data', (chunk) => {res.write(chunk, 'binary')})
             .on('end', () => {res.end()})
       }))
+}
+
+// 生成报表数组
+module.exports.generateReport = (req, res) => {
+var questionInfoList = []
+     Form.find({_id: req.body.formId}).then((formResult)=> {
+       questionInfoList = formResult[0][questions]
+
+     })
 }

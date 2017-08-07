@@ -30,6 +30,10 @@ const getAnswer = (data) => {
   return http.post('/api/checkAnswer', {formId: data.id, pageIndex: data.pageIndex, pageSize: data.pageSize})
 }
 
+const generateReport = (data) => {
+  return http.post('/api/checkAnswer/generateReport', {formId: data.formId})
+}
+
 module.exports = {
-  createForm, deleteForm, getFormList, getFormById, downloadExcelById, updateForm, uploadPic, getAnswer
+  createForm, deleteForm, getFormList, getFormById, downloadExcelById, updateForm, uploadPic, getAnswer, generateReport
 }

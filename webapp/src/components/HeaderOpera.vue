@@ -7,7 +7,11 @@
                  class="preview"
                  type="info"
                  :loading="loading"
-                 icon="document">导出Excel</el-button>
+                 icon="document" style="margin-left: 10px;">导出Excel</el-button>
+      <el-button @click="openChart"
+                 class="preview"
+                 :loading="loading"
+                 icon="date">报表分析</el-button>
     </div>
   </header>
 </template>
@@ -17,6 +21,7 @@
    * Created by Wesdint on 2017/7/14.
    */
 import appConst from '../util/appConst'
+import api from '../api/form'
   export default {
     data () {
       return {
@@ -27,6 +32,10 @@ import appConst from '../util/appConst'
       opera () {
         let formId = this.$route.query.formId
         window.location = appConst.BACKEND_DOMAIN + '/api/downloadExcel/' + formId
+      },
+      openChart () {
+        api.generateReport({formId: this.$route.query.formId}).then()
+        this.$emit('openChart', true)
       },
       goback () {
         this.$router.replace('formList')

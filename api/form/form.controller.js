@@ -46,6 +46,21 @@ module.exports.findByLoginId = (req, res) => {
     .catch(handleError(res))
 }
 
+module.exports.getIdList = (req, res) => {
+  return Form.find({loginId: 'zwd'}).exec()
+      .then(formList => {
+        var result = {
+          responseCode: 1,
+          idList: []
+        }
+        for(let i = 0; i < formList.length; i++) {
+          result.idList.push({id: formList[i]._id, name: formList[i].title})
+        }
+        res.json(result)
+      })
+      .catch(handleError(res))
+}
+
 module.exports.show = (req, res) => {
   return Form.findById(req.params.id).exec()
     .then(handleEntityNotFound(res))

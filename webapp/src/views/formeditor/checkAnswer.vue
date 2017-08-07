@@ -1,6 +1,6 @@
 <template>
 <div class="container">
-  <HeaderOpera/>
+  <HeaderOpera @openChart="openChart"/>
   <div class="main">
     <template>
       <el-table
@@ -80,6 +80,7 @@
       </div>
     </div>
   </div>
+  <AnswerCharts v-if="answerChartsDisplay" @closeView="answerChartsDisplay = false"></AnswerCharts>
 </div>
 </template>
 
@@ -121,6 +122,7 @@
    * Created by Wesdint on 2017/7/14.
    */
   import HeaderOpera from '../../components/HeaderOpera.vue'
+  import AnswerCharts from '../../components/AnswerCharts.vue'
   import appConst from '../../util/appConst'
   import api from '../../api/form'
   import {mapGetters} from 'vuex'
@@ -137,7 +139,8 @@
         total: 0,
         ordinal: 1,
         currentIndex: 0,
-        detailDisplay: false
+        detailDisplay: false,
+        answerChartsDisplay: false
       }
     },
     computed: {
@@ -146,6 +149,9 @@
       })
     },
     methods: {
+      openChart (bool) {
+        this.answerChartsDisplay = bool
+      },
       checkAnswer (index) {
         this.currentIndex = index
         this.ordinal = this.pageSize * (this.currentPage - 1) + index + 1
@@ -259,6 +265,6 @@
       }
       this.loadData()
     },
-    components: {HeaderOpera}
+    components: {HeaderOpera, AnswerCharts}
   }
 </script>
