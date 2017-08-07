@@ -6,13 +6,18 @@
       <Page class="canvas" :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" />
       <div class="control-panel">
         <div class="funcs">
+          <el-tooltip  effect="dark" content="添加背景" placement="left">
+            <button class="func" @click="togglePanel(0)" :class="{ active: panelState === 0 }" >
+              <i class="iconfont" style="font-size: 18px;">&#xe622;</i>
+            </button>
+          </el-tooltip>
           <el-tooltip  effect="dark" content="新建文本" placement="left">
             <button class="func el-icon-edit" @click="togglePanel(1)" :class="{ active: panelState === 1 }"></button>
           </el-tooltip>
           <el-tooltip  effect="dark" content="新建素材" placement="left">
             <button class="func el-icon-picture" @click="togglePanel(2)" :class="{ active: panelState === 2 }"></button>
           </el-tooltip>
-          <el-tooltip  effect="dark" content="添加背景音乐" placement="left">
+          <el-tooltip  effect="dark" content="添加音乐" placement="left">
             <button class="func" @click="togglePanel(3)" :class="{ active: panelState === 3 }" >
               <i class="iconfont">&#xe63e;</i>
             </button>
@@ -26,20 +31,8 @@
         </div>
         <div class="wrapper custom-scrollbar">
           <!-- 设置背景 0 -->
-          <div class="panel panel-bg">
-            <div class="clearfix"
-                 v-if="panelTabState !== 1">
-              <el-button class="btn"
-                         type="success"
-                         @click="panelTabState = 1">更换背景</el-button>
-              <el-button class="btn"
-                         type="danger"
-                         @click="cleanBG">移除背景</el-button>
-            </div>
-            <div class="clearfix"
-                 v-if="panelTabState === 1">
-              <ImgPanel  :selectedImg="addBG"/>
-            </div>
+          <div class="panel panel-bg" v-show="panelState === 0">
+            <BgPanel :editorPage="editorPage" :elements="editorPage.elements"/>
           </div>
           <!-- 添加文字 1 -->
           <div class="panel panel-text" v-show="panelState === 1">
@@ -48,48 +41,11 @@
           </div>
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-show="panelState === 2">
-            <ImgPanel :selectedImg="addPicElement"/>
+            <ImgPanel :selectedImg="addPicElement" type="elementImg"/>
           </div>
           <!-- 添加背景音乐 3 -->
           <div class="panel panel-music" v-show="panelState === 3">
-            <div class="panel-music-bg-music" :class="{active: editorTheme.musicLink}" @click="playMusic(editorTheme, -1)">
-              <div class="left">
-                <audio :src="editorTheme.musicLink" id="audio" loop="true"></audio>
-                <i class="iconfont" v-if="musicPlaying">&#xe61b;</i>
-                <i class="iconfont" v-else>&#xe74b;</i>
-                <span v-if="!editorTheme.musicLink">未选择音乐</span>
-                <span v-if="editorTheme.musicName">{{editorTheme.musicName}}</span>
-              </div>
-              <div class="right">
-                <span class="play" v-if="editorTheme.musicName && this.musicPlaying"><i class="iconfont">&#xe695;</i>暂停</span>
-                <span class="play" v-else><i class="iconfont">&#xe674;</i>播放</span>
-                <span @click.stop="clearMusic(editorTheme, -1)"><i class="iconfont">&#xe62f;</i>清除</span>
-              </div>
-            </div>
-            <ul class="panel-music-default-music">
-              <li v-for="(list,index) in defaultMusicList" @click="toggleDefaultMusicList(list)">
-                <input type="radio" v-model="defaultMusicStyle" :value="list.style">
-                <span>{{list.style}}</span>
-              </li>
-            </ul>
-            <ul class="panel-music-content">
-              <li v-for="(list,index) in musicList" class="music-list" @click.stop="playMusic(list, index)" :class="{active: editorTheme.musicName===list.name}">
-                <div class="left">
-                  <i class="iconfont" v-if="list.isPlaying">&#xe61b;</i>
-                  <i class="iconfont" v-else>&#xe74b;</i>
-                  <span class="music-name">{{list.name}}</span>
-                </div>
-                <div class="right">
-                  <span class="play" v-if="editorTheme.musicName===list.name && list.isPlaying"><i class="iconfont">&#xe695;</i>暂停</span>
-                  <span class="play" v-else><i class="iconfont">&#xe674;</i>播放</span>
-                  <span @click.stop="clearMusic(list, index)" v-if="defaultMusicStyle === '默认'"><i class="iconfont">&#xe62f;</i>清除</span>
-                </div>
-              </li>
-            </ul>
-            <div class="panel-music-upload" v-if="defaultMusicStyle === '默认'">
-              <input type="file" name="inputFile" @change="fileUpload"/>
-              <el-button type="primary" icon="upload2">上传音乐</el-button>
-            </div>
+            <MusicPanel ref="musicPanel"/>
           </div>
           <!-- 图层编辑面板 -->
           <EditPanel :element="element" :panelState="panelState" v-show="panelState > 10"/>
@@ -110,9 +66,9 @@
   import EditPanel from '../../components/EditPanel'
   import SvgPanel from '../../components/SvgPanel'
   import ImgPanel from '../../components/ImgPanel'
+  import MusicPanel from '../../components/MusicPanel'
+  import BgPanel from '../../components/BgPanel'
   import appConst from '../../util/appConst'
-  import api from '../../api/editor'
-  import Vue from 'vue'
 
   export default {
     data () {
@@ -122,20 +78,17 @@
         canvasWidth: 320,
         canvasHeight: 504,
         dialogSaveBeforeBack: false,
-        panelTabState: 0,
         picBase64: '',
         http: appConst.BACKEND_DOMAIN,
         releaseUrl: '',
         showPreView: false,
-        isLoadingPreview: false,
-        defaultMusicStyle: '默认'
+        isLoadingPreview: false
       }
     },
     watch: {
       element () {
         let ele = this.$store.state.editor.editorElement
         let type = ele ? ele.type : 'null'
-        this.panelTabState = 0
         switch (type) {
           case 'text':
             this.panelState = 11
@@ -144,8 +97,10 @@
           case 'pic':
             this.panelState = 12
             break
-          default:
+          case 'bgColor':
+          case 'bg':
             this.panelState = 0
+            break
         }
       }
     },
@@ -162,104 +117,9 @@
       },
       editorTheme () {
         return this.$store.state.editor.editorTheme
-      },
-      musicList () {
-        return this.$store.state.editor.musicList
-      },
-      musicPlaying () {
-        return this.$store.state.editor.musicPlaying
-      },
-      defaultMusicList () {
-        return this.$store.state.editor.defaultMusicList
       }
     },
     methods: {
-      toggleDefaultMusicList (list) {
-        this.$store.commit('CLEAN_MUSIC_LIST')
-        list.music.map(item => {
-          this.$store.commit('PUSH_MUSIC_LIST', item)
-        })
-      },
-      fileUpload (event) { // 上传音乐
-        let upload = true
-        let file = event.target.files[0]
-        if (!/^audio/.test(file.type)) {
-          this.$message('请上传正确的音乐格式！')
-          return
-        }
-        this.defaultMusicList[0].music.map(music => {
-          if (file.name === music.name) {
-            this.$message('不能上传同样的音乐')
-            upload = false
-            return
-          }
-        })
-        if (upload) {
-          let form = new window.FormData()
-          form.append('inputFile', file)
-          form.append('themeId', this.themeId)
-          api.uploadPic(form).then((res) => {
-            this.$store.commit('PUSH_MUSIC_LIST', {name: res.fileName, link: res.filePath})
-            this.$store.commit('PUSH_DEFAULT_MUSIC_LIST', {name: res.fileName, link: res.filePath})
-          })
-        }
-      },
-      playMusic (list, index) { // 播放音乐
-        let audio = document.getElementById('audio')
-        if (index > -1) { // 列表
-          if (list.name === this.editorTheme.musicName) {
-            this.toggleMusic(audio, index)
-          } else {
-            this.$store.commit('UPDATE_THEME_MUSIC', {musicName: list.name, musicLink: appConst.BACKEND_DOMAIN + list.link, musicStyle: this.defaultMusicStyle})
-            this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: index, isPlaying: true})
-            this.$store.commit('UPDATE_MUSIC_PLAYING', true)
-            Vue.nextTick(() => {
-              audio.play()
-            })
-          }
-        } else { // 音乐栏
-          if (list.musicName) {
-            if (this.editorTheme.musicStyle === this.defaultMusicStyle) {
-              this.musicList.map((item, itemIndex) => {
-                if (list.musicName === item.name) {
-                  this.toggleMusic(audio, itemIndex)
-                  return
-                }
-              })
-            } else {
-              if (audio.paused) { // 播放
-                audio.play()
-                this.$store.commit('UPDATE_MUSIC_PLAYING', true)
-              } else { // 暂停
-                audio.pause()
-                this.$store.commit('UPDATE_MUSIC_PLAYING', false)
-              }
-            }
-          }
-        }
-      },
-      toggleMusic (audio, itemIndex) {
-        if (audio.paused) { // 播放
-          audio.play()
-          this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: itemIndex, isPlaying: true})
-          this.$store.commit('UPDATE_MUSIC_PLAYING', true)
-        } else { // 暂停
-          audio.pause()
-          this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: itemIndex, isPlaying: false})
-          this.$store.commit('UPDATE_MUSIC_PLAYING', false)
-        }
-      },
-      clearMusic (list, index) { // 删除音乐
-        let audio = document.getElementById('audio')
-        if (index > -1) {
-          this.$store.commit('UPDATE_MUSIC_LIST', index)
-          this.$store.commit('UPDATE_DEFAULT_MUSIC_LIST', index)
-        }
-        if (list.musicName || list.name === this.editorTheme.musicName) {
-          audio.pause()
-          this.$store.commit('UPDATE_THEME_MUSIC', {musicName: null, musicLink: null, musicStyle: '默认'})
-        }
-      },
       dialogSave () {
         return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('themeList'))
       },
@@ -281,12 +141,6 @@
         //   this.$store.dispatch('addElement', this.element)
         // }
         this.element.type = 'pic'
-      },
-      addBG (file) {
-        this.$store.dispatch('addBGElement', { type: 'bg', imgSrc: file.filePath })
-      },
-      cleanBG () {
-        this.$store.dispatch('cleanBG')
       },
       cleanEle () {
         this.$store.dispatch('cleanEle', this.element)
@@ -313,21 +167,7 @@
         this.$store.dispatch('playAnimate')
       },
       save () {
-        // 暂停音乐
-        let audio = document.getElementById('audio')
-        if (this.editorTheme.musicName && !audio.paused) {
-          if (this.musicList.length > 0) {
-            this.musicList.map((item, itemIndex) => {
-              if (this.editorTheme.musicName === item.name) {
-                this.$store.commit('UPDATE_MUSIC_LIST_PLAYING', {index: itemIndex, isPlaying: false})
-                return
-              }
-            })
-          }
-          audio.pause()
-          this.$store.commit('UPDATE_MUSIC_PLAYING', false)
-        }
-        this.$store.commit('SET_THEME_MUSIC_LIST', this.defaultMusicList[0].music)
+        this.$refs.musicPanel.saveMusic()
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
             message: '保存成功',
@@ -361,7 +201,7 @@
       }
     },
     components: {
-      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, ImgPanel
+      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, ImgPanel, MusicPanel, BgPanel
     },
     mounted () {
       this.itemId = this.$route.query.itemId
@@ -375,24 +215,7 @@
         this.$store.dispatch('addPage')
         this.$store.dispatch('cleanPicList')
       }
-      this.$store.commit('CLEAN_MUSIC_LIST')
-      if (this.editorTheme.uploadMusicList) {
-        this.$store.commit('SET_DEFAULT_MUSIC_LIST', this.editorTheme.uploadMusicList)
-      }
-      if (this.editorTheme.musicStyle) {
-        this.defaultMusicStyle = this.editorTheme.musicStyle
-        this.defaultMusicList.map(item => {
-          if (item.style === this.defaultMusicStyle) {
-            this.toggleDefaultMusicList(item)
-            return
-          }
-        })
-      }
-      if (this.editorTheme.musicName) {
-        let audio = document.getElementById('audio')
-        audio.pause()
-        this.$store.commit('UPDATE_MUSIC_PLAYING', false)
-      }
+      this.$store.dispatch('cleanBgList')
       document.addEventListener('keyup', this.deleteListener)
       window.onbeforeunload = () => false
     },
@@ -474,129 +297,34 @@
         }
       }
     }
-
-  .wrapper {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
-  }
-  .panel {
-    position: absolute;
-    left: 0;
-    top: 0;
-    min-height: 100%;
-    width: 100%;
-    padding: 10px;
-    z-index: 2;
-    background-color: #ececec;
-  }
-  .panel-bg {
-    .btn {
-      float: left;
-      width: 48%;
-      margin-left: 1%;
-      margin-right: 1%;
+    .wrapper {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
     }
-    .bgs {
-      float: left;
-      width: 80px;
-      height: 80px;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      margin: 5px 5px;
-      &:hover {
-         border: 2px solid #18ccc0;
-         cursor: pointer;
-      }
+    .panel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      min-height: 100%;
+      width: 100%;
+      padding: 10px;
+      z-index: 2;
+      background-color: #ececec;
     }
-  }
-  .panel-text {
-    .btn {
-      height: 50px;
-      line-height: 50px;
-      text-align: center;
-      border: 2px solid transparent;
-      &:hover {
-         cursor: pointer;
-         border-color: #04b9c4;
-      }
+    .panel-bg {
+      clear:both;
     }
-  }
-    .panel-music{
-      .play{
-        margin-right:10px;
-      }
-      .iconfont{
-        padding-right:10px;
-      }
-      &-bg-music{
-         height:60px;
-         display: flex;
-         align-items: center;
-         justify-content: space-between;
-         border-bottom:1px solid #ddd;
-         cursor:pointer;
-         font-size:16px;
-      }
-      .active{
-        color:#50bfff;
-      }
-      &-default-music{
-        padding-bottom:15px;
-        display:flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        border-bottom:1px solid #ddd;
-        li{
-          font-size: 14px;
-          cursor:pointer;
-          position:relative;
-          span{
-            display:block;
-            border:1px solid #aaa;
-            border-radius:4px;
-            padding:5px 8px;
-            margin:15px 10px 0;
-          }
-          input[type='radio']{
-            position:absolute;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            z-index:4;
-            cursor:pointer;
-          }
-          input[type='radio']:checked + span{
-            background:#50bfff;
-            color:#fff;
-            border:1px solid #50bfff;
-          }
-        }
-      }
-      &-upload{
-        position:relative;
-        margin-top:10px;
-        input[type='file']{
-          opacity:0;
-          position:absolute;
-          top:0;
-          left:0;
-          width:108px;
-          height:36px;
-        }
-      }
-      &-content{
-        li{
-          height:40px;
-          display:flex;
-          align-items: center;
-          justify-content: space-between;
-          cursor:pointer;
-          padding:0 15px;
-          font-size:14px;
+    .panel-text {
+      .btn {
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        border: 2px solid transparent;
+        &:hover {
+           cursor: pointer;
+           border-color: #04b9c4;
         }
       }
     }

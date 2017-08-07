@@ -18,8 +18,9 @@ const state = {
     uploadMusicList: []
   }, // 正在编辑的主题
   picList: [], // 图片列表
+  bgList: [], // 背景图片列表
   musicList: [], // 音乐列表
-  musicPlaying: true, // 音乐播放
+  musicPlaying: false, // 音乐播放
   defaultMusicList: [ // 默认音乐列表
     {style: '默认', music: []},
     {style: '复古',
