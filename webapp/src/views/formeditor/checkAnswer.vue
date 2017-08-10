@@ -69,8 +69,8 @@
         <el-row v-for="(item, index) in QAArr">
           <el-col :span="12"><div class="grid-content">{{index + 1}}.{{item.question.content}} <span style="color: #0a58cc">{{item.question.type}}</span></div></el-col>
           <el-col :span="12" v-if="formList.length > 0 ">
-           <div v-if="questionInfoList[index].validate === 'img'"><a :href="appConst.BACKEND_DOMAIN + imgItem" target="_blank" style="margin-right:8px;" v-for="imgItem in item.ask"><img :src="appConst.BACKEND_DOMAIN + imgItem" width="100" alt=""></a><span v-if="item.ask.length === 0">未上传图片</span></div>
-           <div v-if="questionInfoList[index].validate === 'pureFile'"><a :href="appConst.BACKEND_DOMAIN + fileItem.path" target="_blank" v-for="(fileItem, index) in item.ask" style="margin-right:8px;color: #0a58cc">{{fileItem.name}}</a><span v-if="item.ask.length === 0">未上传文件</span></div>
+           <div v-if="questionInfoList[index].validate === 'img'"><a :href="appConst.BACKEND_DOMAIN + imgItem" target="_blank" style="margin-right:8px;" v-for="imgItem in item.ask"><img :src="appConst.BACKEND_DOMAIN + imgItem" width="100" alt=""></a><span v-if="item.ask.length === 0" style="font-size:14px">未上传图片</span></div>
+           <div v-if="questionInfoList[index].validate === 'pureFile'"><a :href="appConst.BACKEND_DOMAIN + fileItem.path" target="_blank" v-for="(fileItem, index) in item.ask" style="margin-right:8px;color: #0a58cc">{{fileItem.name}}</a><span v-if="item.ask.length === 0" style="font-size:14px">未上传文件</span></div>
            <div class="grid-content" v-if="questionInfoList[index].qsType !== 'file'">{{item.ask.length == 0 ? '未填写' : item.ask}}</div>
           </el-col>
           <el-col :span="12" v-else>

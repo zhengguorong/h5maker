@@ -31,6 +31,12 @@
               </el-radio-group>
             </div>
           </div>
+          <div class="code">
+            <div>
+              <a :href="QRUrl" target="_blank" title="点击查看大图" style="display: inline-block"><img :src="QRUrl" alt="" width="180" height="180"></a>
+              <el-button><a :href="QRUrl" download="">下载小程序二维码</a></el-button>
+            </div>
+          </div>
           <div class="link">
             <div class="link-title">
               链接地址：
@@ -168,7 +174,8 @@ export default {
       title: this.$store.state.editor.editorTheme.title || '',
       description: this.$store.state.editor.editorTheme.description || '',
       qrcodeSize: 500,
-      isForm: window.location.hash.indexOf('form') > -1
+      isForm: window.location.hash.indexOf('form') > -1,
+      QRUrl: appConst.BACKEND_DOMAIN + '/QR/' + this.itemId + '.jpeg'
     }
   },
   methods: {

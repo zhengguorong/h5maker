@@ -9,7 +9,8 @@ var FormSchema = new mongoose.Schema({
   description: String,
   createDate: { type: Number, default: new Date().getTime() },
   loginId: String,
-  answerNum: { type: Number, default: 0}
+  answerNum: { type: Number, default: 0},
+  wxMpQR: String
 })
 
 module.exports = mongoose.model('Form', FormSchema)
