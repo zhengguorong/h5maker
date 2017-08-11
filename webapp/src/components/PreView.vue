@@ -31,7 +31,7 @@
               </el-radio-group>
             </div>
           </div>
-          <div class="code">
+          <div class="code" v-if="isForm">
             <div>
               <a :href="QRUrl" target="_blank" title="点击查看大图" style="display: inline-block"><img :src="QRUrl" alt="" width="180" height="180"></a>
               <el-button><a :href="QRUrl" download="">下载小程序二维码</a></el-button>

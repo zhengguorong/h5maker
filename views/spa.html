@@ -23,7 +23,7 @@
               <section style="height:<%= canvasHeight %>px">
               <% page.elements.forEach(function (element) { %>
                 <% if (element.type === 'pic') { %>
-                  <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; height: <%= element['height'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px;">
+                  <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; height: <%= element['height'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px">
                     <div>
                       <% if (element.href) { %><a target="_blank" href="http://<%= element['href'] %>"><img class="ele-img" src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"></a><%} else {%><img class="ele-img" src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"><%}%>
                     </div>
@@ -53,7 +53,7 @@
   var actualR = actualW / actualH
 
   var scale = (actualR > designR) ? (actualH / designH) : (actualW / designW)
-  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + '); '
+  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + ');transform-origin: 50% 0; '
   if (actualW < designW) {
     if (actualR > designR) {
       style += 'margin-left: ' + (actualW - designW) / 2 + 'px;'
@@ -63,10 +63,19 @@
   }
 
   var containers = document.getElementsByClassName('resize-container')
+//  var eles = document.getElementsByClassName('ele')
+//  var elesHeights = []
   var i
   for (i = 0; i < containers.length; i++) {
     containers[i].setAttribute('style', style)
   }
+//  for (var j = 0; j < eles.length; j++) {
+//   elesHeights.push(Number(eles[j].style.height.replace('px', '')))
+//  }
+//  elesHeights.sort(function (a, b) {
+//    return b - a
+//  })
+  document.getElementsByClassName('content-container')[0].style.minHeight = document.getElementsByClassName('resize-container')[0].scrollHeight * scale + 'px'
 })()
   </script>
   <!-- endbuild -->
