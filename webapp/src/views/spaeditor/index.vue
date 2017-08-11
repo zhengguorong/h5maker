@@ -2,7 +2,7 @@
   <div class="editor">
     <HeaderEdit :goback="dialogSave" @saveSuccess="showPreView=true" :perViewAction="save"/>
     <section class="section">
-      <Overview class="overview" />
+      <Overview class="overview" @changeEditionLayer="changeEditionLayer"/>
       <div class="canvas-wrap" id="canvas-wrap">
         <Page :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" />
         <!--<div class="tool-bar" :style="{top: parseInt(canvasHeight) + 35 + 'px'}">在右侧设置界面调整页面高度</div>-->
@@ -52,6 +52,14 @@
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-if="panelState === 2">
             <ImgPanel :selectedImg="addPicElement"/>
+            <div class="item">
+              <label>图层高度</label>
+              <div class="content">
+                <el-input v-model="canvasHeight">
+                  <template slot="append">px</template>
+                </el-input>
+              </div>
+            </div>
           </div>
           <!-- 添加背景音乐 3 -->
           <div class="panel panel-music" v-show="panelState === 3">
@@ -78,6 +86,7 @@
   import ImgPanel from '../../components/ImgPanel'
   import appConst from '../../util/appConst'
   import MusicPanel from '../../components/MusicPanel'
+  import * as types from '../../vuex/editor/mutation-type'
 
   export default {
     data () {
@@ -85,7 +94,6 @@
         itemId: null,
         panelState: 0,
         canvasWidth: 320,
-        canvasHeight: 504,
         dialogSaveBeforeBack: false,
         picBase64: '',
         http: appConst.BACKEND_DOMAIN,
@@ -97,22 +105,6 @@
     },
     watch: {
       picBase64 () {
-      },
-      element () {
-        let ele = this.$store.state.editor.editorElement
-        let type = ele ? ele.type : 'null'
-        this.panelTabState = 0
-        switch (type) {
-          case 'text':
-            this.panelState = 11
-            break
-          case 'icon':
-          case 'pic':
-            this.panelState = 12
-            break
-          default:
-            this.panelState = 0
-        }
       }
     },
     computed: {
@@ -131,9 +123,32 @@
       },
       editorTheme () {
         return this.$store.state.editor.editorTheme
+      },
+      canvasHeight: {
+        get: function () {
+          return this.$store.state.editor.editorTheme.canvasHeight
+        },
+        set: function (newV) {
+          this.$store.commit(types.UPDATE_CANVASHEIGHT, newV)
+        }
       }
     },
     methods: {
+      changeEditionLayer (oType) {
+        let type = oType || null
+        this.panelTabState = 0
+        switch (type) {
+          case 'text':
+            this.panelState = 11
+            break
+          case 'icon':
+          case 'pic':
+            this.panelState = 12
+            break
+          default:
+            this.panelState = 0
+        }
+      },
       dialogSave () {
         return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('spaList'))
       },
@@ -385,5 +400,23 @@
         }
       }
     }
+  }
+
+  .item {
+    padding: 5px 0;
+    clear: both;
+  .content {
+    margin-left: 70px;
+  }
+  }
+  label {
+    text-align: right;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #48576a;
+    line-height: 1;
+    width: 70px;
+    float: left;
+    padding: 11px 12px 11px 0;
   }
 </style>

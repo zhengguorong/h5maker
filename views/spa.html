@@ -53,7 +53,7 @@
   var actualR = actualW / actualH
 
   var scale = (actualR > designR) ? (actualH / designH) : (actualW / designW)
-  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + ');transform-origin: 50% 0; '
+  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + ')'
   if (actualW < designW) {
     if (actualR > designR) {
       style += 'margin-left: ' + (actualW - designW) / 2 + 'px;'
@@ -75,7 +75,7 @@
 //  elesHeights.sort(function (a, b) {
 //    return b - a
 //  })
-  document.getElementsByClassName('content-container')[0].style.minHeight = document.getElementsByClassName('resize-container')[0].scrollHeight * scale + 'px'
+ // document.getElementsByClassName('content-container')[0].style.minHeight = document.getElementsByClassName('resize-container')[0].scrollHeight * scale + 'px'
 })()
   </script>
   <!-- endbuild -->

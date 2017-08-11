@@ -134,6 +134,7 @@
         this.$store.dispatch('setEditorPage', page)
       },
       setEditingLayer (event, layer) {
+        this.$emit('changeEditionLayer', layer.type)
         this.$store.dispatch('setEditorElement', layer)
       },
       updateLayersSort () {

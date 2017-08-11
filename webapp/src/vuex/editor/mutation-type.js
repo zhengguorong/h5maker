@@ -10,6 +10,7 @@ export const SET_CUR_EDITOR_THEME = 'SET_CUR_EDITOR_THEME' // 设置当前编辑
 export const DELETE_ELEMENT = 'DELETE_ELEMENT' // 删除元素
 export const CREATE_THEME = 'CREATE_THEME' // 创建主题
 export const UPDATE_THEME_DES = 'UPDATE_THEME_DES' // 更新主题描述
+export const UPDATE_CANVASHEIGHT = 'UPDATE_CANVASHEIGHT' // 更新canvasHeight
 export const UPDATE_THEME_SUCCESS = 'UPDATE_THEME_SUCCESS' // 更新数据成功
 export const ADD_THEME_SUCCESS = 'ADD_THEME_SUCCESS' // 新增页面数据成功
 export const SAVE_PIC = 'SAVE_PIC' // 保存图片

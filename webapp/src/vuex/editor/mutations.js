@@ -85,6 +85,9 @@ const mutations = {
     state.editorTheme.description = description
     state.editorTheme.canvasHeight = canvasHeight
   },
+  [types.UPDATE_CANVASHEIGHT] (state, canvasHeight) {
+    state.editorTheme.canvasHeight = canvasHeight
+  },
   [types.UPDATE_THEME_MUSIC] (state, {musicName, musicLink, musicStyle}) {
     state.editorTheme = {...state.editorTheme, musicName, musicLink, musicStyle}
   },
