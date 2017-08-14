@@ -2,79 +2,232 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title><%=title%></title>
   <link rel="stylesheet" href="/libs/css/mint.css">
+  <link rel="stylesheet" href="/libs/css/bmui.css">
 </head>
 <body>
-  <div id="app">
-    <p class="title" v-if="form.title">{{form.title}}</p>
-    <p class="description" v-if="form.description">{{form.description}}</p>
+  <div id="app" style="display: none">
+   <div class="mask" v-show="!QADisplay">
+     <img src="/img/bg@3x.png" height="100%" v-if="!QADisplay"/>
+     <!--<div v-show="entryDisplay">-->
+        <!--<img class="before-logo" src="/img/logo_big@2x.png" height="40" width="114"/>-->
+        <!--<div class="before-title">-->
+          <!--<p class="pri">{{form.title}}</p>-->
+          <!--<p class="sec keep-br">{{form.description}}</p>-->
+        <!--</div>-->
+        <!--<div class="entry-btn" @click="openQ">打开问卷</div>-->
+      <!--</div>-->
+     <div v-if="successDisplay" class="success">
+       <img src="/img/tick@2x.png" height="80" width="80"/>
+       <p style="margin-top:24px;font-size: 15px; color:#fff; font-weight: bold;">
+         提交成功<br>感谢您的宝贵时间
+       </p>
+     </div>
+     <div v-else class="success">
+       <img src="/img/error.png" height="80" width="80"/>
+       <p style="margin-top:24px;font-size: 15px; color:#fff; font-weight: bold;">
+         问卷已失效
+       </p>
+     </div>
+   </div>
+  <div v-show="QADisplay">
+    <!--<div style="text-align: right;padding: 10px 16px;"><img src="/img/logo_small@2x.png" height="18" width="46"/></div>-->
+    <div style="background: #fff;padding-top:12px">
+      <p class="title" v-if="form.title">{{form.title}}</p>
+      <p class="description keep-br" v-if="form.description">{{form.description}}</p>
+    </div>
     <div v-for="(item, index) in form.questions" class="item">
-      <span class="question">{{item.title}}<span v-if="item.isMust">（必填）</span></span>
-      <span class="ask">
-        <input type="text" v-model="result[index].ask" v-if="item.qsType=== 'text'" placeholder="请输入">
-        <span v-if="item.qsType=== 'radio'" v-for="(ask,i) in item.askList">
-          <input v-model="result[index].ask" type="radio" :name="ask.title" :value="ask.title" :id="i + ask.title">
-          <label :for="i + ask.title">{{ask.title}}</label>
-        </span>
-        <span v-if="item.qsType=== 'check'" v-for="(ask,i) in item.askList">
-          <input v-model="result[index].ask" type="checkbox" :name="ask.title" :value="ask.title" :id="i + ask.title">
-          <label :for="i + ask.title">{{ask.title}}</label>
-        </span>
-        <span v-if="item.qsType=== 'file'">
-          <span v-for="(item, i) in result[index].ask">
-            <img @click="removeImg(i, result[index].ask)" :src="item" alt="">
-          </span>
-          <input class="file-upload" type="file" @change="fileUpload($event, result[index])" />
-        </span>
-      </span>
+      <div v-if="item.isMust" class="isMustSign"></div>
+      <div class="question"><span :class="{qContent: true, errorTitle: errors[index]}">{{index+1}}、{{item.title}} <span v-if="item.qsType=== 'radio'">（单选）</span><span v-if="item.qsType=== 'check'">（多选）</span></span>
+      <p v-if="item.tips" class="tips">{{item.tips}}</p>
+      </div>
+      <div class="ask">
+        <!--时间类型--start-->
+        <div v-if="item.qsType=== 'text' && item.validate === 'time'" class="flex ai-center">
+         <input class="textWarp" type="text" :value="result[index].ask | dtFormat(item.validate)"  placeholder="请选择" @click="openDTPicker(index)" readonly>
+          <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px;margin-right: 8px">
+          <mt-datetime-picker :ref="'dt' + index" :type="item.validate" :value="result[index].ask"  @confirm="function(v) {result[index].ask = v}"></mt-datetime-picker>
+          <!--<mt-datetime-picker :ref="'dt' + index" :type="item.validate" :value="result[index].ask" v-if="item.validate === 'time'"></mt-datetime-picker>-->
+        </div>
+        <!--时间类型--end-->
+        <!--日期类型--start-->
+        <div v-if="item.qsType=== 'text' && item.validate === 'date'" class="flex ai-center" style="padding-left: 12px;padding-bottom: 12px;">
+          <input class="date-input" style="width:60px" type="number" :value="result[index].ask | dtFormat(item.validate)"  placeholder="年" onkeyup="if(event.keyCode === 8)return;if(Number(value) > 9999 || Number(value) < 0 || typeof Number(value) !== 'number') value = '';if(value.length>=4)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[0]">-
+          <input class="date-input" style="width:44px" type="number" placeholder="月" onkeyup="if(event.keyCode === 8)return;if(Number(value) > 12 || Number(value) < 0 || typeof Number(value) !== 'number') value = '';if(value.length>=2)event.srcElement.nextElementSibling.focus()" v-model="result[index].ask[1]">-
+          <input class="date-input" style="width:44px" type="number" placeholder="日" onkeyup="if(Number(value) > 31 || Number(value) < 0 || typeof Number(value) !== 'number') value = ''" v-model="result[index].ask[2]">
+        </div>
+        <!--日期类型--end-->
+        <!--地区类型--start-->
+         <div v-if="item.qsType=== 'text' && item.validate === 'address'" class="flex ai-center">
+         <input class="textWarp" type="text" :value="result[index].ask"  placeholder="请输入省市区" @click="openRegion(index)" readonly>
+           <img src="/img/arrow@2x.png" alt="" style="width:30px;height:30px;margin-right:8px;">
+           <bm-region :ranks="3" @output-region="pccOutput" :ref="'pcc' + index"></bm-region>
+         </div>
+        <!--地区类型--end-->
+        <!--文本类型--start-->
+        <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''">
+        <!--文本类型--end-->
+        <div v-for="(ask,i) in item.askList" class="radioWrap" v-if="item.qsType=== 'radio'">
+          <div class="flex ai-center">
+            <input v-model="result[index].ask" type="radio" :name="index + '' + i + ask.title" :value="ask.title" :id="index + '' + i + ask.title" @change="toValidateAgain(index)">
+            <label :for="index + '' + i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
+          </div>
+          <img :src="ask.imgPath" alt="" v-if="ask.imgPath" style="display:block;width:220px;margin: 5px auto">
+        </div>
+        <div v-for="(ask,i) in item.askList" class="checkboxWrap" v-if="item.qsType=== 'check'">
+          <div class="flex ai-center">
+            <label :for="index + '' + i + ask.title" class="flex-1 breakWord">{{ask.title}}</label>
+            <input v-model="result[index].ask" type="checkbox" :name="index + '' + i + ask.title" :value="ask.title" :id="index + '' + i + ask.title" @change="toValidateAgain(index)">
+          </div>
+          <img :src="ask.imgPath" alt="" v-if="ask.imgPath" style="display:block;width:220px;margin: 5px auto">
+        </div>
+        <div v-if="item.qsType=== 'file' && item.validate === 'img'" class="fileWrap">
+          <img @click="removeImg(i, result[index].ask)" style="float: left" :src="item" alt="" v-for="(item, i) in result[index].ask">
+          <div class="img-upload">
+            <input type="file" name="inputFile" @change="fileUpload($event, index)" style="width:100%;height: 100%;opacity: 0"/>
+          </div>
+          <div style="clear: both"></div>
+        </div>
+        <div v-if="item.qsType=== 'file' && item.validate === 'pureFile'" class="">
+          <div class="file-upload">
+            <div class="fu-msg"><span v-for="(item, i) in result[index].ask" v-if="result[index].ask.length > 0">
+              <a :href="item.path" @click.stop.prevent="removeImg(i, result[index].ask)" style="color:#333">{{item.name }}</a>, </span>  <span v-if="result[index].ask.length === 0">请选择要上传的文件</span></div>
+            <input class="fu-btn" type="file" name="inputFile" @change="fileUpload($event, index)"/>
+            <img src="/img/arrow@2x.png" alt="" class="fu-arrow">
+          </div>
+        </div>
+      </div>
+      <span class="errorMsg" v-if="errors[index]">{{errors[index]}} <img src="/img/alertbox_corner@2x.png" alt="" class="errorTipsCorner"></span>
     </div>
     <input class="submit" type="submit" value="提  交" @click="submit">
+  </div>
   </div>
 </body>
 </html>
   <script src="/libs/js/vue.js"></script>
   <script src="/libs/js/axios.min.js"></script>
   <script src="/libs/js/mint.js"></script>
+  <script src="/libs/js/bmui-prod.js"></script>
   <script src="/libs/js/lrz.all.bundle.js"></script>
+  <script src="/libs/js/vaildate.js"></script>
 <script>
     var app = new Vue({
       el: '#app',
       data: {
         id: null,
         form: {},
-        result: []
+        result: [],
+        regionIndex: null, // 激活的地区选择控件标识
+        errors: {},
+        timeStamp: 0,
+        QADisplay: false,
+        successDisplay: false
+      },
+      filters: {
+        dtFormat: function(v, type) {
+          if (typeof v === 'object' && v instanceof Date) {
+            if (type === 'date') {
+              // return v.toLocaleDateString() //在5s有兼容性问题，待验证
+              return v.getFullYear() + '-' + (v.getMonth() + 1) + '-' + v.getDate()
+            } else if (type === 'time') {
+              return v.getHours() + ':' + v.getMinutes()
+            } else {
+              return v
+            }
+          } else {
+            return v
+          }
+        }
       },
       methods: {
-        getFormById (id) {
+        openQ: function() {
+          this.QADisplay = true
+        },
+        openRegion: function(index) {
+          this.regionIndex = index
+          this.$refs['pcc'+ index][0].open()
+        },
+        pccOutput: function(data) {
+          this.result[this.regionIndex].ask = data.province.data.dname + data.city.data.dname + data.county.data.dname
+          this.toValidateAgain(this.regionIndex)
+        },
+        openDTPicker: function(index) {
+          this.$refs['dt'+index][0].open()
+        },
+        getFormById: function(id) {
           return axios.get('/api/form/' + id)
         },
-        submit () {
-          //this.validate()
+        toValidateAgain: function(el) {
+          if (JSON.stringify(this.errors) === '{}') return
+          if (typeof el === 'number') {
+            this.validate()
+          } else if (el.target.align !== 'text' && validateFuns[validateFuns.funDict[el.target.align]](el.target.value)) {
+            delete this.errors[el.target.name]
+            this.$forceUpdate()
+          } else {
+            this.validate()
+          }
+        },
+        submit: function() {
+          this.validate()
+          if (JSON.stringify(this.errors) !== '{}') {
+            this.$toast('请检查你的输入是否合法')
+           return
+          }
           var self = this
-          axios.post('/api/submit', {formId: this.id, result: this.result}).then(function(res){
-            self.$toast('提交成功')
+          axios.post('/api/submit', {formId: this.id, sourcePlatform: this.runPlatform(), timeStamp: this.timeStamp, result: this.result}).then(function(res){
+            if (res.data.responseCode === 0) {
+              self.$toast(res.data.responseMsg || '提交失败')
+            } else {
+              self.successDisplay = true
+              self.QADisplay = false
+              self.$toast('提交成功')
+            }
           })
         },
-        validate () {
+        validate: function() {
           for(var i=0;i<this.form.questions.length;i++) {
             var question = this.form.questions[i]
             var ask = this.result[i].ask
             // 验证必填项
             if (question.isMust && ask.length === 0) {
-              this.$toast('请填写'+question.title)
-              return
+              this.errors[i] = '该项是必填项'
+            }
+            if (question.isMust && question.validate === 'date' && (ask[0] === '' || ask[1] === '' || ask[2] === '')) {
+              this.errors[i] = '该项是必填项'
+            }
+            if (question.isMust && question.validate === 'date' && (ask[0] !== '' && ask[1] !== '' && ask[2] !== '')) {
+              delete this.errors[i]
+            }
+            if (question.isMust && ask.length !== 0 && question.validate !== 'date') {
+              delete this.errors[i]
+            }
+            if (!question.isMust && ask.length === 0) {
+              delete this.errors[i]
             }
             // 验证手机号
-            if (question.validate === 'phone' && ask.length > 0) {
-              this.$toast('手机号码格式错误')
-              return
+            if (ask.length > 0 && question.validate === 'phone' && !validateFuns.isMobile(ask)) {
+              this.errors[i] = '手机号码不正确哦'
+            }
+            // 验证邮箱
+            if (ask.length > 0 && question.validate === 'email' && !validateFuns.isEmail(ask)) {
+              this.errors[i] = '邮箱格式不正确哦'
+            }
+            // 验证数字
+            if (ask.length > 0 && question.validate === 'num' && !validateFuns.isNum(ask)) {
+              this.errors[i] = '请输入纯数字哦'
+            }
+            // 验证上传图片张数限制
+            if (ask.length > 0 && question.qsType === 'file' && ask.length > question.count ) {
+              this.errors[i] = '上传文件数超出限制啦'
             }
           }
+          this.$forceUpdate()
         },
-        getDefaultAsk (ask, type) {
+        getDefaultAsk: function(ask, type) {
           var defaultAsk = []
           for (var i=0;i<ask.length;i++) {
             if (ask[i].isDefault) {
@@ -87,7 +240,7 @@
           }
           return defaultAsk
         },
-        initResult (questions) {
+        initResult: function(questions) {
           // 组装问题答案数据结构
           for (var i = 0;i < questions.length;i++) {
             var question = questions[i]
@@ -96,30 +249,97 @@
               this.result.push({question:question.title, ask:defaultAsk})
             } else if (questions[i].qsType === 'file') {
               this.result.push({question:question.title, ask:[]})
+            } else if (questions[i].qsType === 'text' && questions[i].validate === 'date') {
+              this.result.push({question:question.title, ask:['', '', '']})
             } else {
               this.result.push({question:question.title, ask:''})
             }
           }
         },
-        fileUpload (event, item) {
-          let file = event.target.files[0]
-          if (file) {
-            lrz(file, { quality: 0.5 }).then(result => {
+        fileUpload: function(event, index) {
+          var item = this.result[index]
+          var file = event.target.files[0]
+          var self = this
+          if (file && /^image/.test(file.type)) {
+            lrz(file, { quality: 0.5 }).then(function (result) {
               if (result.fileLen > 2 * 1024 * 1024) {
                 this.$message.error('请选择小于2M的文件')
                 return
               }
-              axios.post('/api/upload', {imgData: result.base64}).then(function(res){
+              axios.post('/api/upload', {imgData: result.base64, themeId: this.id}).then(function(res){
                 item.ask.push(res.data.filePath)
+                self.toValidateAgain(index)
               })
+            })
+          } else if (file && !/^image/.test(file.type)){
+            var form = new FormData()
+            form.append('inputFile', file)
+            form.append('themeId', self.id)
+            axios.post('/api/upload', form, {header: {'Content-Type': false}}).then(function(res){
+              item.ask.push({path: res.data.filePath, name: res.data.fileName})
+              self.toValidateAgain(index)
             })
           }
         },
-        removeImg (index, ask) {
+        removeImg: function(index, ask) {
           ask.splice(index, 1)
+          this.toValidateAgain(index)
+        },
+        timer: function () {
+          var self = this
+          setInterval(function () {
+            self.timeStamp++
+          }, 1000)
+        },
+        runPlatform: function() {
+          var browser = {
+            versions: function() {
+              var u = navigator.userAgent, app = navigator.appVersion
+              return {         //移动终端浏览器版本信息
+                trident: u.indexOf('Trident') > -1, //IE内核
+                presto: u.indexOf('Presto') > -1, //opera内核
+                webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+                gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+                mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+                iOS: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                Android: u.indexOf('android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                iPad: u.indexOf('iPad') > -1, //是否iPad
+                webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部
+              }
+            }(),
+            language: (navigator.browserLanguage || navigator.language).toLowerCase()
+          }
+          if (browser.versions.mobile) {//判断是否是移动设备打开
+            var ua = navigator.userAgent.toLowerCase() // 获取判断用的对象
+            if (ua.match(/MicroMessenger/i) == "micromessenger") {
+              //在微信中打开
+              return '微信'
+            }
+            if (ua.match(/WeiBo/i) == "weibo") {
+              //在新浪微博客户端打开
+              return '新浪微博'
+            }
+            if (ua.match(/QQ/i) == "qq") {
+              //在QQ空间打开
+              return 'qq'
+            }
+            if (browser.versions.iOS) {
+              //是否在IOS浏览器打开
+              return 'ios浏览器'
+            }
+            if(browser.versions.Android){
+              //是否在安卓浏览器打开
+              return 'Android浏览器'
+            }
+          } else {
+            //否则就是PC浏览器打开
+            return 'pc浏览器'
+          }
         }
       },
-      mounted () {
+      mounted: function() {
+        this.$indicator.open()
         var url = window.location.href
         var index = url.lastIndexOf("\/")
         var dotIndex = url.lastIndexOf("\.")
@@ -128,63 +348,332 @@
         this.getFormById(this.id).then(function (res) {
           self.form = res.data
           self.initResult(res.data.questions)
+          self.QADisplay =true
+          self.$indicator.close()
+          self.timer()
+          document.getElementById('app').style.display = 'block'
+        }).catch(function(err) {
+          console.log(err)
+          self.$indicator.close()
+          self.$toast('问卷已失效')
+          self.QADisplay = false
+          self.successDisplay = false
+          document.getElementById('app').style.display = 'block'
         })
       }
     })
 </script>
 <style>
+html{
+  font-size: 20px;
+}
 body {
   margin: 0 auto;
+  background-color: #F2F2F2;
+}
+.mask {
+  position: fixed;
+  left:0;
+  bottom:0;
+  right:0;
+  top:0;
+}
+.mask .before-logo{
+  position: absolute;
+  top: 44px;
+  left: 50%;
+  right: 50%;
+  margin-left: -57px;
+}
+.mask .before-title {
+  position: absolute;
+  left: 0;
+  right:0;
+  top: 120px;
+  padding: 0 20px;
+}
+.mask .before-title .pri {
+  color: #fff;
+  font-size: 15px;
+  text-align: center;
+  font-weight:bold;
+}
+.mask .before-title .sec {
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 20px;
+}
+.mask .entry-btn {
+  position: absolute;
+  left: 38px;
+  right: 38px;
+  bottom: 80px;
+  background: transparent;
+  text-align: center;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #fff;
+  padding: 17px 0;
+}
+.mask .entry-btn:hover:active {
+  background-color: rgba(255,255,255,.4);
+}
+.mask .success {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right:0;
+  text-align: center;
 }
 #app {
   font-size: 14px;
+  margin-bottom:76px;
+  position: relative;
 }
 .title {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: bold;
   text-align: center;
+  margin: 0;
 }
 .description {
-  text-indent:28px;
+  margin: 0;
+  margin-top:8px
   padding: 0 14px;
+  font-size:12px;
+  color: #999;
+  text-align: center;
 }
 .item {
-  padding: 0 14px;
-  height: 50px;
-  line-height: 50px;
-  border-bottom: 1px #e9e9e9 solid;
+  position: relative;
+  padding-top:16px;
+  margin-bottom:10px;
+  background-color: #FFF;
 }
 .item .question {
-  float: left;
-  color: #666;
+  margin: 0 16px 8px 16px;
 }
-.item .ask {
-  float: right;
+.item .qContent {
+  color: #0A85CC;
+  font-size:15px;
 }
-.item .ask input {
+.item .tips {
+  margin-top: 8px;
+  margin-bottom:0px;
+  color: #999;
+  font-size:12px;
+}
+.item .ask .textWarp{
+  width:100%;
+  box-sizing: border-box;
+  padding: 12px;
+  color: #333;
+  font-size: 14px;
+  border: 0;
+  text-align: left;
+}
+.item .ask .date-input {
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+}
+.item .radioWrap,.item .checkboxWrap {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e5e5;
+  font-size:14px;
+  color: #333;
+}
+.item .ask input{
   color: #333;
   text-align: right;
   font-size: 14px;
-  border: 0px;
+}
+.item .ask input[type=radio] {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: url(/img/radio_normal@2x.png) no-repeat;
+  background-size: 30px 30px;
+}
+.item .ask input[type=radio]:checked {
+  background: url(/img/radio_selected@2x.png) no-repeat;
+  background-size: 100%;
+  border: 0;
+}
+.item .ask input[type=checkbox] {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: url(/img/checkbox_normal@2x.png) no-repeat;
+  background-size: 30px 30px;
+}
+.item .ask input[type=checkbox]:checked {
+  background: url(/img/checkbox_selected@2x.png) no-repeat;
+  background-size: 100%;
+  border: 0;
+}
+.item .ask .fileWrap {
+  overflow: hidden;
+  padding:0 2px 0 12px;
+  margin-bottom:6px;
+}
+.item .ask .fileWrap img {
+  width: 68px;
+  height: 68px;
+  margin-right:10px;
+  margin-bottom:10px;
+}
+.item .ask .img-upload {
+  float: left;
+  width: 68px;
+  height:68px;
+  margin-right:10px;
+  margin-bottom:10px;
+  background: url(/img/picUpLoad@2x.png) no-repeat;
+  background-size: 68px 68px;
 }
 .item .ask .file-upload {
-  width: 100px;
+  position: relative;
+  width:100%;
+  height:50px;
 }
-.item .ask span {
-  margin-left: 10px;
+.item .ask .fu-btn {
+  position: absolute;
+  width: 100%;
+  height:50px;
+  opacity:0;
+  z-index: 10;
 }
-.item .ask img {
-  height: 48px;
+.item .ask .fu-msg {
+  position: absolute;
+  left:12px;
+  right:12px;
+  width: 70%;
+  height: 50px;
+  line-height:50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333;
+}
+.item .ask .fu-msg a {
+  position: relative;
+  z-index:11;
+}
+.item .ask .fu-arrow {
+  width:30px;
+  height:30px;
+  position: absolute;
+  right:8px;
+  top:50%;
+  margin-top:-15px;
 }
 .submit {
   width: 100%;
-  height: 48px;
-  background: #256CE7;
+  height: 60px;
+  background: #FF6747;
   border: 0px;
   color: #fff;
   font-size: 17px;
-  position: absolute;
+  position: fixed;
   bottom: 0px;
+  z-index: 100;
 }
+.isMustSign{
+  position: absolute;
+  width: 2px;
+  height:8px;
+  background: #ff6c47;
+  left:10px;
+  top:22px;
+}
+/*----原子类start----*/
+input,select {
+  outline: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.errorTitle {
+  color: #ff6c47!important;
+}
+.errorMsg {
+  position: absolute;
+  display: inline-block;
+  padding: 7px 10px;
+  color:#fff;
+  background: #ff6c47;
+  font-size: 12px;
+  z-index: 10;
+  top: -20px;
+  left:16px;
+  -webkit-border-radius:4px 4px 4px 0;
+  -moz-border-radius:4px 4px 4px 0;
+  border-radius:4px 4px 4px 0;
+  box-shadow: 0 3px 3px 0 rgba(0,0,0,.2);
+}
+.errorTipsCorner{
+  position: absolute;
+  width:10px;
+  height:10px;
+  bottom: -9px;
+  left:0;
+  z-index: 10;
+}
+/* 换行*/
+.breakWord{
+  word-break:break-all;
+  word-wrap:break-word;
+}
+/* flexbox */
+.flex {
+  -webkit-box-direction: normal;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.flex-1 {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+.flex-0 {
+  flex: none;
+}
+.ai-center {
+  -webkit-align-items:center;
+  align-items:center;
+}
+.jc-center {
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+.jc-around {
+  -webkit-justify-content: space-around;
+  justify-content: space-around;
+}
+.jc-between {
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+.flex-basis {
+  -webkit-flex-basis:100%;
+  flex-basis:100%;
+}
+
+.keep-br{
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+/*----原子类end----*/
 </style>
 

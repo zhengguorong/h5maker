@@ -28,7 +28,7 @@
       <el-button @click.stop="moveTopQuestion" icon="d-arrow-left" :plain="true" size="small" type="info">最前</el-button>
       <el-button @click.stop="moveBottomQuestion" icon="d-arrow-right" :plain="true" size="small" type="info">最后</el-button>
     </div>
-    <div class="editor-panel" v-show="question.isActive">
+    <div class="editor-panel ignore-drag" v-show="question.isActive">
       <div class="row">
         <div class="item">
           <span class="title">问题标题</span>
@@ -40,6 +40,14 @@
         </div>
         <div class="item">
           <el-checkbox v-model="question.isMust">必填项</el-checkbox>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="item">
+          <span class="title" style="margin-right:15px">问题类型</span>
+          <el-radio class="radio" v-model="question.qsType" label="radio">单选</el-radio>
+          <el-radio class="radio" v-model="question.qsType" label="check">多选</el-radio>
         </div>
       </div>
       <div class="row">
@@ -64,8 +72,7 @@
           </el-table-column>
           <el-table-column label="默认选中" width="100">
             <template scope="scope">
-              <el-switch @change="" v-model="scope.row.isDefault">
-              </el-switch>
+              <el-switch @change="" v-model="scope.row.isDefault"></el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作">
@@ -95,7 +102,7 @@ export default {
   },
   methods: {
     setActive () {
-      if (this.question.isActive === true) return
+      // if (this.question.isActive === true) return
       this.$store.commit('form/activeQuestion', this.index)
     },
     addAsk (index) {

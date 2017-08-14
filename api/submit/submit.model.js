@@ -5,9 +5,12 @@ var SubmitSchema = new mongoose.Schema({
   result: {
     type: Array
   },
-  createDate: { type: Number, default: new Date().getTime() },
+  createDate: { type: Number, default: Date.now },
   loginId: String,
-  formId: String
+  formId: String,
+  ip: String,
+  sourcePlatform: String,
+  timeStamp: Number
 })
 
 module.exports = mongoose.model('Submit', SubmitSchema)

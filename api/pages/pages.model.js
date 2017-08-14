@@ -17,7 +17,11 @@ var PageSchema = new mongoose.Schema({
   type: {
     type: String, required: true, default: 'h5', enum: ['h5', 'spa'] // 页面是单页还是多页
   },
-  canvasHeight: Number
+  canvasHeight: Number,
+  musicLink: String,
+  musicName: String,
+  musicStyle: String,
+  uploadMusicList: Array
 })
 
 module.exports = mongoose.model('Page', PageSchema)

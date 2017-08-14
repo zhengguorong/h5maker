@@ -32,7 +32,7 @@ a:hover, a:visited, a:link, a:active {
     left: 50%;
     top: 0;
     transform: translateX(-50%);
-    z-index: 0;    
+    z-index: 0;
 }
 
 .ele-img {
@@ -129,3 +129,13 @@ a:hover, a:visited, a:link, a:active {
     text-align: center;
     top: 120px;
 }
+
+#music-btn {
+  position: absolute;
+  width:36px;
+  top:4px;
+  right:4px;
+  z-index:10;
+  cursor: pointer;
+}
+

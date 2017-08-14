@@ -1,8 +1,8 @@
 <template>
   <div class="editor">
-    <HeaderEdit :goback="dialogSave" @saveThemeSuccess="showPreView=true"/>
+    <HeaderEdit :goback="dialogSave" @saveSuccess="showPreView=true" :perViewAction="save"/>
     <section class="section">
-      <Overview class="overview" />
+      <Overview class="overview" @changeEditionLayer="changeEditionLayer"/>
       <div class="canvas-wrap" id="canvas-wrap">
         <Page :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" />
         <!--<div class="tool-bar" :style="{top: parseInt(canvasHeight) + 35 + 'px'}">在右侧设置界面调整页面高度</div>-->
@@ -14,6 +14,11 @@
           </el-tooltip>
           <el-tooltip  effect="dark" content="新建素材" placement="left">
             <button class="func el-icon-picture" @click="togglePanel(2)":class="{ active: panelState === 2 }"></button>
+          </el-tooltip>
+          <el-tooltip  effect="dark" content="添加背景音乐" placement="left">
+            <button class="func" @click="togglePanel(3)" :class="{ active: panelState === 3 }" >
+              <i class="iconfont">&#xe63e;</i>
+            </button>
           </el-tooltip>
           <el-tooltip  effect="dark" content="播放动画" placement="left">
             <button class="func el-icon-caret-right" @click="playAnimate"></button>
@@ -47,6 +52,18 @@
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-if="panelState === 2">
             <ImgPanel :selectedImg="addPicElement"/>
+            <div class="item">
+              <label>图层高度</label>
+              <div class="content">
+                <el-input v-model="canvasHeight">
+                  <template slot="append">px</template>
+                </el-input>
+              </div>
+            </div>
+          </div>
+          <!-- 添加背景音乐 3 -->
+          <div class="panel panel-music" v-show="panelState === 3">
+            <MusicPanel ref="musicPanel"/>
           </div>
           <!-- 图层编辑面板 -->
           <EditPanel :element="element" :panelState="panelState" v-if="panelState > 10"/>
@@ -68,13 +85,15 @@
   import SvgPanel from '../../components/SvgPanel'
   import ImgPanel from '../../components/ImgPanel'
   import appConst from '../../util/appConst'
+  import MusicPanel from '../../components/MusicPanel'
+  import * as types from '../../vuex/editor/mutation-type'
+
   export default {
     data () {
       return {
         itemId: null,
         panelState: 0,
         canvasWidth: 320,
-        canvasHeight: 504,
         dialogSaveBeforeBack: false,
         picBase64: '',
         http: appConst.BACKEND_DOMAIN,
@@ -86,22 +105,6 @@
     },
     watch: {
       picBase64 () {
-      },
-      element () {
-        let ele = this.$store.state.editor.editorElement
-        let type = ele ? ele.type : 'null'
-        this.panelTabState = 0
-        switch (type) {
-          case 'text':
-            this.panelState = 11
-            break
-          case 'icon':
-          case 'pic':
-            this.panelState = 12
-            break
-          default:
-            this.panelState = 0
-        }
       }
     },
     computed: {
@@ -117,9 +120,35 @@
       },
       picList () {
         return this.$store.state.editor.picList
+      },
+      editorTheme () {
+        return this.$store.state.editor.editorTheme
+      },
+      canvasHeight: {
+        get: function () {
+          return this.$store.state.editor.editorTheme.canvasHeight
+        },
+        set: function (newV) {
+          this.$store.commit(types.UPDATE_CANVASHEIGHT, newV)
+        }
       }
     },
     methods: {
+      changeEditionLayer (oType) {
+        let type = oType || null
+        this.panelTabState = 0
+        switch (type) {
+          case 'text':
+            this.panelState = 11
+            break
+          case 'icon':
+          case 'pic':
+            this.panelState = 12
+            break
+          default:
+            this.panelState = 0
+        }
+      },
       dialogSave () {
         return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('spaList'))
       },
@@ -182,6 +211,7 @@
         this.$store.dispatch('playAnimate')
       },
       save () {
+        this.$refs.musicPanel.saveMusic()
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
             message: '保存成功',
@@ -214,7 +244,7 @@
       }
     },
     components: {
-      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, ImgPanel
+      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, ImgPanel, MusicPanel
     },
     mounted () {
       this.itemId = this.$route.query.itemId
@@ -370,5 +400,23 @@
         }
       }
     }
+  }
+
+  .item {
+    padding: 5px 0;
+    clear: both;
+  .content {
+    margin-left: 70px;
+  }
+  }
+  label {
+    text-align: right;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #48576a;
+    line-height: 1;
+    width: 70px;
+    float: left;
+    padding: 11px 12px 11px 0;
   }
 </style>

@@ -19,11 +19,21 @@ const getFormList = () => {
 const getFormById = (id) => {
   return http.get('/api/form/' + id)
 }
-
+const downloadExcelById = (id) => {
+  return http.get('/api/downloadExcel/' + id)
+}
 const uploadPic = (data) => {
   return http.post('/api/upload', {imgData: data})
 }
 
+const getAnswer = (data) => {
+  return http.post('/api/checkAnswer', {formId: data.id, pageIndex: data.pageIndex, pageSize: data.pageSize})
+}
+
+const generateReport = (data) => {
+  return http.post('/api/checkAnswer/generateReport', {formId: data.formId})
+}
+
 module.exports = {
-  createForm, deleteForm, getFormList, getFormById, updateForm, uploadPic
+  createForm, deleteForm, getFormList, getFormById, downloadExcelById, updateForm, uploadPic, getAnswer, generateReport
 }

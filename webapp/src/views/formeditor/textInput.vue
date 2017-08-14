@@ -21,11 +21,11 @@
       <el-button @click.stop="moveTopQuestion" icon="d-arrow-left" :plain="true" size="small" type="info">最前</el-button>
       <el-button @click.stop="moveBottomQuestion" icon="d-arrow-right" :plain="true" size="small" type="info">最后</el-button>
     </div>
-    <div class="editor-panel"  v-show="question.isActive">
+    <div class="editor-panel ignore-drag"  v-show="question.isActive">
       <div class="row">
         <div class="item">
           <span class="title">问题标题</span>
-          <el-input class="input" v-model="question.title"></el-input>
+          <el-input class="input" v-model="question.title" @focus="removeTips(question.title)"></el-input>
         </div>
         <div class="item">
           <el-checkbox v-model="question.isTips">填写提示</el-checkbox>
@@ -79,6 +79,11 @@ export default {
     }
   },
   methods: {
+    removeTips (v) {
+      if (v === '请输入问题内容') {
+        this.question.title = ''
+      }
+    },
     setActive () {
       if (this.question.isActive === true) return
       this.$store.commit('form/activeQuestion', this.index)
