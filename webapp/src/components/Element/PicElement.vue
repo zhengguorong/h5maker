@@ -84,24 +84,24 @@
                 case 'nw':
                   this.element.width = parseInt(this.width) - disX
                   this.element.left = parseInt(this.left) + disX
-                  this.element.height = parseInt(this.height) - disY
-                  this.element.top = parseInt(this.top) + disY
+                  // 高度等比
+                  this.element.height = parseInt(this.height) - disX * this.scale
+                  this.element.top = parseInt(this.top) + disX * this.scale
                   break
                 // 左下
                 case 'sw':
                   this.element.width = parseInt(this.width) - disX
                   this.element.left = parseInt(this.left) + disX
-                  this.element.height = parseInt(this.height) + disY
+                  this.element.height = parseInt(this.height) - disX * this.scale
                   break
                 // 右上
                 case 'ne':
-                  this.element.height = parseInt(this.height) - disY
-                  this.element.top = parseInt(this.top) + disY
+                  this.element.height = parseInt(this.height) + disX * this.scale
                   this.element.width = parseInt(this.width) + disX
                   break
                 // 右下
                 case 'se':
-                  this.element.height = parseInt(this.height) + disY
+                  this.element.height = parseInt(this.height) + disX * this.scale
                   this.element.width = parseInt(this.width) + disX
                   break
               }
@@ -114,6 +114,7 @@
           this.currentY = e.clientY
           this.top = this.element.top
           this.left = this.element.left
+          this.scale = this.element.width / this.element.height // 图片比例
           this.move()
         },
         mouseup (e) {

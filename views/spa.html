@@ -9,7 +9,7 @@
   <!-- endbuild -->
 </head>
 
-<body>
+<body style="-webkit-overflow-scrolling:touch;">
   <div id="wx_pic"><img src=""></div>
   <audio src="<%=musicLink%>" loop="true" autoplay="autoplay"></audio>
   <div class="content-container">
@@ -53,7 +53,8 @@
   var actualR = actualW / actualH
 
   var scale = (actualR > designR) ? (actualH / designH) : (actualW / designW)
-  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + ')'
+  var top = (scale - 1) * actualH / 2
+  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + '); top: ' + top + 'px'
   if (actualW < designW) {
     if (actualR > designR) {
       style += 'margin-left: ' + (actualW - designW) / 2 + 'px;'
