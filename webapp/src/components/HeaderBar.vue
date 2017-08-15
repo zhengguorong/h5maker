@@ -34,6 +34,11 @@ export default {
         path: 'spaList',
         name: '单页作品',
         active: false
+      },
+      {
+        path: 'simpleSpaList',
+        name: '图片转网页',
+        active: false
       }, {
         path: 'formList',
         name: '问卷调查',
