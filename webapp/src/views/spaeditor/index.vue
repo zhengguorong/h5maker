@@ -135,6 +135,7 @@
     },
     methods: {
       changeEditionLayer (oType) {
+        console.log('in here')
         let type = oType || null
         this.panelTabState = 0
         switch (type) {
@@ -297,12 +298,12 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    left: 20%;
     padding-left: 150px;
     overflow: scroll;
   }
   .canvas {
     position: absolute !important;
+    left: 30%;
     top: 5%;
     border: 2px solid #ccc;
     box-shadow: 0px 2px 30px 5px rgba(0,0,0,0.2);

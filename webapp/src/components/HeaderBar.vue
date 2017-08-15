@@ -38,6 +38,10 @@ export default {
         path: 'formList',
         name: '问卷调查',
         active: false
+      }, {
+        path: 'logs',
+        name: '更新日志',
+        active: false
       }
       ],
       loginId: window.localStorage.getItem('loginId')
