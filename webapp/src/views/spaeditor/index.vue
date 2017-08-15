@@ -15,14 +15,14 @@
           <el-tooltip  effect="dark" content="新建素材" placement="left">
             <button class="func el-icon-picture" @click="togglePanel(2)":class="{ active: panelState === 2 }"></button>
           </el-tooltip>
-          <el-tooltip  effect="dark" content="添加背景音乐" placement="left">
+          <!-- <el-tooltip  effect="dark" content="添加背景音乐" placement="left">
             <button class="func" @click="togglePanel(3)" :class="{ active: panelState === 3 }" >
               <i class="iconfont">&#xe63e;</i>
             </button>
-          </el-tooltip>
-          <el-tooltip  effect="dark" content="播放动画" placement="left">
+          </el-tooltip> -->
+          <!-- <el-tooltip  effect="dark" content="播放动画" placement="left">
             <button class="func el-icon-caret-right" @click="playAnimate"></button>
-          </el-tooltip>
+          </el-tooltip> -->
           <el-tooltip  effect="dark" content="保存" placement="left">
             <button class="func el-icon-upload" @click="save"></button>
           </el-tooltip>
@@ -41,7 +41,7 @@
           </div>
           <div class="clearfix"
               v-if="panelTabState === 1">
-            <ImgPanel :selectedImg="addBG"/>
+            <ImgPanel :themeId="themeId" :selectedImg="addBG"/>
           </div>
         </div>
           <!-- 添加文字 1 -->
@@ -51,7 +51,7 @@
           </div>
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-if="panelState === 2">
-            <ImgPanel :selectedImg="addPicElement"/>
+            <ImgPanel :themeId="themeId" :selectedImg="addPicElement"/>
             <div class="item">
               <label>图层高度</label>
               <div class="content">
@@ -296,8 +296,8 @@
   .canvas-wrap {
     position: absolute;
     height: 100%;
-    width: 600px;
-    left: 160px;
+    width: 100%;
+    left: 20%;
     padding-left: 150px;
     overflow: scroll;
   }

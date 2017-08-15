@@ -24,6 +24,9 @@ export default {
     type: {
       type: String,
       default: 'elementImg'
+    },
+    themeId: {
+      type: String
     }
   },
   data () {

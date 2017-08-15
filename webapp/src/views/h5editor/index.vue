@@ -32,7 +32,7 @@
         <div class="wrapper custom-scrollbar">
           <!-- 设置背景 0 -->
           <div class="panel panel-bg" v-show="panelState === 0">
-            <BgPanel :editorPage="editorPage" :elements="editorPage.elements"/>
+            <BgPanel :themeId="themeId" :editorPage="editorPage" :elements="editorPage.elements"/>
           </div>
           <!-- 添加文字 1 -->
           <div class="panel panel-text" v-show="panelState === 1">
@@ -41,7 +41,7 @@
           </div>
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-show="panelState === 2">
-            <ImgPanel :selectedImg="addPicElement" type="elementImg"/>
+            <ImgPanel :themeId="themeId" :selectedImg="addPicElement" type="elementImg"/>
           </div>
           <!-- 添加背景音乐 3 -->
           <div class="panel panel-music" v-show="panelState === 3">
