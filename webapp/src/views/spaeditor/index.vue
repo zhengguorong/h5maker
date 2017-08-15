@@ -41,7 +41,7 @@
           </div>
           <div class="clearfix"
               v-if="panelTabState === 1">
-            <ImgPanel :selectedImg="addBG"/>
+            <ImgPanel :themeId="themeId" :selectedImg="addBG"/>
           </div>
         </div>
           <!-- 添加文字 1 -->
@@ -51,7 +51,7 @@
           </div>
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-if="panelState === 2">
-            <ImgPanel :selectedImg="addPicElement"/>
+            <ImgPanel :themeId="themeId" :selectedImg="addPicElement"/>
             <div class="item">
               <label>图层高度</label>
               <div class="content">

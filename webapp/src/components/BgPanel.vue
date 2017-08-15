@@ -9,7 +9,7 @@
     <el-button class="btn" type="danger" @click="cleanBG">移除背景图</el-button>
   </div>
   <div class="clearfix">
-    <ImgPanel :selectedImg="addBG" type="bg"/>
+    <ImgPanel :themeId="themeId" :selectedImg="addBG" type="bg"/>
   </div>
 </div>
 </template>
@@ -50,7 +50,7 @@
     components: {
       ImgPanel
     },
-    props: ['editorPage', 'elements'],
+    props: ['editorPage', 'elements', 'themeId'],
     methods: {
       cleanBG () {
         this.$store.dispatch('cleanBG')

@@ -98,6 +98,7 @@
                 case 'ne':
                   this.element.height = parseInt(this.height) + disX * this.scale
                   this.element.width = parseInt(this.width) + disX
+                  this.element.top = parseInt(this.top) - disX * this.scale
                   break
                 // 右下
                 case 'se':
