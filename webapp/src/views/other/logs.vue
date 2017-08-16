@@ -3,6 +3,8 @@
   <HeaderBar />
   <div class="container">
     <ol>
+      <p>版本：v1.1.0</p>
+      <li>加入图片单页功能</li>
       <p>版本：v1.0.0</p>
       <li>修复编辑器元素等比缩放功能</li>
       <li>修复单页应用高度适应问题</li>
