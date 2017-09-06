@@ -53,7 +53,7 @@ module.exports.getIdList = (req, res) => {
           responseCode: 1,
           idList: []
         }
-        for(let i = 0; i < formList.length; i++) {
+        for (let i = 0; i < formList.length; i++) {
           result.idList.push({id: formList[i]._id, name: formList[i].title})
         }
         res.json(result)
