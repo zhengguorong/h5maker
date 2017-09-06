@@ -8,11 +8,7 @@
   <link rel="stylesheet" href="/css/main.css">
   <!-- endbuild -->
 </head>
-
-<body>
-  <div id="wx_pic"><img src=""></div>
-  <audio src="<%=musicLink%>" loop="true" autoplay="autoplay"></audio>
-  <div class="content-container">
+<body style="-webkit-overflow-scrolling:touch;">
         <% pages.forEach(function (page) { %>
             <% page.elements.forEach(function (element) { %>
               <% if (element.type === 'bg') { %>
@@ -23,7 +19,7 @@
               <section style="height:<%= canvasHeight %>px">
               <% page.elements.forEach(function (element) { %>
                 <% if (element.type === 'pic') { %>
-                  <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; height: <%= element['height'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px;">
+                  <div class="ele" style="z-index: <%= element['zindex'] %>; width: <%= element['width'] %>px; height: <%= element['height'] %>px; left: <%= element['left'] %>px; top: <%= element['top'] %>px">
                     <div>
                       <% if (element.href) { %><a target="_blank" href="http://<%= element['href'] %>"><img class="ele-img" src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"></a><%} else {%><img class="ele-img" src="<%= element['imgSrc'] %>" style="opacity: <%= element['opacity'] %>; transform: rotate(<%= element['transform'] %>deg)"><%}%>
                     </div>
@@ -40,7 +36,6 @@
         </section>
         <% }) %>
       </div>
-  </div>
   <!-- build:js scripts/vendor.js -->
   <script>
   (function () {
@@ -53,7 +48,8 @@
   var actualR = actualW / actualH
 
   var scale = (actualR > designR) ? (actualH / designH) : (actualW / designW)
-  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + '); '
+  var top = (scale - 1) * actualH / 2
+  var style = 'width: ' + designW + 'px;overflow: auto; -webkit-transform: scale(' + scale + '); transform: scale(' + scale + '); top: ' + top + 'px'
   if (actualW < designW) {
     if (actualR > designR) {
       style += 'margin-left: ' + (actualW - designW) / 2 + 'px;'
@@ -63,10 +59,19 @@
   }
 
   var containers = document.getElementsByClassName('resize-container')
+//  var eles = document.getElementsByClassName('ele')
+//  var elesHeights = []
   var i
   for (i = 0; i < containers.length; i++) {
     containers[i].setAttribute('style', style)
   }
+//  for (var j = 0; j < eles.length; j++) {
+//   elesHeights.push(Number(eles[j].style.height.replace('px', '')))
+//  }
+//  elesHeights.sort(function (a, b) {
+//    return b - a
+//  })
+ // document.getElementsByClassName('content-container')[0].style.minHeight = document.getElementsByClassName('resize-container')[0].scrollHeight * scale + 'px'
 })()
   </script>
   <!-- endbuild -->

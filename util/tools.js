@@ -27,8 +27,13 @@ const renderFile = (filePath, data, successCallback) => {
         successCallback(html)
     });
 }
-const saveFile = (filePath, data, successCallback) => {
-    var rootPath = path.join(__dirname, '../public/pages/')
+const saveFile = (filePath, data, type, successCallback) => {
+    var rootPath = ''
+    if (type === 'QR') {
+        rootPath = path.join(__dirname, '../public/QR/')
+    } else {
+        rootPath = path.join(__dirname, '../public/pages/')
+    }
     mkdirp(rootPath, (err) => {
         fs.writeFile(rootPath + filePath, data, function (err) {
             if (err) {

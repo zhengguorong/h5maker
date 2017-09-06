@@ -1,0 +1,25 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title><%=title%></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+        <% pages.forEach(function (page) { %>
+            <% page.elements.forEach(function (element) { %>
+              <% if (element.href) { %>
+              <a target="_blank" href="http://<%= element['href'] %>"><img style="width: 100%" src="<%=element['imgSrc'] %>"/></a>
+              <%} else {%>
+              <img style="width: 100%" src="<%=element['imgSrc'] %>"/>
+              <%}%>
+            <% }) %>
+        <% }) %>
+</body>
+</html>

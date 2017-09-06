@@ -1,15 +1,8 @@
 <template>
   <div>
-    <PicPicker class="ele"
-               @uploaded="uploadImage"></PicPicker>
-    <div class="ele" v-if="type==='elementImg'"
-         :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }"
-         @click="selectedImg(element)"
-         v-for="element in picList"></div>
-    <div class="ele" v-if="type==='bg'"
-         :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }"
-         @click="selectedImg(element)"
-         v-for="element in bgList"></div>
+    <PicPicker class="ele" @uploaded="uploadImage"></PicPicker>
+    <div class="ele" v-if="type==='elementImg'" :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }" @click="selectedImg(element)" v-for="element in picList"></div>
+    <div class="ele" v-if="type==='bg'" :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }" @click="selectedImg(element)" v-for="element in bgList"></div>
   </div>
 </template>
 
@@ -24,6 +17,9 @@ export default {
     type: {
       type: String,
       default: 'elementImg'
+    },
+    themeId: {
+      type: String
     }
   },
   data () {
@@ -47,6 +43,10 @@ export default {
         'width': data['width'],
         'height': data['height'],
         'type': this.type
+      }).catch(err => {
+        if (err.response.status === 413) {
+          this.$message.error('请选择小于2M的文件')
+        }
       })
     }
   },

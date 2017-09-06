@@ -96,13 +96,15 @@ export const addBGElement = ({commit}, data) => {
  * @param data
  */
 export const savePic = ({commit}, {imgData, themeId, width, height, type}) => {
-  api.uploadPic({imgData, themeId, width, height}).then((res) => {
+  return api.uploadPic({imgData, themeId, width, height}).then((res) => {
     // commit(types.SAVE_PIC, res)
-    if (type === 'elementImg') {
-      commit(types.PUSH_PIC_LIST, res)
-    } else {
-      commit(types.PUSH_BG_LIST, res)
-    }
+    setTimeout(() => {
+      if (type === 'elementImg') {
+        commit(types.PUSH_PIC_LIST, res)
+      } else {
+        commit(types.PUSH_BG_LIST, res)
+      }
+    }, 500)
   })
 }
 /**

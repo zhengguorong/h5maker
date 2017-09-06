@@ -4,69 +4,40 @@
     <section class="section">
       <Overview class="overview" @changeEditionLayer="changeEditionLayer"/>
       <div class="canvas-wrap" id="canvas-wrap">
-        <Page :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" />
-        <!--<div class="tool-bar" :style="{top: parseInt(canvasHeight) + 35 + 'px'}">在右侧设置界面调整页面高度</div>-->
+        <!-- <Page :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" /> -->
+        <div class="canvas" :style="{ width: canvasWidth + 'px'}">
+            <template v-for="element in editorPage.elements">
+              <img @click="selectedElement(element)" style="width: 100%" :src="http + element.imgSrc" :key="element"/>
+            </template>
+        </div>
       </div>
       <div class="control-panel">
         <div class="funcs">
-          <el-tooltip  effect="dark" content="新建文本" placement="left">
-            <button class="func el-icon-edit" @click="togglePanel(1)" :class="{ active: panelState === 1 }"></button>
-          </el-tooltip>
           <el-tooltip  effect="dark" content="新建素材" placement="left">
             <button class="func el-icon-picture" @click="togglePanel(2)":class="{ active: panelState === 2 }"></button>
           </el-tooltip>
-          <!-- <el-tooltip  effect="dark" content="添加背景音乐" placement="left">
-            <button class="func" @click="togglePanel(3)" :class="{ active: panelState === 3 }" >
-              <i class="iconfont">&#xe63e;</i>
-            </button>
-          </el-tooltip> -->
-          <!-- <el-tooltip  effect="dark" content="播放动画" placement="left">
-            <button class="func el-icon-caret-right" @click="playAnimate"></button>
-          </el-tooltip> -->
           <el-tooltip  effect="dark" content="保存" placement="left">
             <button class="func el-icon-upload" @click="save"></button>
           </el-tooltip>
         </div>
         <div class="wrapper custom-scrollbar">
-          <!-- 设置背景 0 -->
-        <div class="panel panel-bg">
-          <div class="clearfix"
-              v-if="panelTabState !== 1">
-            <el-button class="btn"
-                      type="success"
-                      @click="panelTabState = 1">更换背景</el-button>
-            <el-button class="btn"
-                      type="danger"
-                      @click="cleanBG">移除背景</el-button>
-          </div>
-          <div class="clearfix"
-              v-if="panelTabState === 1">
-            <ImgPanel :themeId="themeId" :selectedImg="addBG"/>
-          </div>
-        </div>
-          <!-- 添加文字 1 -->
-          <div class="panel panel-text" v-if="panelState === 1">
-            <div class="btn" @click="addTextElement('title')" style="font-size: 32px; font-weight: bold;">插入标题</div>
-            <div class="btn" @click="addTextElement('plain')">插入文本</div>
-          </div>
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-if="panelState === 2">
             <ImgPanel :themeId="themeId" :selectedImg="addPicElement"/>
-            <div class="item">
-              <label>图层高度</label>
-              <div class="content">
-                <el-input v-model="canvasHeight">
-                  <template slot="append">px</template>
-                </el-input>
-              </div>
-            </div>
-          </div>
-          <!-- 添加背景音乐 3 -->
-          <div class="panel panel-music" v-show="panelState === 3">
-            <MusicPanel ref="musicPanel"/>
           </div>
           <!-- 图层编辑面板 -->
-          <EditPanel :element="element" :panelState="panelState" v-if="panelState > 10"/>
+          <!-- <EditPanel :element="element" :panelState="panelState" v-if="panelState > 10"/> -->
+          <div v-if="panelState > 10">
+            <div class="item">
+              <label>跳转链接</label>
+              <div class="content">
+                <el-input v-model="element.href"></el-input>
+              </div>
+            </div>
+            <div class="item btn">
+               <el-button type="warning" @click="deleteElement">删除图片</el-button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -92,7 +63,7 @@
     data () {
       return {
         itemId: null,
-        panelState: 0,
+        panelState: 2,
         canvasWidth: 320,
         dialogSaveBeforeBack: false,
         picBase64: '',
@@ -135,7 +106,6 @@
     },
     methods: {
       changeEditionLayer (oType) {
-        console.log('in here')
         let type = oType || null
         this.panelTabState = 0
         switch (type) {
@@ -151,7 +121,7 @@
         }
       },
       dialogSave () {
-        return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('spaList'))
+        return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('simpleSpaList'))
       },
       getPicList (_id) {
         this.$store.dispatch('getPicListByThemeId', _id)
@@ -212,7 +182,6 @@
         this.$store.dispatch('playAnimate')
       },
       save () {
-        this.$refs.musicPanel.saveMusic()
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
             message: '保存成功',
@@ -231,6 +200,7 @@
       },
       selectedElement (element) {
         this.$store.dispatch('setEditorElement', element)
+        this.changeEditionLayer('pic')
       },
       deleteListener (event) {
         if (event.keyCode === 8 && event.target.nodeName !== 'INPUT' && event.target.nodeName !== 'TEXTAREA') {
@@ -239,6 +209,7 @@
       },
       deleteElement () {
         this.$store.dispatch('deleteSelectedElement')
+        this.panelState = 2
       },
       togglePanel (code) {
         this.panelState = code
@@ -309,6 +280,8 @@
     box-shadow: 0px 2px 30px 5px rgba(0,0,0,0.2);
     box-sizing: content-box;
     margin-bottom: 200px;
+    background: #fff;
+    min-height: 504px;
   }
   .tool-bar {
     position: absolute;
@@ -404,11 +377,14 @@
   }
 
   .item {
-    padding: 5px 0;
+    padding: 10px 5px;
     clear: both;
   .content {
     margin-left: 70px;
+    }
   }
+  .item.btn {
+    text-align: center
   }
   label {
     text-align: right;
