@@ -117,11 +117,11 @@
   /**
    * Created by Wesdint on 2017/7/25.
    */
-/**  import api from '../api/form'
-  var echarts = require('echarts/lib/echarts')
-  require('echarts/lib/chart/pie')
-  require('echarts/lib/component/tooltip')
-  require('echarts/lib/component/title')
+//  import api from '../api/form'
+//  var echarts = require('echarts/lib/echarts')
+//  require('echarts/lib/chart/pie')
+//  require('echarts/lib/component/tooltip')
+//  require('echarts/lib/component/title')
   export default {
     data () {
       return {
@@ -132,12 +132,12 @@
     methods: {
       close () {
         this.$emit('closeView')
-      },
-      selectQuestion (item) {
-
       }
-    },
-    mounted () {
+//      selectQuestion (item) {
+//
+//      }
+    }
+    /**   mounted () {
       api.generateReport({formId: this.$route.query.formId}).then((result) => {
         this.answerList = result
         let kv = []
@@ -168,6 +168,6 @@
           }]
         })
       })
-    }
-  } */
+    } */
+  }
 </script>
