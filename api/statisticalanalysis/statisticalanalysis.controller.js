@@ -54,7 +54,7 @@ module.exports.downloadExcel = (req, res) => {
           item.result.forEach((inItem, inIndex) => {
             let qsType = questionData[0].questions[inIndex].qsType
             let validate = questionData[0].questions[inIndex].validate
-            if (Object.prototype.toString.call(this.preData) !== '[object Array]') {
+            if (Object.prototype.toString.call(inItem.ask) !== '[object Array]') {
               itemArr.push(inItem.ask)
             } else if (qsType === 'text' && validate === 'date') {
               let dateStr = ''
@@ -71,13 +71,13 @@ module.exports.downloadExcel = (req, res) => {
             } else if (qsType === 'file' && validate === 'img') {
               let imgStr = ''
               inItem.ask.forEach((imgItem) => {
-                imgStr = imgStr + 'http://' + req.headers.host + imgItem
+                imgStr = imgStr + 'http://' + req.headers.host + imgItem + ' '
               })
               itemArr.push(imgStr)
             } else if (qsType === 'file' && validate === 'pureFile') {
               let fileStr = ''
               inItem.ask.forEach((fileItem) => {
-                fileStr = fileStr + 'http://' + req.headers.host + fileItem.path
+                fileStr = fileStr + 'http://' + req.headers.host + fileItem.path + ' '
               })
               itemArr.push(fileStr)
             } else {
