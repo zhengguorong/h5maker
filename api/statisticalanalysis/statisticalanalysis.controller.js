@@ -204,9 +204,58 @@ module.exports.downloadExcel = (req, res) => {
 
 // 生成报表数组
 module.exports.generateReport = (req, res) => {
-  res.json('建设中')
-// var questionInfoList = []
-//      Form.find({_id: req.body.formId}).then((formResult)=> {
-//        questionInfoList = formResult[0][questions]
-//      })
+ let questionInfoList = []
+ let assembleResult = []
+ let rcIndex = []
+      Form.find({_id: req.body.formId}).then((formResult)=> {
+       questionInfoList = formResult[0].questions
+        Answer.find({formId: req.body.formId}).then((answerResult) => {
+          // res.status(200).json(answerResult)
+          questionInfoList.forEach((item, index) => {
+            if (item.qsType === 'radio' || item.qsType === 'check') {
+              let newAskList = []
+              item.askList.forEach((alItem, alIndex) => {
+                newAskList.push({
+                  imgPath: alItem.imgPath,
+                  isDefault: alItem.isDefault,
+                  title: alItem.title,
+                  times: 0
+                })
+              })
+              rcIndex.push(index)
+              assembleResult.push({
+                qsType: item.qsType,
+                title: item.title,
+                tips: item.tips,
+                askList: newAskList,
+                oriIndex: index,
+                validTimes: 0
+              })
+            }
+          })
+          rcIndex.forEach((rciItem, rciIndex) => {
+            answerResult.forEach((arItem, arIndex) => {
+              if (typeof arItem.result[rciItem] !== 'undefined') {
+                if (arItem.result[rciItem].ask.length !== 0) {
+                  assembleResult[rciItem].validTimes++
+                }
+                assembleResult[rciItem].askList.forEach((abrItem, abrIndex) => {
+                  if (assembleResult[rciItem].qsType === 'radio') { // 单选题
+                    if (abrItem.title === arItem.result[rciItem].ask) {
+                      abrItem.times++
+                    }
+                  } else { // 多选题
+                    arItem.result[rciItem].ask.forEach((araItem, araIndex) => {
+                      if (araItem === abrItem.title) {
+                        abrItem.times++
+                      }
+                    })
+                  }
+                })
+              }
+            })
+          })
+          res.status(200).json(assembleResult)
+        })
+     })
 }

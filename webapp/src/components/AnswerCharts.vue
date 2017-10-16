@@ -2,7 +2,10 @@
   <div class="wrap">
     <div class="content">
       <div style="overflow-y: auto;height: 100%">
-        <h2>建设中。。。</h2>
+        <ul>
+          <li v-for="(item, index) in answerList" @click="selectQuestion(item)">{{index + 1}}、{{item.title}}</li>
+        </ul>
+        <div id="main" style="width:500px; height: 300px"></div>
       </div>
       <div class="close" @click="close">
         <i class="el-icon-close"></i>
@@ -113,14 +116,57 @@
   /**
    * Created by Wesdint on 2017/7/25.
    */
+  import api from '../api/form'
+  var echarts = require('echarts/lib/echarts')
+  require('echarts/lib/chart/pie')
+  require('echarts/lib/component/tooltip')
+  require('echarts/lib/component/title')
   export default {
     data () {
-      return {}
+      return {
+        answerList: [],
+        kv: []
+      }
     },
     methods: {
       close () {
         this.$emit('closeView')
+      },
+      selectQuestion (item) {
+
       }
+    },
+    mounted () {
+      api.generateReport({formId: this.$route.query.formId}).then((result) => {
+        this.answerList = result
+        let kv = []
+        result[4].askList.forEach((item) => {
+          kv.push({
+            value: item.times,
+            name: item.title
+          })
+        })
+        console.log(kv)
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'))
+// 绘制图表
+        myChart.setOption({
+          title: { text: 'ECharts 入门示例' },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b} : {c} ({d}%)'
+          },
+          xAxis: {
+            data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+          },
+          yAxis: {},
+          series: [{
+            name: '',
+            type: 'pie',
+            data: kv
+          }]
+        })
+      })
     }
   }
 </script>

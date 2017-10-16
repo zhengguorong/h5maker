@@ -21,7 +21,6 @@
    * Created by Wesdint on 2017/7/14.
    */
 import appConst from '../util/appConst'
-import api from '../api/form'
   export default {
     data () {
       return {
@@ -34,7 +33,6 @@ import api from '../api/form'
         window.location = appConst.BACKEND_DOMAIN + '/api/downloadExcel/' + formId
       },
       openChart () {
-        api.generateReport({formId: this.$route.query.formId}).then()
         this.$emit('openChart', true)
       },
       goback () {
