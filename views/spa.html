@@ -8,11 +8,7 @@
   <link rel="stylesheet" href="/css/main.css">
   <!-- endbuild -->
 </head>
-
 <body style="-webkit-overflow-scrolling:touch;">
-  <div id="wx_pic"><img src=""></div>
-  <audio src="<%=musicLink%>" loop="true" autoplay="autoplay"></audio>
-  <div class="content-container">
         <% pages.forEach(function (page) { %>
             <% page.elements.forEach(function (element) { %>
               <% if (element.type === 'bg') { %>
@@ -40,7 +36,6 @@
         </section>
         <% }) %>
       </div>
-  </div>
   <!-- build:js scripts/vendor.js -->
   <script>
   (function () {

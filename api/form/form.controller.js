@@ -56,7 +56,7 @@ module.exports.getIdList = (req, res) => {
           responseCode: 1,
           idList: []
         }
-        for(let i = 0; i < formList.length; i++) {
+        for (let i = 0; i < formList.length; i++) {
           result.idList.push({id: formList[i]._id, name: formList[i].title})
         }
         res.json(result)
@@ -70,10 +70,10 @@ const getMpToken = (req, res) => {
   let timeDiff = (new Date().getTime() - global.wxTokenTimestamp) / 1000 // 获取token时长(秒)（token两小时过期）
   return function (entity) {
     return new Promise((resolve, reject) => {
-      if(global.wxTokenTimestamp && timeDiff < 7000) {
+      if (global.wxTokenTimestamp && timeDiff < 7000) {
         resolve(entity)
       } else {
-        request(wxTokenUrl, (error, response, body) =>{
+        request(wxTokenUrl, (error, response, body) => {
           if (!error) {
             global.wxTokenTimestamp = new Date().getTime()
             global.mp_access_token = JSON.parse(body).access_token
@@ -92,11 +92,11 @@ const generateMpQcode = () => {
     let QRPath = path.join(__dirname, '../../public/QR/') + entity._id
     return new Promise((resolve, reject) => {
       let wxQcodeUrl = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' + global.mp_access_token
-      request({url: wxQcodeUrl, method: 'POST', json: true, body: {"scene": entity._id, "width": 180}})
+      request({url: wxQcodeUrl, method: 'POST', json: true, body: {'scene': entity._id, 'width': 180}})
           .pipe(fs.createWriteStream(QRPath + '.jpeg').on('finish', () => {
-           Form.update({'_id': entity._id}, {$set: {'wxMpQR': '/QR/' + entity._id + '.jpeg'}})
-               .then(() => {resolve(entity)})
-      }).on('error', () => {resolve(entity)}))
+            Form.update({'_id': entity._id}, {$set: {'wxMpQR': '/QR/' + entity._id + '.jpeg'}})
+               .then(() => { resolve(entity) })
+          }).on('error', () => { resolve(entity) }))
     })
   }
 }

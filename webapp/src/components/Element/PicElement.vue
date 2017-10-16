@@ -51,6 +51,9 @@
         },
         // 处理元素伸缩
         scaleMousemove () {
+          document.querySelector('.editor').onmousedown = (event) => {
+            this.scale = this.element.width / this.element.height
+          }
           document.querySelector('.editor').onmouseup = (event) => {
             this.scaleFlag = false
           }
@@ -85,24 +88,24 @@
                   this.element.width = parseInt(this.width) - disX
                   this.element.left = parseInt(this.left) + disX
                   // 高度等比
-                  this.element.height = parseInt(this.height) - disX * this.scale
-                  this.element.top = parseInt(this.top) + disX * this.scale
+                  this.element.height = parseInt(this.height) - disX / this.scale
+                  this.element.top = parseInt(this.top) + disX / this.scale
                   break
                 // 左下
                 case 'sw':
                   this.element.width = parseInt(this.width) - disX
                   this.element.left = parseInt(this.left) + disX
-                  this.element.height = parseInt(this.height) - disX * this.scale
+                  this.element.height = parseInt(this.height) - disX / this.scale
                   break
                 // 右上
                 case 'ne':
-                  this.element.height = parseInt(this.height) + disX * this.scale
+                  this.element.height = parseInt(this.height) + disX / this.scale
                   this.element.width = parseInt(this.width) + disX
                   this.element.top = parseInt(this.top) - disX * this.scale
                   break
                 // 右下
                 case 'se':
-                  this.element.height = parseInt(this.height) + disX * this.scale
+                  this.element.height = parseInt(this.height) + disX / this.scale
                   this.element.width = parseInt(this.width) + disX
                   break
               }
@@ -115,7 +118,6 @@
           this.currentY = e.clientY
           this.top = this.element.top
           this.left = this.element.left
-          this.scale = this.element.width / this.element.height // 图片比例
           this.move()
         },
         mouseup (e) {
@@ -131,13 +133,13 @@
           this.width = this.element.width
           this.height = this.element.height
           this.direction = e.target.getAttribute('data-direction')
+          this.scale = this.element.width / this.element.height
           this.scaleMousemove()
         },
         scaleMouseup (e) {
           this.scaleFlag = false
         },
         dragstart (event) {
-          console.log('dragstart')
           event.preventDefault()
         }
       },

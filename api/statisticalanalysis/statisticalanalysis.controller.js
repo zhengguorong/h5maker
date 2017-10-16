@@ -18,7 +18,7 @@ module.exports.findAnswerById = (req, res) => {
       })
     },
     records: (done) => {
-      Answer.find({formId: formId}).sort({createDate: -1}).skip(pageSize * (pageIndex-1)).limit(pageSize).exec((err, doc) => {
+      Answer.find({formId: formId}).sort({createDate: -1}).skip(pageSize * (pageIndex - 1)).limit(pageSize).exec((err, doc) => {
         done(err, doc)
       })
     }
@@ -46,8 +46,8 @@ module.exports.downloadExcel = (req, res) => {
         })
         answerData.forEach((item, index) => {
           let itemArr = []
-          itemArr.push(index+1)
-          itemArr.push(new Date(item.createDate).toLocaleString().replace(/:\d{1,2}$/,' '))
+          itemArr.push(index + 1)
+          itemArr.push(new Date(item.createDate).toLocaleString().replace(/:\d{1,2}$/, ' '))
           itemArr.push(item.timeStamp)
           itemArr.push(item.ip)
           itemArr.push(item.sourcePlatform)
@@ -85,54 +85,54 @@ module.exports.downloadExcel = (req, res) => {
           excelContent.push(itemArr)
         })
         // ----------//
-        const file = new xlsx.File();
-        const sheet = file.addSheet('Sheet1');
+        const file = new xlsx.File()
+        const sheet = file.addSheet('Sheet1')
         const data = excelContent
-        function border(cell, top, left, bottom, right) {
-          const light = 'ffded9d4';
-          const dark = 'ff7e6a54';
-          cell.style.border.top = 'thin';
-          cell.style.border.topColor = top ? dark : light;
-          cell.style.border.left = 'thin';
-          cell.style.border.leftColor = left ? dark : light;
-          cell.style.border.bottom = 'thin';
-          cell.style.border.bottomColor = bottom ? dark : light;
-          cell.style.border.right = 'thin';
-          cell.style.border.rightColor = right ? dark : light;
+        function border (cell, top, left, bottom, right) {
+          const light = 'ffded9d4'
+          const dark = 'ff7e6a54'
+          cell.style.border.top = 'thin'
+          cell.style.border.topColor = top ? dark : light
+          cell.style.border.left = 'thin'
+          cell.style.border.leftColor = left ? dark : light
+          cell.style.border.bottom = 'thin'
+          cell.style.border.bottomColor = bottom ? dark : light
+          cell.style.border.right = 'thin'
+          cell.style.border.rightColor = right ? dark : light
         }
 
-        function fill(cell, type) {
-          type = type || 0;
-          const colors = ['ffffffff', 'ffa2917d', 'ffe4e2de', 'fffff8df', 'fff1eeec'];
+        function fill (cell, type) {
+          type = type || 0
+          const colors = ['ffffffff', 'ffa2917d', 'ffe4e2de', 'fffff8df', 'fff1eeec']
           // 1: header, 2: first col, 3: second col, 4: gray, 0: white
-          cell.style.fill.patternType = 'solid';
-          cell.style.fill.fgColor = colors[type];
-          cell.style.fill.bgColor = 'ffffffff';
+          cell.style.fill.patternType = 'solid'
+          cell.style.fill.fgColor = colors[type]
+          cell.style.fill.bgColor = 'ffffffff'
         }
-        const header = sheet.addRow();
-        header.setHeightCM(0.8);
+        const header = sheet.addRow()
+        header.setHeightCM(0.8)
         const headers = excelHeader
-        for (let i = 0; i <  headers.length; i++) {
-          sheet.col(i).width = 30;
+        for (let i = 0; i < headers.length; i++) {
+          sheet.col(i).width = 30
         }
         for (let i = 0; i < headers.length; i++) {
-          const hc = header.addCell();
-          hc.value = headers[i];
-          hc.style.align.v = 'center';
-          if (i > 0) hc.style.align.h = 'center';
-          hc.style.font.color = 'ffffffff';
-          border(hc, 0, 0, 1, 0);
-          fill(hc, 1);
+          const hc = header.addCell()
+          hc.value = headers[i]
+          hc.style.align.v = 'center'
+          if (i > 0) hc.style.align.h = 'center'
+          hc.style.font.color = 'ffffffff'
+          border(hc, 0, 0, 1, 0)
+          fill(hc, 1)
         }
 
-        const len = data.length;
+        const len = data.length
         for (let i = 0; i < len; i++) {
-          const line = data[i];
-          const row = sheet.addRow();
-          row.setHeightCM(0.8);
+          const line = data[i]
+          const row = sheet.addRow()
+          row.setHeightCM(0.8)
           // Col 1
           const lineLen = line.length
-          for (let p = 0; p <lineLen; p++) {
+          for (let p = 0; p < lineLen; p++) {
             let cell = row.addCell()
             cell.value = line[p]
             cell.style.align.v = 'center'
@@ -193,12 +193,12 @@ module.exports.downloadExcel = (req, res) => {
         //   sheet.col(i).width = 20;
         // }
         res.setHeader(
-            "Content-Disposition", "attachment;filename=answer.xlsx"
-        );
+            'Content-Disposition', 'attachment;filename=answer.xlsx'
+        )
         file
             .saveAs()
-            .on('data', (chunk) => {res.write(chunk, 'binary')})
-            .on('end', () => {res.end()})
+            .on('data', (chunk) => { res.write(chunk, 'binary') })
+            .on('end', () => { res.end() })
       }))
 }
 

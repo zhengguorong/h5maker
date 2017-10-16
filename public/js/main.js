@@ -1,13 +1,13 @@
 var swiper = new Swiper('.swiper-container', {
   direction: 'vertical',
   mousewheelControl: true,
-  nextButton:'.button-next',
+  nextButton: '.button-next',
   onInit: function (swiper) {
-    swiperAnimate(swiper);
+    swiperAnimate(swiper)
   },
   onSlideChangeEnd: function (swiper) {
-    swiperAnimate(swiper);
-  },
+    swiperAnimate(swiper)
+  }
 })
 
 var loader = (function () {
@@ -27,9 +27,9 @@ var loader = (function () {
     }
   }
   if (srcList.length === 0) {
-      swiper.container[0].style.opacity = 1
-      loadingContainer.style.opacity = 0
-      swiperAnimate(swiper)
+    swiper.container[0].style.opacity = 1
+    loadingContainer.style.opacity = 0
+    swiperAnimate(swiper)
   }
   return new resLoader({
     resources: srcList,
@@ -56,12 +56,12 @@ var loader = (function () {
 loader.start()
 
 // 音乐
-let audio = document.getElementById('audio')
-let musicBtn = document.getElementById('music-btn')
+var audio = document.getElementById('audio')
+var musicBtn = document.getElementById('music-btn')
 if (!audio.getAttribute('src')) {
   musicBtn.style.display = 'none'
 }
-musicBtn.addEventListener("click", function () {
+musicBtn.addEventListener('click', function () {
   if (audio.paused) { // 播放
     audio.play()
     musicBtn.setAttribute('src', '../img/music-open.png')
