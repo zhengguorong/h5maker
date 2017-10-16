@@ -54,7 +54,9 @@ module.exports.downloadExcel = (req, res) => {
           item.result.forEach((inItem, inIndex) => {
             let qsType = questionData[0].questions[inIndex].qsType
             let validate = questionData[0].questions[inIndex].validate
-            if (qsType === 'text' && validate === 'date') {
+            if (Object.prototype.toString.call(this.preData) !== '[object Array]') {
+              itemArr.push(inItem.ask)
+            } else if (qsType === 'text' && validate === 'date') {
               let dateStr = ''
               inItem.ask.forEach((dateItem) => {
                 dateStr = dateStr + '-' + dateItem
@@ -204,7 +206,7 @@ module.exports.downloadExcel = (req, res) => {
 
 // 生成报表数组
 module.exports.generateReport = (req, res) => {
- let questionInfoList = []
+/* let questionInfoList = []
  let assembleResult = []
  let rcIndex = []
       Form.find({_id: req.body.formId}).then((formResult)=> {
@@ -257,5 +259,5 @@ module.exports.generateReport = (req, res) => {
           })
           res.status(200).json(assembleResult)
         })
-     })
+     }) */
 }

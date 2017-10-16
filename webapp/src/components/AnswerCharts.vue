@@ -2,9 +2,10 @@
   <div class="wrap">
     <div class="content">
       <div style="overflow-y: auto;height: 100%">
-        <ul>
-          <li v-for="(item, index) in answerList" @click="selectQuestion(item)">{{index + 1}}、{{item.title}}</li>
-        </ul>
+        <!--<ul>-->
+          <!--<li v-for="(item, index) in answerList" @click="selectQuestion(item)">{{index + 1}}、{{item.title}}</li>-->
+        <!--</ul>-->
+        <h2>建设中。。。</h2>
         <div id="main" style="width:500px; height: 300px"></div>
       </div>
       <div class="close" @click="close">
@@ -116,7 +117,7 @@
   /**
    * Created by Wesdint on 2017/7/25.
    */
-  import api from '../api/form'
+/**  import api from '../api/form'
   var echarts = require('echarts/lib/echarts')
   require('echarts/lib/chart/pie')
   require('echarts/lib/component/tooltip')
@@ -168,5 +169,5 @@
         })
       })
     }
-  }
+  } */
 </script>
