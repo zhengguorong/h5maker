@@ -68,7 +68,8 @@
          </div>
         <!--地区类型--end-->
         <!--文本类型--start-->
-        <input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''">
+        <!--<input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''">-->
+        <textarea class="textWarp" style="resize: none" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'"  placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''" rows="3"></textarea>
         <!--文本类型--end-->
         <div v-for="(ask,i) in item.askList" class="radioWrap" v-if="item.qsType=== 'radio'">
           <div class="flex ai-center">
@@ -102,6 +103,7 @@
       </div>
       <span class="errorMsg" v-if="errors[index]">{{errors[index]}} <img src="/img/alertbox_corner@2x.png" alt="" class="errorTipsCorner"></span>
     </div>
+    <div id="test"></div>
     <input class="submit" type="submit" value="提  交" @click="submit">
   </div>
   </div>
@@ -171,11 +173,11 @@
             this.validate()
           }
         },
-        submit: function() {
+        submit: function () {
           this.validate()
           if (JSON.stringify(this.errors) !== '{}') {
             this.$toast('请检查你的输入是否合法')
-           return
+            return
           }
           var self = this
           axios.post('/api/submit', {formId: this.id, sourcePlatform: this.runPlatform(), timeStamp: this.timeStamp, result: this.result}).then(function(res){
@@ -188,8 +190,8 @@
             }
           })
         },
-        validate: function() {
-          for(var i=0;i<this.form.questions.length;i++) {
+        validate: function () {
+          for (var i = 0; i < this.form.questions.length; i++) {
             var question = this.form.questions[i]
             var ask = this.result[i].ask
             // 验证必填项
@@ -227,9 +229,9 @@
           }
           this.$forceUpdate()
         },
-        getDefaultAsk: function(ask, type) {
+        getDefaultAsk: function (ask, type) {
           var defaultAsk = []
-          for (var i=0;i<ask.length;i++) {
+          for (var i = 0; i < ask.length; i++) {
             if (ask[i].isDefault) {
               if (type === 'radio') {
                 return ask[i].title
@@ -242,21 +244,21 @@
         },
         initResult: function(questions) {
           // 组装问题答案数据结构
-          for (var i = 0;i < questions.length;i++) {
+          for (var i = 0; i < questions.length; i++) {
             var question = questions[i]
-            if (questions[i].qsType === 'check'|| questions[i].qsType === 'radio') {
+            if (questions[i].qsType === 'check' || questions[i].qsType === 'radio') {
               var defaultAsk = this.getDefaultAsk(question.askList, questions[i].qsType)
               this.result.push({question:question.title, ask:defaultAsk})
             } else if (questions[i].qsType === 'file') {
-              this.result.push({question:question.title, ask:[]})
+              this.result.push({question:question.title, ask: []})
             } else if (questions[i].qsType === 'text' && questions[i].validate === 'date') {
-              this.result.push({question:question.title, ask:['', '', '']})
+              this.result.push({question:question.title, ask: ['', '', '']})
             } else {
-              this.result.push({question:question.title, ask:''})
+              this.result.push({question:question.title, ask: ''})
             }
           }
         },
-        fileUpload: function(event, index) {
+        fileUpload: function (event, index) {
           var item = this.result[index]
           var file = event.target.files[0]
           var self = this
@@ -433,18 +435,18 @@ body {
   position: relative;
 }
 .title {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: bold;
   text-align: center;
   margin: 0;
 }
 .description {
   margin: 0;
-  margin-top:8px
+  margin-top:8px;
   padding: 0 14px;
-  font-size:12px;
+  font-size:13px;
   color: #999;
-  text-align: center;
+  text-align: left;
 }
 .item {
   position: relative;
