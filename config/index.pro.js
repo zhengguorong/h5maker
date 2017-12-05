@@ -5,7 +5,7 @@ const all = {
         session: 'h5maker'
     },
     mongo: {
-        uri: 'mongodb://192.168.32.45:27017/h5maker',
+        uri: 'mongodb://192.168.32.89:27017/h5maker, 192.168.32.90:27017/h5maker, 192.168.32.91:27017/h5maker',
         user: 'h5maker',
         pass: 'xgd$MPB37@8GALX#'
     },
