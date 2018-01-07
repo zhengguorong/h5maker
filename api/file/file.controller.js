@@ -99,10 +99,11 @@ module.exports.create = (req, res) => {
       } else {
         var inputFile = files.inputFile[0]
         var uploadedPath = inputFile.path
-        var extension = /\.[^\.]+$/.exec(inputFile.originalFilename)[0]
+        var matchResult = /\.[^\.]+$/.exec(inputFile.originalFilename)
+        var extension = matchResult ? matchResult[0] : ''
         var fileInfo = buildFilePath(fields.themeId[0] || 'all', extension)
         // var dstPath = './public/upload/files/' + inputFile.originalFilename
-        fs.rename(uploadedPath, fileInfo.filePath, function (error)  {
+        fs.rename(uploadedPath, fileInfo.filePath, function (error) {
           if (error) {
             console.log(error)
           } else {
