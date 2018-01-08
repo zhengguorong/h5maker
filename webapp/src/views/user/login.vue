@@ -63,7 +63,8 @@
         })
       },
       register () {
-        window.location.href = '#register'
+        // window.location.href = '#register'
+        this.$router.push('register')
       }
     }
   }

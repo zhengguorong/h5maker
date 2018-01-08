@@ -259,6 +259,7 @@
           }
         },
         fileUpload: function (event, index) {
+          this.$indicator.open()
           var item = this.result[index]
           var type = this.form.questions[index].validate
           var file = event.target.files[0]
@@ -277,9 +278,10 @@
               return
             }
             lrz(file, { quality: 1, width: 375 }).then(function (result) {
-              axios.post('/api/upload', {imgData: result.base64, themeId: self.id}).then(function(res){
+              axios.post('/api/upload', {imgData: result.base64, themeId: self.id}).then(function (res) {
                 item.ask.push(res.data.filePath)
                 self.toValidateAgain(index)
+                self.$indicator.close()
               })
             })
           } else if (file && !/^image/.test(file.type)){
@@ -289,6 +291,7 @@
             axios.post('/api/upload', form, {header: {'Content-Type': false}}).then(function (res) {
               item.ask.push({path: res.data.filePath, name: res.data.fileName})
               self.toValidateAgain(index)
+              self.$indicator.close()
             })
           }
         },
