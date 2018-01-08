@@ -242,7 +242,7 @@
           }
           return defaultAsk
         },
-        initResult: function(questions) {
+        initResult: function (questions) {
           // 组装问题答案数据结构
           for (var i = 0; i < questions.length; i++) {
             var question = questions[i]
@@ -260,15 +260,24 @@
         },
         fileUpload: function (event, index) {
           var item = this.result[index]
+          var type = this.form.questions[index].validate
           var file = event.target.files[0]
           var self = this
+          if (/^image/.test(file.type) && type === 'pureFile') {
+            self.$toast('请选择非图片文件')
+            return
+          }
+          if (!/^image/.test(file.type) && type === 'img') {
+            self.$toast('请选择图片文件')
+            return
+          }
           if (file && /^image/.test(file.type)) {
-            lrz(file, { quality: 0.5 }).then(function (result) {
-              if (result.fileLen > 2 * 1024 * 1024) {
-                this.$message.error('请选择小于2M的文件')
-                return
-              }
-              axios.post('/api/upload', {imgData: result.base64, themeId: this.id}).then(function(res){
+            if (file.size > 4 * 1024 * 1024) {
+              self.$toast('请选择小于4M的图片')
+              return
+            }
+            lrz(file, { quality: 1, width: 375 }).then(function (result) {
+              axios.post('/api/upload', {imgData: result.base64, themeId: self.id}).then(function(res){
                 item.ask.push(res.data.filePath)
                 self.toValidateAgain(index)
               })
@@ -277,7 +286,7 @@
             var form = new FormData()
             form.append('inputFile', file)
             form.append('themeId', self.id)
-            axios.post('/api/upload', form, {header: {'Content-Type': false}}).then(function(res){
+            axios.post('/api/upload', form, {header: {'Content-Type': false}}).then(function (res) {
               item.ask.push({path: res.data.filePath, name: res.data.fileName})
               self.toValidateAgain(index)
             })
@@ -345,8 +354,8 @@
         var url = window.location.href
         var index = url.lastIndexOf("\/")
         var dotIndex = url.lastIndexOf("\.")
-        this.id = url.substring(index + 1,dotIndex)
-        var self = this;
+        this.id = url.substring(index + 1, dotIndex)
+        var self = this
         this.getFormById(this.id).then(function (res) {
           self.form = res.data
           self.initResult(res.data.questions)
@@ -354,7 +363,7 @@
           self.$indicator.close()
           self.timer()
           document.getElementById('app').style.display = 'block'
-        }).catch(function(err) {
+        }).catch(function (err) {
           console.log(err)
           self.$indicator.close()
           self.$toast('问卷已失效')
