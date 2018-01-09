@@ -29,7 +29,7 @@ module.exports.findAnswerById = (req, res) => {
 
 // 将答卷生成excel导出
 module.exports.downloadExcel = (req, res) => {
-  Form.find({_id: req.params.id}).exec().then((questionData) => Answer.find({formId: req.params.id}).exec()
+  Form.find({_id: req.params.id}).exec().then((questionData) => Answer.find({formId: req.params.id}).sort({createDate: -1}).exec()
       .then((answerData) => {
         let excelHeader = ['序号', '提交时间', '答题时长', '所在地IP', '来源渠道']
         let excelContent = []
@@ -44,6 +44,7 @@ module.exports.downloadExcel = (req, res) => {
             excelHeader.push(++index + '.' + item.title + '【文件上传】')
           }
         })
+        console.log(answerData)
         answerData.forEach((item, index) => {
           let itemArr = []
           itemArr.push(index + 1)
@@ -85,8 +86,6 @@ module.exports.downloadExcel = (req, res) => {
             }
           })
           excelContent.push(itemArr)
-          // 导出数据按时间降序排列
-          // excelContent.reverse()
         })
         // ----------//
         const file = new xlsx.File()
