@@ -85,6 +85,8 @@ module.exports.downloadExcel = (req, res) => {
             }
           })
           excelContent.push(itemArr)
+          // 导出数据按时间降序排列
+          excelContent.reverse()
         })
         // ----------//
         const file = new xlsx.File()
