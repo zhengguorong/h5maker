@@ -18,7 +18,7 @@ module.exports.findAnswerById = (req, res) => {
       })
     },
     records: (done) => {
-      Answer.find({formId: formId}).sort({createDate: -1}).skip(pageSize * (pageIndex - 1)).limit(pageSize).exec((err, doc) => {
+      Answer.find({formId: formId}).sort({createDate: 1}).skip(pageSize * (pageIndex - 1)).limit(pageSize).exec((err, doc) => {
         done(err, doc)
       })
     }
@@ -29,7 +29,7 @@ module.exports.findAnswerById = (req, res) => {
 
 // 将答卷生成excel导出
 module.exports.downloadExcel = (req, res) => {
-  Form.find({_id: req.params.id}).exec().then((questionData) => Answer.find({formId: req.params.id}).sort({createDate: -1}).exec()
+  Form.find({_id: req.params.id}).exec().then((questionData) => Answer.find({formId: req.params.id}).sort({createDate: 1}).exec()
       .then((answerData) => {
         let excelHeader = ['序号', '提交时间', '答题时长', '所在地IP', '来源渠道']
         let excelContent = []
