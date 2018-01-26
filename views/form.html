@@ -225,6 +225,10 @@
             if (!question.isMust && ask.length === 0) {
               delete this.errors[i]
             }
+            // 删除图片张数限制提示
+            if (ask.length > 0 && question.qsType === 'file' && ask.length <= question.count ) {
+              delete this.errors[i]
+            }
             // 验证手机号
             if (ask.length > 0 && question.validate === 'phone' && !validateFuns.isMobile(ask)) {
               this.errors[i] = '手机号码不正确哦'
