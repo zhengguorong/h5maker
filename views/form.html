@@ -195,6 +195,7 @@
               }
             }
           }
+          this.$indicator.open()
           axios.post('/api/submit', {formId: this.id, sourcePlatform: this.runPlatform(), timeStamp: this.timeStamp, result: submitResult}).then(function(res){
             if (res.data.responseCode === 0) {
               self.$toast(res.data.responseMsg || '提交失败')
@@ -203,6 +204,7 @@
               self.QADisplay = false
               self.$toast('提交成功')
             }
+            self.$indicator.close()
           })
         },
         validate: function () {
