@@ -12,6 +12,8 @@
   <div id="app" style="display: none">
    <div class="mask" v-show="!QADisplay">
      <img src="/img/bg@3x.png" height="100%" v-if="!QADisplay"/>
+     <img src="/img/loading.gif" alt="" style="display: none">
+     <img src="/img/del.png" alt="" style="display: none">
      <!--<div v-show="entryDisplay">-->
         <!--<img class="before-logo" src="/img/logo_big@2x.png" height="40" width="114"/>-->
         <!--<div class="before-title">-->
@@ -85,13 +87,18 @@
           </div>
           <img :src="ask.imgPath" alt="" v-if="ask.imgPath" style="display:block;width:220px;margin: 5px auto">
         </div>
+        <!--图片文件上传-->
         <div v-if="item.qsType=== 'file' && item.validate === 'img'" class="fileWrap">
-          <img @click="removeImg(i, result[index].ask)" style="float: left" :src="item" alt="" v-for="(item, i) in result[index].ask">
+          <div class="imgWrap" v-for="(item, i) in result[index].ask">
+            <i class="delImg" @click="removeImg(i, result[index].ask)"></i>
+            <img :src="item.url" alt="">
+          </div>
           <div class="img-upload">
             <input type="file" name="inputFile" @change="fileUpload($event, index)" style="width:100%;height: 100%;opacity: 0"/>
           </div>
           <div style="clear: both"></div>
         </div>
+        <!--非图片文件上传-->
         <div v-if="item.qsType=== 'file' && item.validate === 'pureFile'" class="">
           <div class="file-upload">
             <div class="fu-msg"><span v-for="(item, i) in result[index].ask" v-if="result[index].ask.length > 0">
@@ -180,7 +187,15 @@
             return
           }
           var self = this
-          axios.post('/api/submit', {formId: this.id, sourcePlatform: this.runPlatform(), timeStamp: this.timeStamp, result: this.result}).then(function(res){
+          var submitResult = this.deepClone(this.result)
+          for (var i = 0; i < submitResult.length; i++) {
+            if (submitResult[i].type === 'imgUpload') {
+              for (var j = 0; j < submitResult[i].ask.length; j++) {
+                submitResult[i].ask[j] = submitResult[i].ask[j].url
+              }
+            }
+          }
+          axios.post('/api/submit', {formId: this.id, sourcePlatform: this.runPlatform(), timeStamp: this.timeStamp, result: submitResult}).then(function(res){
             if (res.data.responseCode === 0) {
               self.$toast(res.data.responseMsg || '提交失败')
             } else {
@@ -259,11 +274,11 @@
           }
         },
         fileUpload: function (event, index) {
-          this.$indicator.open()
           var item = this.result[index]
           var type = this.form.questions[index].validate
           var file = event.target.files[0]
           var self = this
+          if (!file) return
           if (/^image/.test(file.type) && type === 'pureFile') {
             self.$toast('请选择非图片文件')
             return
@@ -278,16 +293,28 @@
               return
             }
             lrz(file, { quality: 1, width: 375 }).then(function (result) {
+              var id = new Date().getTime()
+              item.type = 'imgUpload'
+              item.ask.push({
+                id: id,
+                url: '/img/loading.gif'
+              })
               axios.post('/api/upload', {imgData: result.base64, themeId: self.id}).then(function (res) {
-                item.ask.push(res.data.filePath)
+                for (var i = 0; i < item.ask.length; i++) {
+                  if (item.ask[i].id === id) {
+                    item.ask[i].url = res.data.filePath
+                    break
+                  }
+                }
+                self.$forceUpdate()
                 self.toValidateAgain(index)
-                self.$indicator.close()
               })
             })
           } else if (file && !/^image/.test(file.type)){
             var form = new FormData()
             form.append('inputFile', file)
             form.append('themeId', self.id)
+            self.$indicator.open()
             axios.post('/api/upload', form, {header: {'Content-Type': false}}).then(function (res) {
               item.ask.push({path: res.data.filePath, name: res.data.fileName})
               self.toValidateAgain(index)
@@ -349,6 +376,37 @@
           } else {
             //否则就是PC浏览器打开
             return 'pc浏览器'
+          }
+        },
+        deepClone (obj) {
+          if (obj == null || typeof obj !== 'object') {
+            return obj
+          }
+          switch (Object.prototype.toString.call(obj)) {
+            case '[object Array]' : {
+              var result = new Array(obj.length)
+              for (var i = 0; i < result.length; i++) {
+                result[i] = this.deepClone(obj[i])
+              }
+              return result
+            }
+            case '[object Object]': {
+              var keys = Object.keys(obj)
+              var result = {}
+              for (var j = 0; j < keys.length; j++) {
+                var key = keys[j]
+                result[key] = this.deepClone(obj[key])
+              }
+              return result
+            }
+            case '[object Date]':
+            case '[object RegExp]':
+            case '[object Map]':
+            case '[object Set]':
+              return new obj.constructor(obj)
+            default: {
+              throw new Error('not support')
+            }
           }
         }
       },
@@ -531,14 +589,28 @@ body {
 }
 .item .ask .fileWrap {
   overflow: hidden;
-  padding:0 2px 0 12px;
+  padding: 10px 2px 0 12px;
   margin-bottom:6px;
 }
-.item .ask .fileWrap img {
+.item .ask .fileWrap .imgWrap {
+  position: relative;
+  float: left;
   width: 68px;
   height: 68px;
   margin-right:10px;
   margin-bottom:10px;
+}
+.fileWrap .imgWrap img {
+  width: 100%;
+  height: 100%;
+}
+.fileWrap .imgWrap .delImg {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  background: url(/img/del.png) no-repeat center/16px;
 }
 .item .ask .img-upload {
   float: left;

@@ -132,6 +132,7 @@ export default {
     }
     .editor {
       padding:20px 50px;
+      margin-bottom: 150px;
       .title {
         font-size: 24px;
         font-weight: bold;
