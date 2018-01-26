@@ -288,8 +288,9 @@
             return
           }
           if (file && /^image/.test(file.type)) {
-            if (file.size > 4 * 1024 * 1024) {
-              self.$toast('请选择小于4M的图片')
+            if (file.size > 10 * 1024 * 1024) {
+              self.$toast('请选择小于10M的图片')
+              self.$indicator.close()
               return
             }
             lrz(file, { quality: 1, width: 375 }).then(function (result) {
