@@ -71,7 +71,7 @@
         <!--地区类型--end-->
         <!--文本类型--start-->
         <!--<input class="textWarp" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'" placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''">-->
-        <textarea class="textWarp" style="resize: none" type="text" :name="index" :align="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'"  placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''" rows="3"></textarea>
+        <textarea class="textWarp" style="resize: none" type="text" :name="index" :data-validate="item.validate" v-model="result[index].ask" v-if="item.qsType=== 'text' && item.validate !== 'date' && item.validate !=='time' && item.validate !=='address'"  placeholder="请输入" @keyup="toValidateAgain" :maxlength="item.maxLength || ''" :minlength="item.minLength || ''" rows="3"></textarea>
         <!--文本类型--end-->
         <div v-for="(ask,i) in item.askList" class="radioWrap" v-if="item.qsType=== 'radio'">
           <div class="flex ai-center">
@@ -173,7 +173,7 @@
           if (JSON.stringify(this.errors) === '{}') return
           if (typeof el === 'number') {
             this.validate()
-          } else if (el.target.align !== 'text' && validateFuns[validateFuns.funDict[el.target.align]](el.target.value)) {
+          } else if (el.target.dataset.validate !== 'text' && validateFuns[validateFuns.funDict[el.target.dataset.validate]](el.target.value)) {
             delete this.errors[el.target.name]
             this.$forceUpdate()
           } else {
