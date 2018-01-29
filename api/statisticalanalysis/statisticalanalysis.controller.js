@@ -44,7 +44,6 @@ module.exports.downloadExcel = (req, res) => {
             excelHeader.push(++index + '.' + item.title + '【文件上传】')
           }
         })
-        console.log(answerData)
         answerData.forEach((item, index) => {
           let itemArr = []
           itemArr.push(index + 1)

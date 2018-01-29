@@ -6,7 +6,7 @@ module.exports = function (app) {
   app.use('/api/form', require('./api/form'))
   app.use('/api/upload', require('./api/file'))
   app.use('/api/submit', require('./api/submit'))
-  app.use('/api/proxy/region', require('./api/proxy'))
+  app.use('/api/proxy/', require('./api/proxy'))
   app.use('/api/checkAnswer', require('./api/statisticalanalysis'))
   app.use('/api/downloadExcel', require('./api/statisticalanalysis'))
   app.use('/auth', require('./auth'))

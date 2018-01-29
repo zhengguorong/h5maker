@@ -133,7 +133,8 @@
         errors: {},
         timeStamp: 0,
         QADisplay: false,
-        successDisplay: false
+        successDisplay: false,
+        sfaInfo: null
       },
       filters: {
         dtFormat: function(v, type) {
@@ -194,6 +195,9 @@
                 submitResult[i].ask[j] = submitResult[i].ask[j].url
               }
             }
+          }
+          if (this.sfaInfo) {
+           // submitResult.unshift({question: '员工编码', ask: this.sfaInfo.account}, {question: '员工姓名', ask: this.sfaInfo.realName})
           }
           this.$indicator.open()
           axios.post('/api/submit', {formId: this.id, sourcePlatform: this.runPlatform(), timeStamp: this.timeStamp, result: submitResult}).then(function(res){
@@ -424,6 +428,11 @@
         var dotIndex = url.lastIndexOf("\.")
         this.id = url.substring(index + 1, dotIndex)
         var self = this
+        axios.post('/api/proxy/getSfaInfo',{token: 'a6bb156e114ec50dcab1eac0b651409a'}).then(function (res) {
+          if (res.data.responseCode === 0) {
+            self.sfaInfo = res.data.user
+          }
+        })
         this.getFormById(this.id).then(function (res) {
           self.form = res.data
           self.initResult(res.data.questions)
