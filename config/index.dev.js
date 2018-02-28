@@ -5,9 +5,10 @@ const all = {
         session: 'h5maker'
     },
     mongo: {
-        uri: 'mongodb://192.168.234.28:27017/h5maker',
-        user: 'h5maker',
-        pass: 'xgd$MPB37@8GALX#'
+      uri: 'mongodb://120.77.178.209:27017/h5maker',
+      user: 'root',
+      pass: '3432395@wesdint'
+
     },
     userRoles: ['guest', 'user', 'admin']
 }
