@@ -109,8 +109,10 @@ export default {
     },
     activeQuestion (state, index) {
       if (state.activeQuestionIndex !== -1) state.form.questions[state.activeQuestionIndex].isActive = false
-      state.form.questions[index].isActive = true
-      state.activeQuestionIndex = index
+      if (state.form.questions.length > 0) {
+        state.form.questions[index].isActive = true
+        state.activeQuestionIndex = index
+      }
     },
     disActiveQuestion (state, index) {
       if (state.activeQuestionIndex !== -1) state.form.questions[index].isActive = false
