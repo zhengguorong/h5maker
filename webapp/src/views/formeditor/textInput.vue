@@ -2,9 +2,9 @@
   <div class="container" @click.stop="setActive" :class="{active: question.isActive}">
     <div class="question">
       <div class="title">
-        <span class="must" v-if="question.isMust">*</span>{{index + 1}}. {{question.title}}</div>
+        <span class="must" v-if="question.isMust">*</span>{{index + 1}}. {{question.title || '请输入问题内容'}}</div>
       <div class="result">
-        <el-input placeholder="请输入内容"></el-input>
+        <!--<el-input placeholder="请输入内容"></el-input>-->
         <div class="tips" v-if="question.tips">
           提示：{{question.tips}}
         </div>
@@ -23,9 +23,9 @@
     </div>
     <div class="editor-panel ignore-drag"  v-show="question.isActive">
       <div class="row">
-        <div class="item">
+        <div class="item" @click="disableReason">
           <span class="title">问题标题</span>
-          <el-input class="input" v-model="question.title" @focus="removeTips(question.title)"></el-input>
+          <el-input class="input" v-model="question.title" placeholder="请输入问题内容" :disabled="!isFreeEdit"></el-input>
         </div>
         <div class="item">
           <el-checkbox v-model="question.isTips">填写提示</el-checkbox>
@@ -63,7 +63,7 @@
 
 <script>
 export default {
-  props: ['question', 'index'],
+  props: ['question', 'index', 'isFreeEdit'],
   data () {
     return {
       options: [
@@ -79,10 +79,9 @@ export default {
     }
   },
   methods: {
-    removeTips (v) {
-      if (v === '请输入问题内容') {
-        this.question.title = ''
-      }
+    disableReason () {
+      if (this.isFreeEdit) return
+      this.$message('已存在答卷的问题无法对标题进行编辑哦')
     },
     setActive () {
       if (this.question.isActive === true) return

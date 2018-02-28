@@ -130,10 +130,31 @@ module.exports.update = (req, res) => {
   if (req.body._id) {
     delete req.body._id
   }
-  tools.renderFile('form.html', req.body, (html) => {
-    tools.saveFile(req.params.id + '.html', html)
+  let queryFormData = null
+  Form.findById(req.params.id).exec().then((formData) => {
+    // 当产生问卷后，禁止对已存在问题标题或选择题类型的更改
+    if (formData.answerNum > 0) {
+      let qs = formData.questions
+      qs.map(item => {
+        req.body.questions.map(reqItem => {
+          if (reqItem.qsId === item.qsId) {
+            reqItem.qsType = item.qsType
+            reqItem.title = item.title
+          }
+        })
+      })
+    }
+    return Promise.resolve()
+  }).then(() => {
+    return Form.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true }).exec()
+  }).then((qfd) => {
+    queryFormData = qfd
+    return tools.renderFile('form.html', req.body)
+  }).then((html) => {
+    return tools.saveFile(req.params.id + '.html', html)
+  }).then(() => {
+    return res.status(200).json(queryFormData)
+  }).catch((err) => {
+    return res.status(500).send(err)
   })
-  return Form.findOneAndUpdate({ _id: req.params.id }, req.body, { upsert: true, setDefaultsOnInsert: true, runValidators: true }).exec()
-    .then(respondWithResult(res))
-    .catch(handleError(res))
 }

@@ -4,7 +4,6 @@
 var Answer = require('../submit/submit.model')
 var Form = require('../form/form.model')
 var async = require('async')
-const fs = require('fs')
 const xlsx = require('better-xlsx') // github: https://github.com/d-band/better-xlsx
 module.exports.findAnswerById = (req, res) => {
   let formId = req.body.formId
@@ -23,7 +22,9 @@ module.exports.findAnswerById = (req, res) => {
       })
     }
   }, (err, result) => {
-    res.json(result)
+    if (!err) {
+      res.json(result)
+    }
   })
 }
 
@@ -51,37 +52,52 @@ module.exports.downloadExcel = (req, res) => {
           itemArr.push(item.timeStamp)
           itemArr.push(item.ip)
           itemArr.push(item.sourcePlatform)
-          item.result.forEach((inItem, inIndex) => {
-            let qsType = questionData[0].questions[inIndex].qsType
-            let validate = questionData[0].questions[inIndex].validate
-            if (Object.prototype.toString.call(inItem.ask) !== '[object Array]') {
-              itemArr.push(inItem.ask)
+          // 重新组装答卷数据接口，id为key的对象
+          let resultObj = {}
+          item.result.forEach((inItem) => {
+            resultObj[inItem.qsId] = inItem
+          })
+          questionData[0].questions.forEach((qsItem) => {
+            let qsId = qsItem.qsId
+            if (!resultObj[qsId]) {
+              if (qsItem.isExist) {
+                itemArr.push('[Not generated]')
+              } else {
+                itemArr.push('[deleted]')
+              }
+              return
+            }
+            let qsType = resultObj[qsId].qsType
+            let validate = resultObj[qsId].qsValidate
+            let qsAsk = resultObj[qsId].ask
+            if (Object.prototype.toString.call(qsAsk) !== '[object Array]') {
+              itemArr.push(qsAsk)
             } else if (qsType === 'text' && validate === 'date') {
               let dateStr = ''
-              inItem.ask.forEach((dateItem) => {
+              qsAsk.forEach((dateItem) => {
                 dateStr = dateStr + '-' + dateItem
               })
               itemArr.push(dateStr.replace('-', ''))
             } else if (qsType === 'check') {
               let checkboxStr = ''
-              inItem.ask.forEach((checkboxItem) => {
+              qsAsk.forEach((checkboxItem) => {
                 checkboxStr = checkboxStr + ' | ' + checkboxItem
               })
               itemArr.push((checkboxStr))
             } else if (qsType === 'file' && validate === 'img') {
               let imgStr = ''
-              inItem.ask.forEach((imgItem) => {
+              qsAsk.forEach((imgItem) => {
                 imgStr = imgStr + 'http://' + req.headers.host + imgItem + ' '
               })
               itemArr.push(imgStr)
             } else if (qsType === 'file' && validate === 'pureFile') {
               let fileStr = ''
-              inItem.ask.forEach((fileItem) => {
+              qsAsk.forEach((fileItem) => {
                 fileStr = fileStr + 'http://' + req.headers.host + fileItem.path + ' '
               })
               itemArr.push(fileStr)
             } else {
-              itemArr.push(inItem.ask)
+              itemArr.push(qsAsk)
             }
           })
           excelContent.push(itemArr)

@@ -1,14 +1,16 @@
-import api from '../../api/form'
+import * as api from '../../api/form'
 import FormModel from '../../model/Form'
 import TextQuestionModel from '../../model/TextQuestion'
 import SelectedQuestionModel from '../../model/SelectedQuestion'
 import CheckModel from '../../model/Check'
 import FileQuestionModel from '../../model/FileQuestion'
+import tools from '../../util/tools'
 export default {
   namespaced: true,
   state: {
     formList: [],  // 问卷列表
     form: new FormModel(), // 正在编辑的表单
+    deletedQs: [], // 缓存删除的问题
     activeQuestionIndex: -1
   },
   actions: {
@@ -16,10 +18,10 @@ export default {
     deleteForm (form) {
       api.deleteForm(form)
     },
-    // 创建问卷
-    createForm (form) {
-      api.createForm(form)
-    },
+    // // 创建问卷
+    // createForm (form) {
+    //   api.createForm(form)
+    // },
     // 获取问卷列表
     getFormList ({commit}) {
       api.getFormList().then(res => {
@@ -31,14 +33,23 @@ export default {
       api.getFormById(id).then(res => {
         // 初始化选中元素
         res.questions.forEach((item, index) => {
-          if (item.isActive) state.activeQuestionIndex = index
+          if (item.isExist && item.isActive) state.activeQuestionIndex = index
         })
         commit('setForm', new FormModel(res))
       })
     },
     // 更新表单
     updateForm ({commit, state}) {
-      api.updateForm(state.form)
+      var submitFrom = tools.deepClone(state.form)
+      for (let qs of submitFrom.questions) {
+        if (qs.isNew) delete qs.isNew
+      }
+      if (state.deletedQs.length > 0) {
+        submitFrom.questions = submitFrom.questions.concat(state.deletedQs)
+      }
+      return api.updateForm(submitFrom).then(res => {
+        commit('setForm', new FormModel(res))
+      })
     },
     savePic ({commit}, data) {
       return api.uploadPic(data)
@@ -76,7 +87,19 @@ export default {
       state.formList = list
     },
     setForm (state, form) {
+      // 把删除的问题筛分出来
+      let existQs = []
+      let deletedQs = []
+      for (let qs of form.questions) {
+        if (qs.isExist) {
+          existQs.push(qs)
+        } else {
+          deletedQs.push(qs)
+        }
+      }
+      form.questions = existQs
       state.form = form
+      state.deletedQs = deletedQs
     },
     createForm (state, form) {
       state.formList.push(form)
@@ -94,11 +117,12 @@ export default {
       state.activeQuestionIndex = -1
     },
     addQuestion (state, question) {
-      if (state.activeQuestionIndex > -1) {
-        state.form.questions.splice(state.activeQuestionIndex + 1, 0, question)
-      } else {
-        state.form.questions.push(question)
-      }
+      state.form.questions.push(question)
+      // if (state.activeQuestionIndex > -1) {
+      //   state.form.questions.splice(state.activeQuestionIndex + 1, 0, question)
+      // } else {
+      //   state.form.questions.push(question)
+      // }
     },
     copyQuestion (state, index) {
       let copyObject = JSON.parse(JSON.stringify(state.form.questions[index]))
@@ -109,6 +133,11 @@ export default {
       state.form.questions[index] = question
     },
     deleteQuestion (state, index) {
+      let temQs = state.form.questions[index]
+      if (!temQs.isNew) {
+        temQs.isExist = false
+        state.deletedQs.push(temQs)
+      }
       state.form.questions.splice(index, 1)
     },
     moveUpQuestion (state, index) {

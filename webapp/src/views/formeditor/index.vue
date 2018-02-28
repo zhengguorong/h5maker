@@ -11,14 +11,14 @@
           <el-button class="save" :plain="true" type="info" @click.stop="saveForm">保存</el-button>
         </div>
         <div class="editor">
-          <div class="title"><input type="text" v-model="form.title"/></div>
+          <div class="title"><input type="text" v-model="form.title" style="width: 80%"/></div>
           <p class="description"><textarea rows="4" v-model="form.description"/></p>
           <draggable v-model="form.questions" :options="{filter: '.ignore-drag', preventOnFilter: false}">
-            <div class="form list-complete-item"  v-for="(item,index) in form.questions" v-bind:key="index">
-              <TextInput :index="index" :question="item" v-if="item.qsType === 'text'"/>
-              <Checkbox :index="index" :question="item" v-if="item.qsType === 'check'"/>
-              <Checkbox :index="index" :question="item" v-if="item.qsType === 'radio'"/>
-              <FileUpload :index="index" :question="item" v-if="item.qsType === 'file'" />
+            <div class="form list-complete-item"  v-for="(item,index) in form.questions" :key="index" v-if="item.isExist">
+              <TextInput :index="index" :question="item" :isFreeEdit="form.answerNum === 0 || item.isNew" v-if="item.qsType === 'text'"/>
+              <Checkbox :index="index" :question="item" :isFreeEdit="form.answerNum === 0 || item.isNew" v-if="item.qsType === 'check'"/>
+              <Checkbox :index="index" :question="item" :isFreeEdit="form.answerNum === 0 || item.isNew" v-if="item.qsType === 'radio'"/>
+              <FileUpload :index="index" :question="item" :isFreeEdit="form.answerNum === 0 || item.isNew" v-if="item.qsType === 'file'" />
             </div>
           </draggable>
         </div>
@@ -36,6 +36,7 @@ import FileUpload from './fileUpload'
 import PreView from '../../components/PreView'
 import draggable from 'vuedraggable'
 import {mapGetters} from 'vuex'
+import FormModel from '../../model/Form'
 export default {
   data () {
     return {
@@ -66,7 +67,7 @@ export default {
       this.$store.dispatch('form/addFileQuestion')
     },
     saveForm () {
-      return this.$store.dispatch('form/updateForm').then(() => {
+      return this.$store.dispatch('form/updateForm').then((res) => {
         this.$message('保存成功')
       })
     },
@@ -81,6 +82,8 @@ export default {
     HeaderEdit, TextInput, Checkbox, FileUpload, PreView, draggable
   },
   mounted () {
+    this.$store.state.form.activeQuestionIndex = -1
+    this.$store.state.form.form = new FormModel()
     this.$store.dispatch('form/getFormById', this.$route.query.itemId)
     window.addEventListener('scroll', this.handleScroll)
     // window.onbeforeunload = () => false

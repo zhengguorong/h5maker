@@ -1,5 +1,6 @@
 import axios from 'axios'
 import appConst from './appConst'
+
 export const get = (url, query) => {
   const token = 'Bearer ' + window.localStorage.token
   let _url

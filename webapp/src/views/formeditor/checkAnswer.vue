@@ -39,7 +39,7 @@
             width="120">
           <template scope="scope">
             <el-button
-                @click.native.prevent="checkAnswer(scope.$index)"
+                @click.native.prevent="checkAnswer1(scope.$index)"
                 type="success"
                 :plain="true"
                 size="small">
@@ -69,9 +69,9 @@
         <el-row v-for="(item, index) in QAArr">
           <el-col :span="12"><div class="grid-content">{{index + 1}}.{{item.question.content}} <span style="color: #0a58cc">{{item.question.type}}</span></div></el-col>
           <el-col :span="12" v-if="formList.length > 0 ">
-           <div v-if="questionInfoList[index].validate === 'img'"><a :href="appConst.BACKEND_DOMAIN + imgItem" target="_blank" style="margin-right:8px;" v-for="imgItem in item.ask"><img :src="appConst.BACKEND_DOMAIN + imgItem" width="100" alt=""></a><span v-if="item.ask.length === 0" style="font-size:14px">未上传图片</span></div>
-           <div v-if="questionInfoList[index].validate === 'pureFile'"><a :href="appConst.BACKEND_DOMAIN + fileItem.path" target="_blank" v-for="(fileItem, index) in item.ask" style="margin-right:8px;color: #0a58cc">{{fileItem.name}}</a><span v-if="item.ask.length === 0" style="font-size:14px">未上传文件</span></div>
-           <div class="grid-content" v-if="questionInfoList[index].qsType !== 'file'">{{item.ask.length == 0 ? '未填写' : item.ask}}</div>
+           <div v-if="item.qsValidate === 'img'"><a :href="appConst.BACKEND_DOMAIN + imgItem" target="_blank" style="margin-right:8px;" v-for="imgItem in item.ask"><img :src="appConst.BACKEND_DOMAIN + imgItem" width="100" alt=""></a><span v-if="item.ask.length === 0" style="font-size:14px">未上传图片</span></div>
+           <div v-if="item.qsValidate === 'pureFile'"><a :href="appConst.BACKEND_DOMAIN + fileItem.path" target="_blank" v-for="(fileItem, index) in item.ask" style="margin-right:8px;color: #0a58cc">{{fileItem.name}}</a><span v-if="item.ask.length === 0" style="font-size:14px">未上传文件</span></div>
+           <div class="grid-content" v-if="item.qsType !== 'file'">{{item.ask.length == 0 ? '未填写' : item.ask}}</div>
           </el-col>
           <el-col :span="12" v-else>
             <div class="grid-content">{{item.ask.length == 0 ? '未填写' : item.ask}}</div>
@@ -152,6 +152,70 @@
       openChart (bool) {
         this.answerChartsDisplay = bool
       },
+      checkAnswer1 (index) {
+        this.currentIndex = index
+        this.ordinal = this.pageSize * (this.currentPage - 1) + index + 1
+        this.QAArr = this.answerCollection[index].result
+        this.detailDisplay = true
+        for (let i = 0; i < this.QAArr.length; i++) {
+          let qaItem = this.QAArr[i]
+          if (qaItem.qsType === 'text' && qaItem.qsValidate === 'date') {
+            let dateStr = ''
+            if (Object.prototype.toString.call(qaItem.ask) !== '[object Array]') continue
+            qaItem.ask.forEach((dateItem) => {
+              dateStr = dateStr + '-' + dateItem
+            })
+            if (Object.prototype.toString.call(qaItem.ask) !== '[object Object]') {
+              qaItem.question = {
+                content: qaItem.question,
+                type: '【填空题】'
+              }
+            }
+            qaItem.ask = dateStr.replace('-', '')
+          } else if (qaItem.qsType === 'check') {
+            let checkboxStr = ''
+            if (Object.prototype.toString.call(qaItem.ask) !== '[object Array]') continue
+            qaItem.ask.forEach((checkboxItem) => {
+              checkboxStr = checkboxStr + ' | ' + checkboxItem
+            })
+            if (Object.prototype.toString.call(qaItem.ask) !== '[object Object]') {
+              qaItem.question = {
+                content: qaItem.question,
+                type: '【多选题】'
+              }
+            }
+            qaItem.ask = checkboxStr
+          } else if (qaItem.qsType === 'file' && qaItem.qsValidate === 'img') {
+            if (Object.prototype.toString.call(qaItem.question) !== '[object Object]') {
+              qaItem.question = {
+                content: qaItem.question,
+                type: '【图片上传】'
+              }
+            }
+          } else if (qaItem.qsType === 'file' && qaItem.qsValidate === 'pureFile') {
+            if (Object.prototype.toString.call(qaItem.question) !== '[object Object]') {
+              qaItem.question = {
+                content: qaItem.question,
+                type: '【文件上传】'
+              }
+            }
+          } else if (qaItem.qsType === 'radio') {
+            if (Object.prototype.toString.call(qaItem.question) !== '[object Object]') {
+              qaItem.question = {
+                content: qaItem.question,
+                type: '【单选题】'
+              }
+            }
+          } else {
+            if (Object.prototype.toString.call(qaItem.question) !== '[object Object]') {
+              qaItem.question = {
+                content: qaItem.question,
+                type: '【填空题】'
+              }
+            }
+          }
+        }
+      },
       checkAnswer (index) {
         this.currentIndex = index
         this.ordinal = this.pageSize * (this.currentPage - 1) + index + 1
@@ -193,31 +257,19 @@
               }
               this.QAArr[j].ask = checkboxStr
             } else if (questionInfo.qsType === 'file' && questionInfo.validate === 'img') {
-//            let imgStr = ''
-//            if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
-//            this.QAArr[j].ask.forEach((imgItem) => {
-//              imgStr = imgStr + appConst.BACKEND_DOMAIN + imgItem
-//            })
               if (Object.prototype.toString.call(this.QAArr[j].question) !== '[object Object]') {
                 this.QAArr[j].question = {
                   content: this.QAArr[j].question,
                   type: '【图片上传】'
                 }
               }
-//            this.QAArr[j].ask = imgStr
             } else if (questionInfo.qsType === 'file' && questionInfo.validate === 'pureFile') {
-//              let fileStr = ''
-//              if (Object.prototype.toString.call(this.QAArr[j].ask) !== '[object Array]') return
-//              this.QAArr[j].ask.forEach((fileItem) => {
-//                fileStr = fileStr + appConst.BACKEND_DOMAIN + fileItem.path
-//              })
               if (Object.prototype.toString.call(this.QAArr[j].question) !== '[object Object]') {
                 this.QAArr[j].question = {
                   content: this.QAArr[j].question,
                   type: '【文件上传】'
                 }
               }
-//              this.QAArr[j].ask = fileStr
             } else if (questionInfo.qsType === 'radio') {
               if (Object.prototype.toString.call(this.QAArr[j].question) !== '[object Object]') {
                 this.QAArr[j].question = {
