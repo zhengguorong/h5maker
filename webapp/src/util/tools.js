@@ -19,12 +19,12 @@ const deepClone = (obj) => {
     }
     case '[object Object]': {
       const keys = Object.keys(obj)
-      const result = {}
+      const resultObj = {}
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i]
-        result[key] = deepClone(obj[key])
+        resultObj[key] = deepClone(obj[key])
       }
-      return result
+      return resultObj
     }
     case '[object Date]':
     case '[object RegExp]':

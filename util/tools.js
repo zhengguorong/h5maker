@@ -12,7 +12,9 @@ const base64ToImg = (imgData, filePath) => {
   var dataBuffer = new Buffer(base64Data, 'base64')
   var fileDir = path.dirname(filePath)
   mkdirp(fileDir, (err) => {
+    if (err) throw new Error(err)
     fs.writeFile(filePath, dataBuffer, (err) => {
+      if (err) throw new Error(err)
     })
   })
 }

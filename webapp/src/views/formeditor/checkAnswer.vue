@@ -152,6 +152,7 @@
       openChart (bool) {
         this.answerChartsDisplay = bool
       },
+      // 2018/03/09 对数据库字段进行更改后，查看问卷调用此方法
       checkAnswer1 (index) {
         this.currentIndex = index
         this.ordinal = this.pageSize * (this.currentPage - 1) + index + 1

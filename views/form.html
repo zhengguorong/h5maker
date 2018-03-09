@@ -403,12 +403,12 @@
             }
             case '[object Object]': {
               var keys = Object.keys(obj)
-              var result = {}
+              var resultObj = {}
               for (var j = 0; j < keys.length; j++) {
                 var key = keys[j]
-                result[key] = this.deepClone(obj[key])
+                resultObj[key] = this.deepClone(obj[key])
               }
-              return result
+              return resultObj
             }
             case '[object Date]':
             case '[object RegExp]':
@@ -428,14 +428,15 @@
         var dotIndex = url.lastIndexOf("\.")
         this.id = url.substring(index + 1, dotIndex)
         var self = this
-        axios.post('/api/proxy/getSfaInfo',{token: 'a6bb156e114ec50dcab1eac0b651409a'}).then(function (res) {
-          if (res.data.responseCode === 0) {
-            self.sfaInfo = res.data.user
-          }
-        })
+//        axios.post('/api/proxy/getSfaInfo',{token: 'a6bb156e114ec50dcab1eac0b651409a'}).then(function (res) {
+//          if (res.data.responseCode === 0) {
+//            self.sfaInfo = res.data.user
+//          }
+//        })
         this.getFormById(this.id).then(function (res) {
           var questions = res.data.questions
           var newQuestions = []
+          // 过滤已删除的问题
           for (var i = 0; i < questions.length; i++) {
             if (questions[i].isExist) newQuestions.push(questions[i])
           }
@@ -623,6 +624,7 @@ body {
   margin-bottom:10px;
 }
 .fileWrap .imgWrap img {
+  display: inline-block;
   width: 100%;
   height: 100%;
 }

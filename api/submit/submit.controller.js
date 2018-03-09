@@ -24,19 +24,19 @@ const validate = (data) => {
     var question = data.result[i]
     var ask = data.result[i].ask
     // 验证必填项
-    if (question.isMust && ask.length === 0) {
-      return {responseMsg: '请完成' + question.title}
+    if (question.qsIsMust && ask.length === 0) {
+      return {responseMsg: '请完成' + question.question}
     }
     // 验证手机号
-    if (ask.length > 0 && question.validate === 'phone' && !validateFuns.isMobile(ask)) {
+    if (ask.length > 0 && question.qsValidate === 'phone' && !validateFuns.isMobile(ask)) {
       return {responseMsg: '手机号码格式不正确哦'}
     }
     // 验证邮箱
-    if (ask.length > 0 && question.validate === 'email' && !validateFuns.isEmail(ask)) {
+    if (ask.length > 0 && question.qsValidate === 'email' && !validateFuns.isEmail(ask)) {
       return {responseMsg: '邮箱格式不正确哦'}
     }
     // 验证数字
-    if (ask.length > 0 && question.validate === 'num' && !validateFuns.isNum(ask)) {
+    if (ask.length > 0 && question.qsValidate === 'num' && !validateFuns.isNum(ask)) {
       return {responseMsg: '请输入纯数字哦'}
     }
     // 验证上传图片张数限制

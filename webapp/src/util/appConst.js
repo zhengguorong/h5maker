@@ -2,7 +2,7 @@
 let BACKEND_DOMAIN = 'http://localhost:3000'
 if (process.env.NODE_ENV === 'production') {
   // 生产环境
-  BACKEND_DOMAIN = 'http://120.77.178.209'
+  BACKEND_DOMAIN = 'http://node.bluemoon.com.cn'
 } else if (process.env.NODE_ENV === 'development') {
   // 本地开发
   BACKEND_DOMAIN = 'http://localhost:3000'
