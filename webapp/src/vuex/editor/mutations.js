@@ -10,6 +10,9 @@ const mutations = {
   [types.ADD_PIC_ELEMENT] (state, data) {
     state.editorPage.elements.push(new Element(data))
   },
+  [types.SET_AS_TEMPLATE] (state, data) {
+    state.editorTheme.isTemplate = data
+  },
   [types.SET_BG_ELEMENT] (state, data) {
     let haveBG = false
     state.editorPage.elements.findIndex((value, index, arr) => {

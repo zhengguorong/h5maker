@@ -4,14 +4,21 @@
     <div class="my-themes">
       <div class="container">
         <ul class="theme-list">
-          <li class="theme-item create" @click="create">
-            <div class="create-area">
-              <p>创建作品</p>
+          <li class="theme-item create">
+            <!--<div class="create-area">-->
+              <!--<p>创建作品</p>-->
+            <!--</div>-->
+            <div class="thumb">
+              <div class="create-area"><p class="catext">创建作品</p></div>
+              <div class="cover">
+                <div class="preview" @click="create"><span>直接创建</span></div>
+                <div class="preview" @click="isShowSelectTemplate = true"><span>选取模板</span></div>
+              </div>
             </div>
           </li>
           <template v-for="item in list">
             <li class="theme-item">
-              <div class="thumb" >
+              <div class="thumb">
                 <img src="../../assets/images/default.png" alt="">
                 <div class="cover">
                   <div class="toolbar">
@@ -35,17 +42,20 @@
       </div>
     </div>
     <PreView :itemId="itemId" @hideView="isShowPreView=false" v-if="isShowPreView"/>
+    <SelectTemplate @closeSelectTemplate="isShowSelectTemplate = false" v-if="isShowSelectTemplate"></SelectTemplate>
   </div>
 </template>
 
 <script>
   import HeaderBar from '../../components/HeaderBar'
+  import SelectTemplate from './selectTemplate.vue'
   import tools from '../../util/tools'
   import PreView from '../../components/PreView'
   export default {
     data () {
       return {
         isShowPreView: false,
+        isShowSelectTemplate: false,
         itemId: null
       }
     },
@@ -95,7 +105,7 @@
       }
     },
     components: {
-      HeaderBar, PreView
+      HeaderBar, PreView, SelectTemplate
     }
   }
 </script>
@@ -124,6 +134,9 @@
     margin-right: 20px;
     margin-bottom: 20px;
     background: #fff;
+    /*box-shadow: 0 5px 16px 0 rgba(0,0,0,0.81);*/
+    /*border-radius: 8px;*/
+    overflow: hidden;
   }
 
   .theme-item .thumb img {
@@ -167,6 +180,9 @@
     .cover {
       display: block;
     }
+    .catext {
+      display: none;
+    }
   }
   .theme-item .footer {
     height: 98px;
@@ -203,9 +219,15 @@
     text-align: center;
   }
 
-  .theme-item.create .create-area p {
+  .theme-item.create .create-area{
     font-size: 20px;
+    letter-spacing: 3px;
+    color: #fff;
     cursor: pointer;
-    margin-top: 100px;
+    height: 328px;
+    line-height: 328px;
+    background-image: linear-gradient(-220deg, #04FFFC 0%, #0851D8 100%);
+    /*box-shadow: 0 5px 16px 0 rgba(0,0,0,0.81);*/
+    /*border-radius: 8px;*/
   }
 </style>

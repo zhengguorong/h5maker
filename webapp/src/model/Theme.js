@@ -7,6 +7,7 @@ export default class Theme {
     this.description = theme.description || '描述'
     this.pages = theme.pages || []
     this.type = theme.type || 'h5'
+    this.isTemplate = theme.isTemplate || false
     this.canvasHeight = theme.canvasHeight || 504
     this.musicName = theme.musicName || null
     this.musicLink = theme.musicLink || null

@@ -1,6 +1,6 @@
 <template>
   <div class="editor">
-    <HeaderEdit :goback="dialogSave" @saveSuccess="showPreView=true" :perViewAction="save"/>
+    <HeaderEdit :goback="dialogSave" @saveSuccess="showPreView=true" :perViewAction="save" @template_status="template_status" :isTemplate="editorTheme.isTemplate"/>
     <section class="section">
       <Overview class="overview" />
       <Page class="canvas" :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" />
@@ -69,6 +69,7 @@
   import MusicPanel from '../../components/MusicPanel'
   import BgPanel from '../../components/BgPanel'
   import appConst from '../../util/appConst'
+  import * as types from '../../vuex/editor/mutation-type'
 
   export default {
     data () {
@@ -120,6 +121,9 @@
       }
     },
     methods: {
+      template_status (val) {
+        this.$store.commit(types.SET_AS_TEMPLATE, val)
+      },
       dialogSave () {
         return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('themeList'))
       },
@@ -168,6 +172,7 @@
       },
       save () {
         this.$refs.musicPanel.saveMusic()
+        console.log(tools.vue2json(this.$store.state.editor.editorTheme))
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
             message: '保存成功',

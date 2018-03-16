@@ -12,6 +12,7 @@ const state = {
     title: '蓝月亮',
     description: '蓝月亮',
     canvasHeight: 504,
+    isTemplate: false,
     musicLink: null,
     musicName: null,
     musicStyle: '默认',
