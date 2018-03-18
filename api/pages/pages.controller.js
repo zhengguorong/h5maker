@@ -4,6 +4,8 @@
 var jsonpatch = require('fast-json-patch')
 var Pages = require('./pages.model')
 var tools = require('../../util/tools')
+var mkdirp = require('mkdirp')
+var path = require('path')
 
 const respondWithResult = (res, statusCode) => {
   statusCode = statusCode || 200
@@ -93,7 +95,19 @@ module.exports.update = (req, res) => {
   }
   if (req.body.type === 'h5') {
     tools.renderFile('template.html', req.body, (html) => {
-      tools.saveFile(req.params.id + '.html', html)
+      tools.saveFile(req.params.id + '.html', html, '', () => { // 把生成的h5页面转为缩略图
+        var dirpath = path.join(__dirname, '../../public/screenshot')
+        var filename = req.params.id + '.png'
+        var localUrl = 'http://localhost:3000/pages/' + req.params.id + '.html'
+        mkdirp(dirpath, (err) => {
+          console.log(err)
+          if (err) {
+            throw new Error(err)
+          } else {
+            tools.html2img(localUrl, dirpath + '/' + filename)
+          }
+        })
+      })
     })
   } else if (req.body.type === 'spa') {
     tools.renderFile('spa.html', req.body, (html) => {

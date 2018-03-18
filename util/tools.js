@@ -6,6 +6,7 @@ var mkdirp = require('mkdirp')
 var path = require('path')
 var ejs = require('ejs')
 var fs = require('fs')
+var puppeteer = require('puppeteer')
 
 const base64ToImg = (imgData, filePath) => {
   var base64Data = imgData.replace(/^data:image\/\w+;base64,/, "")
@@ -57,9 +58,29 @@ const saveFile = (filePath, data, type, successCallback) => {
     })
   })
 }
-
+const html2img = (url, filepath) => {
+  puppeteer.launch().then(browser => {
+    browser.newPage().then(page => {
+      page.setViewport({
+        width: 320,
+        height: 568
+      }).then(() => {
+        page.goto(url).then(() => {
+          // 访问页面链接的方式（page.goto()）有参数指定可等页面网络请求完成再进行下一步操作
+          // 直接setContent的方式目前的方式是延时一秒再进行截图操作（可能有其他方法实现）
+          setTimeout(() => {
+            page.screenshot({path: filepath, fullPage: true}).then(() => {
+              browser.close()
+            })
+          }, 1000)
+        })
+      })
+    })
+  })
+}
 module.exports = {
     base64ToImg,
     renderFile,
-    saveFile
+    saveFile,
+    html2img
 }
