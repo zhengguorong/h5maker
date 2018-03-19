@@ -1,1 +1,2 @@
 export const SET_ERROR_INFO = 'SET_ERROR_INFO'
+export const SET_REGISTER_ERROR = 'SET_REGISTER_ERROR'

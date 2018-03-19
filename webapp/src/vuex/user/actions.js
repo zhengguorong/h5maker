@@ -18,7 +18,13 @@ export const register = ({commit}, userInfo) => {
   api.register(userInfo)
     .then((res) => {
       window.localStorage.setItem('token', res.token)
+      window.localStorage.setItem('loginId', userInfo.loginId)
       window.location.replace('#/themeList')
+    })
+    .catch(res => {
+      if (res.response.status === 422) {
+        commit('SET_REGISTER_ERROR', '用户名已存在')
+      }
     })
 }
 

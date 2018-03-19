@@ -6,8 +6,8 @@
       </div>
       <div class="content">
         <el-form :model="loginForm" ref="loginForm" :rules="loginRule">
-          <div class="error-info" v-if="errorInfo">
-            <div><i class="el-icon-warning"></i><span>{{errorInfo}}</span></div>
+          <div class="error-info" v-if="registerError">
+            <div><i class="el-icon-warning"></i><span>{{registerError}}</span></div>
           </div>
           <el-form-item prop="loginId">
             <el-input type="text" v-model="loginForm.loginId" placeholder="帐号(邮箱或者手机号)"></el-input>
@@ -53,7 +53,6 @@
         }
       }
       return {
-        errorInfo: '',
         loginForm: {
           loginId: '',
           name: '',
@@ -76,9 +75,14 @@
         }
       }
     },
+    computed: {
+      registerError () {
+        return this.$store.state.user.registerError
+      }
+    },
     methods: {
       register (ev) {
-        this.errorInfo = ''
+        this.$store.commit('SET_REGISTER_ERROR', '')
         this.$refs.loginForm.validate((valid) => {
           if (valid) {
             this.$store.dispatch('register', {loginId: this.loginForm.loginId, name: this.loginForm.name, password: this.loginForm.password})

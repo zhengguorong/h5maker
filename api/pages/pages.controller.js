@@ -107,21 +107,32 @@ module.exports.create = (req, res) => {
 
 // 通过模板创建作品
 module.exports.createByTemplate = (req, res) => {
-  // 添加作者信息
-  req.body.loginId = req.user.loginId
   var templateId = req.body.templateId
-  var newWorksId
-  return Pages.create(req.body)
-    .then((newWorksDoc) => {
-      newWorksId = newWorksDoc._id
-      return Pages.findById(templateId)
-    })
-    .then((templateDoc) => {
+  // var newWorksId
+  // return Pages.create(req.body)
+  //   .then((newWorksDoc) => {
+  //     newWorksId = newWorksDoc._id
+  //     return Pages.findById(templateId)
+  //   })
+  //   .then((templateDoc) => {
+  //     var newData = JSON.parse(JSON.stringify(templateDoc))
+  //     delete newData._id
+  //     delete newData.createDate
+  //     delete newData.loginId
+  //     return Pages.findOneAndUpdate({ _id: newWorksId }, newData, { upsert: true, setDefaultsOnInsert: true, runValidators: true })
+  //   })
+  Pages.findById(templateId)
+    .then(templateDoc => {
       var newData = JSON.parse(JSON.stringify(templateDoc))
       delete newData._id
       delete newData.createDate
       delete newData.loginId
-      return Pages.findOneAndUpdate({ _id: newWorksId }, newData, { upsert: true, setDefaultsOnInsert: true, runValidators: true })
+      // 添加作者信息
+      newData.loginId = req.user.loginId
+      newData.templateId = req.body.templateId
+      newData.type = req.body.type
+      newData.isTemplate = false
+      return Pages.create(newData)
     })
     .then(respondWithResult(res, 201))
     .catch(handleError(res))

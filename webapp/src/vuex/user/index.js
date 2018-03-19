@@ -2,7 +2,8 @@ import mutations from './mutations'
 import * as actions from './actions'
 
 const state = {
-  loginResult: ''
+  loginResult: '',
+  registerError: ''
 }
 
 export default{

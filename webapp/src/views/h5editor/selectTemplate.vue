@@ -2,7 +2,14 @@
   <div class="wrap">
    <div class="main">
      <div class="content">
-       <div class="title">选取模板</div>
+       <div class="title-bar">
+         <div class="title">选取模板</div>
+         <div>
+           <el-input placeholder="请输入模板创建人" v-model="searchKey" class="input-with-select">
+             <el-button slot="append" :icon="isSearching ? 'loading' : 'search'" @click="getTemplate"></el-button>
+           </el-input>
+         </div>
+       </div>
        <div class="t_list">
          <div class="t_card" v-for="item in template" :key="item.loginId">
            <div class="img_wrap">
@@ -50,11 +57,16 @@
    .content {
      height: 600px;
      overflow-x: hidden;
-     .title {
+     .title-bar {
        padding-bottom: 10px;
        margin-bottom: 10px;
        border-bottom: 1px solid #ccc;
-       font-weight: bold;
+       display: flex;
+       align-items: center;
+       justify-content: space-between;
+       .title {
+         font-weight: bold;
+       }
      }
      .t_list {
        display: flex;
@@ -144,7 +156,9 @@
     data () {
       return {
         template: [],
-        domain: appConst.BACKEND_DOMAIN
+        domain: appConst.BACKEND_DOMAIN,
+        searchKey: '',
+        isSearching: false
       }
     },
     props: {
@@ -159,13 +173,26 @@
         theme.pages.push({elements: []})
         api.createByTemplate(theme).then(res => {
           this.close()
+          this.$store.dispatch('getUserThemeList', 'h5')
         })
+      },
+      getTemplate () {
+        this.isSearching = true
+        if (this.searchKey === '') {
+          api.getWorksTemplate().then(res => {
+            this.template = res
+            this.isSearching = false
+          })
+        } else {
+          api.getWorksTemplate(this.searchKey).then(res => {
+            this.template = res
+            this.isSearching = false
+          })
+        }
       }
     },
     mounted () {
-      api.getWorksTemplate().then(res => {
-        this.template = res
-      })
+      this.getTemplate()
     }
   }
 </script>
