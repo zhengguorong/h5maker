@@ -172,7 +172,6 @@
       },
       save () {
         this.$refs.musicPanel.saveMusic()
-        console.log(tools.vue2json(this.$store.state.editor.editorTheme))
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
           this.$message({
             message: '保存成功',

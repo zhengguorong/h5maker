@@ -6,6 +6,12 @@ import * as http from '../util/http'
 const getUserThemeList = (type = 'h5') => {
   return http.get('/api/pages?type=' + type)
 }
+const getWorksTemplate = (key = 'all') => {
+  return http.get('/api/pages/worksTemplate/' + key)
+}
+const createByTemplate = (theme) => {
+  return http.post('/api/pages/createByTemplate', theme)
+}
 const getPageByThemeId = (id) => {
   return http.get('/api/pages/' + id)
 }
@@ -27,5 +33,5 @@ const getPicListByThemeId = (_id) => {
   return http.get('/api/upload/theme/' + _id)
 }
 module.exports = {
-  getUserThemeList, saveTheme, updateTheme, uploadPic, getPageByThemeId, getPicListByThemeId, delTheme
+  getUserThemeList, getWorksTemplate, createByTemplate, saveTheme, updateTheme, uploadPic, getPageByThemeId, getPicListByThemeId, delTheme
 }

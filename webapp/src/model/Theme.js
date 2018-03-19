@@ -13,5 +13,6 @@ export default class Theme {
     this.musicLink = theme.musicLink || null
     this.musicStyle = theme.musicStyle || '默认'
     this.uploadMusicList = theme.uploadMusicList || []
+    this.templateId = theme.templateId || null
   }
 }

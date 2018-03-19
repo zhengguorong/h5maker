@@ -65,7 +65,7 @@ module.exports.index = (req, res) => {
 
 module.exports.findByLoginId = (req, res) => {
   var loginId = req.user.loginId
-  var type = req.query.type;
+  var type = req.query.type
   return Pages.find({ loginId: loginId, type: type }).exec()
     .then(respondWithResult(res))
     .catch(handleError(res))
@@ -78,12 +78,51 @@ module.exports.show = (req, res) => {
     .then(respondWithResult(res))
     .catch(handleError(res))
 }
-
+// 获取模板作品
+module.exports.worksTemplate = (req, res) => {
+  var loginId = req.params.id
+  var condition
+  if (loginId === 'all') {
+    condition = {
+      isTemplate: true
+    }
+  } else {
+    condition = {
+      loginId: loginId,
+      isTemplate: true
+    }
+  }
+  return Pages.find(condition).exec()
+    .then(respondWithResult(res))
+    .catch(handleError(res))
+}
 // Creates a new Pages in the DB
 module.exports.create = (req, res) => {
   // 添加作者信息
   req.body.loginId = req.user.loginId
   return Pages.create(req.body)
+    .then(respondWithResult(res, 201))
+    .catch(handleError(res))
+}
+
+// 通过模板创建作品
+module.exports.createByTemplate = (req, res) => {
+  // 添加作者信息
+  req.body.loginId = req.user.loginId
+  var templateId = req.body.templateId
+  var newWorksId
+  return Pages.create(req.body)
+    .then((newWorksDoc) => {
+      newWorksId = newWorksDoc._id
+      return Pages.findById(templateId)
+    })
+    .then((templateDoc) => {
+      var newData = JSON.parse(JSON.stringify(templateDoc))
+      delete newData._id
+      delete newData.createDate
+      delete newData.loginId
+      return Pages.findOneAndUpdate({ _id: newWorksId }, newData, { upsert: true, setDefaultsOnInsert: true, runValidators: true })
+    })
     .then(respondWithResult(res, 201))
     .catch(handleError(res))
 }
