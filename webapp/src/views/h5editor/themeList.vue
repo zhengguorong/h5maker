@@ -16,7 +16,7 @@
               </div>
             </div>
           </li>
-          <template v-for="item in list">
+          <template v-for="(item, index) in list">
             <li class="theme-item">
               <div class="thumb">
                 <img src="../../assets/images/default.png" alt="">
@@ -29,7 +29,7 @@
                       <i @click.stop="deleteTheme(item)" class="el-icon-delete"></i>
                     </el-tooltip>
                   </div>
-                  <div class="preview" @click="showPreView(item._id)"><span>预 览</span></div>
+                  <div class="preview" @click="showPreView(item._id, index)"><span>预 览</span></div>
                 </div>
               </div>
               <div class="footer">
@@ -41,7 +41,7 @@
         </ul>
       </div>
     </div>
-    <PreView :itemId="itemId" @hideView="isShowPreView=false" v-if="isShowPreView"/>
+    <PreView :itemId="itemId" :itemIndex="itemIndex" @hideView="isShowPreView=false" v-if="isShowPreView"/>
     <SelectTemplate @closeSelectTemplate="isShowSelectTemplate = false" v-if="isShowSelectTemplate"></SelectTemplate>
   </div>
 </template>
@@ -56,7 +56,8 @@
       return {
         isShowPreView: false,
         isShowSelectTemplate: false,
-        itemId: null
+        itemId: null,
+        itemIndex: 0
       }
     },
     computed: {
@@ -99,9 +100,10 @@
           this.$router.replace({ path: '/h5editor', query: { itemId: $this.$store.state.editor.editorTheme._id } })
         })
       },
-      showPreView (itemId) {
+      showPreView (itemId, itemIndex) {
         this.isShowPreView = true
         this.itemId = itemId
+        this.itemIndex = itemIndex
       }
     },
     components: {

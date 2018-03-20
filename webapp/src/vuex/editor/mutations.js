@@ -83,10 +83,9 @@ const mutations = {
   [types.SET_CUR_EDITOR_THEME] (state, data) {
     state.editorTheme = data
   },
-  [types.UPDATE_THEME_DES] (state, {title, description, canvasHeight}) {
-    state.editorTheme.title = title
-    state.editorTheme.description = description
-    state.editorTheme.canvasHeight = canvasHeight
+  [types.UPDATE_THEME_DES] (state, {themeIndex, title, description}) {
+    state.themeList[themeIndex].title = title
+    state.themeList[themeIndex].description = description
   },
   [types.UPDATE_CANVASHEIGHT] (state, canvasHeight) {
     state.editorTheme.canvasHeight = canvasHeight
