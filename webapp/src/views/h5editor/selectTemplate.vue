@@ -83,7 +83,7 @@
        .img_wrap {
          position: relative;
          width: 180px;
-         height: 320px;
+         height: 284px;
          img {
            width: 100%;
            height: 100%;

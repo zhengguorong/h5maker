@@ -63,7 +63,7 @@ const html2img = (url, filepath) => {
     browser.newPage().then(page => {
       page.setViewport({
         width: 320,
-        height: 568
+        height: 504
       }).then(() => {
         page.goto(url).then(() => {
           // 访问页面链接的方式（page.goto()）有参数指定可等页面网络请求完成再进行下一步操作

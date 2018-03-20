@@ -19,7 +19,7 @@
           <template v-for="(item, index) in list">
             <li class="theme-item">
               <div class="thumb">
-                <img src="../../assets/images/default.png" alt="">
+                <ImgLoad class="img-wrap" :src="domain + '/screenshot/' + item._id + '.png'"></ImgLoad>
                 <div class="cover">
                   <div class="toolbar">
                     <el-tooltip class="item" effect="dark" content="编辑" placement="top-start">
@@ -49,15 +49,18 @@
 <script>
   import HeaderBar from '../../components/HeaderBar'
   import SelectTemplate from './selectTemplate.vue'
+  import ImgLoad from '../../components/ImgLoad.vue'
   import tools from '../../util/tools'
   import PreView from '../../components/PreView'
+  import AppConst from '../../util/appConst'
   export default {
     data () {
       return {
         isShowPreView: false,
         isShowSelectTemplate: false,
         itemId: null,
-        itemIndex: 0
+        itemIndex: 0,
+        domain: AppConst.BACKEND_DOMAIN
       }
     },
     computed: {
@@ -104,10 +107,14 @@
         this.isShowPreView = true
         this.itemId = itemId
         this.itemIndex = itemIndex
+      },
+      themeImgError (ev) {
+//        var evObject = ev.srcElement ? ev.srcElement : ev.target
+//        evObject.src = '../../assets/images/default.png'
       }
     },
     components: {
-      HeaderBar, PreView, SelectTemplate
+      HeaderBar, PreView, SelectTemplate, ImgLoad
     }
   }
 </script>
@@ -141,7 +148,7 @@
     overflow: hidden;
   }
 
-  .theme-item .thumb img {
+  .theme-item .thumb .img-wrap {
     width: 100%;
     height: 230px;
   }
