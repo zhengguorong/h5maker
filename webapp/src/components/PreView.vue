@@ -174,8 +174,8 @@ export default {
   data () {
     return {
       releaseUrl: appConst.BACKEND_DOMAIN + '/pages/' + this.itemId + '.html',
-      title: this.$store.state.editor.themeList[this.itemIndex].title || '',
-      description: this.$store.state.editor.themeList[this.itemIndex].description || '',
+      title: this.$store.state.editor.editorTheme.title || '',
+      description: this.$store.state.editor.editorTheme.description || '',
       qrcodeSize: 500,
       isForm: window.location.hash.indexOf('form') > -1,
       QRUrl: appConst.BACKEND_DOMAIN + '/QR/' + this.itemId + '.jpeg'
@@ -220,7 +220,7 @@ export default {
     },
     save () {
       this.$store.commit('UPDATE_THEME_DES', {themeIndex: this.itemIndex, title: this.title, description: this.description})
-      this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.themeList[this.itemIndex])).then(() => {
+      this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
         this.$message({
           message: '保存成功',
           type: 'success'

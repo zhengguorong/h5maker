@@ -52,7 +52,7 @@
         </div>
       </div>
     </section>
-    <PreView :itemId="itemId" @hideView="showPreView=false" v-if="showPreView"/>
+    <PreView :itemId="itemId" :itemIndex="itemIndex" @hideView="showPreView=false" :showSetting="false" v-if="showPreView"/>
   </div>
 </template>
 
@@ -83,7 +83,8 @@
         http: appConst.BACKEND_DOMAIN,
         releaseUrl: '',
         showPreView: false,
-        isLoadingPreview: false
+        isLoadingPreview: false,
+        cacheThemeUnSave: null // 用来缓存改动了未保存的初始状态，判断离开页面时提示用户是否保存
       }
     },
     watch: {
@@ -125,7 +126,21 @@
         this.$store.commit(types.SET_AS_TEMPLATE, val)
       },
       dialogSave () {
-        return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('themeList'))
+       // return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('themeList')) // 取消返回自动保存逻辑
+        if (this.cacheThemeUnSave === JSON.stringify(this.$store.state.editor.editorTheme)) {
+          return Promise.resolve().then(this.$router.replace('themeList'))
+        } else {
+          this.$confirm('要保存您的更改吗？', '提示', {
+            confirmButtonText: '保存',
+            cancelButtonText: '放弃',
+            type: 'warning'
+          }).then(() => {
+            this.save()
+            this.$router.replace('themeList')
+          }).catch(() => {
+            this.$router.replace('themeList')
+          })
+        }
       },
       getPicList (_id) {
         this.$store.dispatch('getPicListByThemeId', _id)
@@ -173,6 +188,7 @@
       save () {
         this.$refs.musicPanel.saveMusic()
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
+          this.cacheThemeUnSave = JSON.stringify(this.$store.state.editor.editorTheme)
           this.$message({
             message: '保存成功',
             type: 'success'
@@ -192,15 +208,16 @@
         this.$store.dispatch('setEditorElement', element)
       },
       deleteListener (event) {
-        if (event.keyCode === 8 && event.target.nodeName !== 'INPUT' && event.target.nodeName !== 'TEXTAREA') {
+        if (event.keyCode === 46 && event.target.nodeName !== 'INPUT' && event.target.nodeName !== 'TEXTAREA') {
           this.deleteElement()
         }
       },
       deleteElement () {
+        if (this.panelState === 11) this.panelState = 1
+        if (this.panelState === 12) this.panelState = 2
         this.$store.dispatch('deleteSelectedElement')
       },
       togglePanel (code) {
-        console.log(code)
         this.panelState = code
       }
     },
@@ -211,7 +228,9 @@
       this.itemId = this.$route.query.itemId
       if (this.itemId) {
         if (!this.pages) {
-          this.$store.dispatch('getPageByThemeId', this.itemId)
+          this.$store.dispatch('getPageByThemeId', this.itemId).then(() => {
+            this.cacheThemeUnSave = JSON.stringify(this.$store.state.editor.editorTheme)
+          })
         }
         this.getPicList(this.itemId)
       } else {

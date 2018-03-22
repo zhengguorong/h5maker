@@ -41,7 +41,7 @@
         </ul>
       </div>
     </div>
-    <PreView :itemId="itemId" :itemIndex="itemIndex" @hideView="isShowPreView=false" v-if="isShowPreView"/>
+    <PreView :itemId="itemId" :itemIndex="itemIndex" @hideView="isShowPreView=false" :showSetting="false" v-if="isShowPreView"/>
     <SelectTemplate @closeSelectTemplate="isShowSelectTemplate = false" v-if="isShowSelectTemplate"></SelectTemplate>
   </div>
 </template>

@@ -129,6 +129,7 @@
         this.$store.dispatch('copyPage', page)
       },
       delPage (page) {
+        if (this.pages.length === 1) return
         this.$store.dispatch('delPage', page)
       },
       addPage () {
