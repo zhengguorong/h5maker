@@ -9,6 +9,14 @@
       </div>
       <div class="control-panel">
         <div class="funcs">
+          <el-tooltip  effect="dark" content="编辑标题" placement="left">
+            <button class="func el-icon-document" @click="togglePanel(-1)" :class="{ active: panelState === -1 }"></button>
+          </el-tooltip>
+          <el-tooltip  effect="dark" content="添加背景" placement="left">
+            <button class="func" @click="togglePanel(0)" :class="{ active: panelState === 0 }" >
+              <i class="iconfont" style="font-size: 18px;">&#xe622;</i>
+            </button>
+          </el-tooltip>
           <el-tooltip  effect="dark" content="新建文本" placement="left">
             <button class="func el-icon-edit" @click="togglePanel(1)" :class="{ active: panelState === 1 }"></button>
           </el-tooltip>
@@ -31,7 +39,7 @@
           <!-- 设置背景 0 -->
         <div class="panel panel-bg">
           <div class="clearfix"
-              v-if="panelTabState !== 1">
+              v-if="panelTabState === 0">
             <el-button class="btn"
                       type="success"
                       @click="panelTabState = 1">更换背景</el-button>
@@ -44,6 +52,22 @@
             <ImgPanel :themeId="themeId" :selectedImg="addBG"/>
           </div>
         </div>
+          <!-- 设置标题和描述 -1 -->
+          <div class="panel panel-bg" v-show="panelState === -1">
+            <div class="info">
+              <div class="label">设置作品标题</div>
+              <el-input class="input"
+                        :value="editorTheme.title"
+                        @change="saveTitle"
+                        placeholder="请输入标题"></el-input>
+              <div class="label" style="margin-top:10px">设置作品描述</div>
+              <el-input class="input"
+                        :value="editorTheme.description"
+                        @change="saveDescription"
+                        placeholder="请输入描述"
+                        type="textarea"></el-input>
+            </div>
+          </div>
           <!-- 添加文字 1 -->
           <div class="panel panel-text" v-if="panelState === 1">
             <div class="btn" @click="addTextElement('title')" style="font-size: 32px; font-weight: bold;">插入标题</div>
@@ -53,7 +77,7 @@
           <div class="panel panel-element clearfix" v-if="panelState === 2">
             <ImgPanel :themeId="themeId" :selectedImg="addPicElement"/>
             <div class="item">
-              <label>图层高度</label>
+              <label class="layer">图层高度</label>
               <div class="content">
                 <el-input v-model="canvasHeight">
                   <template slot="append">px</template>
@@ -70,7 +94,7 @@
         </div>
       </div>
     </section>
-    <PreView :itemId="itemId" @hideView="showPreView=false" v-if="showPreView"/>
+    <PreView :itemId="itemId" @hideView="showPreView=false" :showSetting="false" v-if="showPreView"/>
   </div>
 </template>
 
@@ -92,7 +116,7 @@
     data () {
       return {
         itemId: null,
-        panelState: 0,
+        panelState: -1,
         canvasWidth: 320,
         dialogSaveBeforeBack: false,
         picBase64: '',
@@ -149,6 +173,12 @@
           default:
             this.panelState = 0
         }
+      },
+      saveTitle (v) {
+        this.$store.commit('UPDATE_THEME_TITLE', v)
+      },
+      saveDescription (v) {
+        this.$store.commit('UPDATE_THEME_DES', v)
       },
       dialogSave () {
         return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('spaList'))
@@ -233,7 +263,7 @@
         this.$store.dispatch('setEditorElement', element)
       },
       deleteListener (event) {
-        if (event.keyCode === 8 && event.target.nodeName !== 'INPUT' && event.target.nodeName !== 'TEXTAREA') {
+        if (event.keyCode === 46 && event.target.nodeName !== 'INPUT' && event.target.nodeName !== 'TEXTAREA') {
           this.deleteElement()
         }
       },
@@ -241,6 +271,9 @@
         this.$store.dispatch('deleteSelectedElement')
       },
       togglePanel (code) {
+        if (code === 0) {
+          this.panelTabState = 0
+        }
         this.panelState = code
       }
     },
@@ -410,7 +443,7 @@
     margin-left: 70px;
   }
   }
-  label {
+  .layer {
     text-align: right;
     vertical-align: middle;
     font-size: 14px;
@@ -419,5 +452,13 @@
     width: 70px;
     float: left;
     padding: 11px 12px 11px 0;
+  }
+  .info {
+    .label {
+      margin-bottom: 3px;
+    }
+    .input {
+      margin-top: 10px;
+    }
   }
 </style>

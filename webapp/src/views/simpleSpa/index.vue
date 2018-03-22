@@ -7,12 +7,15 @@
         <!-- <Page :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" /> -->
         <div class="canvas" :style="{ width: canvasWidth + 'px'}">
             <template v-for="element in editorPage.elements">
-              <img @click="selectedElement(element)" style="width: 100%" :src="http + element.imgSrc" :key="element"/>
+              <img @click="selectedElement(element)" style="width: 100%" :src="http + element.imgSrc" :key="element.imgSrc"/>
             </template>
         </div>
       </div>
       <div class="control-panel">
         <div class="funcs">
+          <el-tooltip  effect="dark" content="编辑标题" placement="left">
+            <button class="func el-icon-document" @click="togglePanel(-1)" :class="{ active: panelState === -1 }"></button>
+          </el-tooltip>
           <el-tooltip  effect="dark" content="新建素材" placement="left">
             <button class="func el-icon-picture" @click="togglePanel(2)":class="{ active: panelState === 2 }"></button>
           </el-tooltip>
@@ -21,6 +24,22 @@
           </el-tooltip>
         </div>
         <div class="wrapper custom-scrollbar">
+          <!-- 设置标题和描述 -1 -->
+          <div class="panel panel-bg" v-show="panelState === -1">
+            <div class="info">
+              <div class="label">设置作品标题</div>
+              <el-input class="input"
+                        :value="editorTheme.title"
+                        @change="saveTitle"
+                        placeholder="请输入标题"></el-input>
+              <div class="label" style="margin-top:10px">设置作品描述</div>
+              <el-input class="input"
+                        :value="editorTheme.description"
+                        @change="saveDescription"
+                        placeholder="请输入描述"
+                        type="textarea"></el-input>
+            </div>
+          </div>
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-if="panelState === 2">
             <ImgPanel :themeId="themeId" :selectedImg="addPicElement"/>
@@ -29,7 +48,7 @@
           <!-- <EditPanel :element="element" :panelState="panelState" v-if="panelState > 10"/> -->
           <div v-if="panelState > 10">
             <div class="item">
-              <label>跳转链接</label>
+              <label class="layer">跳转链接</label>
               <div class="content">
                 <el-input v-model="element.href"></el-input>
               </div>
@@ -41,7 +60,7 @@
         </div>
       </div>
     </section>
-    <PreView :itemId="itemId" @hideView="showPreView=false" v-if="showPreView"/>
+    <PreView :itemId="itemId" @hideView="showPreView=false" :showSetting="false" v-if="showPreView"/>
   </div>
 </template>
 
@@ -63,7 +82,7 @@
     data () {
       return {
         itemId: null,
-        panelState: 2,
+        panelState: -1,
         canvasWidth: 320,
         dialogSaveBeforeBack: false,
         picBase64: '',
@@ -119,6 +138,12 @@
           default:
             this.panelState = 0
         }
+      },
+      saveTitle (v) {
+        this.$store.commit('UPDATE_THEME_TITLE', v)
+      },
+      saveDescription (v) {
+        this.$store.commit('UPDATE_THEME_DES', v)
       },
       dialogSave () {
         return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('simpleSpaList'))
@@ -203,7 +228,7 @@
         this.changeEditionLayer('pic')
       },
       deleteListener (event) {
-        if (event.keyCode === 8 && event.target.nodeName !== 'INPUT' && event.target.nodeName !== 'TEXTAREA') {
+        if (event.keyCode === 46 && event.target.nodeName !== 'INPUT' && event.target.nodeName !== 'TEXTAREA') {
           this.deleteElement()
         }
       },
@@ -386,7 +411,7 @@
   .item.btn {
     text-align: center
   }
-  label {
+  .layer {
     text-align: right;
     vertical-align: middle;
     font-size: 14px;
@@ -395,5 +420,13 @@
     width: 70px;
     float: left;
     padding: 11px 12px 11px 0;
+  }
+  .info {
+    .label {
+      margin-bottom: 3px;
+    }
+    .input {
+      margin-top: 10px;
+    }
   }
 </style>

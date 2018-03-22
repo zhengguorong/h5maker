@@ -6,6 +6,9 @@
       <Page class="canvas" :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" />
       <div class="control-panel">
         <div class="funcs">
+          <el-tooltip  effect="dark" content="编辑标题" placement="left">
+            <button class="func el-icon-document" @click="togglePanel(-1)" :class="{ active: panelState === -1 }"></button>
+          </el-tooltip>
           <el-tooltip  effect="dark" content="添加背景" placement="left">
             <button class="func" @click="togglePanel(0)" :class="{ active: panelState === 0 }" >
               <i class="iconfont" style="font-size: 18px;">&#xe622;</i>
@@ -30,13 +33,29 @@
           </el-tooltip>
         </div>
         <div class="wrapper custom-scrollbar">
+          <!-- 设置标题和描述 -1 -->
+          <div class="panel panel-bg" v-show="panelState === -1">
+            <div class="info">
+              <div class="label">设置作品标题</div>
+              <el-input class="input"
+                        :value="editorTheme.title"
+                        @change="saveTitle"
+                        placeholder="请输入标题"></el-input>
+              <div class="label" style="margin-top:10px">设置作品描述</div>
+              <el-input class="input"
+                        :value="editorTheme.description"
+                        @change="saveDescription"
+                        placeholder="请输入描述"
+                        type="textarea"></el-input>
+            </div>
+          </div>
           <!-- 设置背景 0 -->
           <div class="panel panel-bg" v-show="panelState === 0">
             <BgPanel :themeId="themeId" :editorPage="editorPage" :elements="editorPage.elements"/>
           </div>
           <!-- 添加文字 1 -->
           <div class="panel panel-text" v-show="panelState === 1">
-            <div class="btn" @click="addTextElement('title')" style="font-size: 32px; font-weight: bold;">插入标题</div>
+            <!--<div class="btn" @click="addTextElement('title')" style="font-size: 32px; font-weight: bold;">插入标题</div>-->
             <div class="btn" @click="addTextElement('plain')">插入文本</div>
           </div>
           <!-- 添加元素 2 -->
@@ -52,7 +71,7 @@
         </div>
       </div>
     </section>
-    <PreView :itemId="itemId" :itemIndex="itemIndex" @hideView="showPreView=false" :showSetting="false" v-if="showPreView"/>
+    <PreView :itemId="itemId" @hideView="showPreView=false" :showSetting="false" v-if="showPreView"/>
   </div>
 </template>
 
@@ -75,7 +94,7 @@
     data () {
       return {
         itemId: null,
-        panelState: 0,
+        panelState: -1,
         canvasWidth: 320,
         canvasHeight: 504,
         dialogSaveBeforeBack: false,
@@ -124,6 +143,12 @@
     methods: {
       template_status (val) {
         this.$store.commit(types.SET_AS_TEMPLATE, val)
+      },
+      saveTitle (v) {
+        this.$store.commit('UPDATE_THEME_TITLE', v)
+      },
+      saveDescription (v) {
+        this.$store.commit('UPDATE_THEME_DES', v)
       },
       dialogSave () {
        // return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('themeList')) // 取消返回自动保存逻辑
@@ -350,6 +375,14 @@
            border-color: #04b9c4;
         }
       }
+    }
+  }
+  .info {
+    .label {
+      margin-bottom: 3px;
+    }
+    .input {
+      margin-top: 10px;
     }
   }
 </style>

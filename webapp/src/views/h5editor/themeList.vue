@@ -41,7 +41,7 @@
         </ul>
       </div>
     </div>
-    <PreView :itemId="itemId" :itemIndex="itemIndex" @hideView="isShowPreView=false" :showSetting="false" v-if="isShowPreView"/>
+    <PreView :itemId="itemId" @hideView="isShowPreView=false" :showSetting="false" v-if="isShowPreView"/>
     <SelectTemplate @closeSelectTemplate="isShowSelectTemplate = false" v-if="isShowSelectTemplate"></SelectTemplate>
   </div>
 </template>
@@ -59,7 +59,6 @@
         isShowPreView: false,
         isShowSelectTemplate: false,
         itemId: null,
-        itemIndex: 0,
         domain: AppConst.BACKEND_DOMAIN
       }
     },
@@ -103,10 +102,9 @@
           this.$router.replace({ path: '/h5editor', query: { itemId: $this.$store.state.editor.editorTheme._id } })
         })
       },
-      showPreView (itemId, itemIndex) {
+      showPreView (itemId) {
         this.isShowPreView = true
         this.itemId = itemId
-        this.itemIndex = itemIndex
       },
       themeImgError (ev) {
 //        var evObject = ev.srcElement ? ev.srcElement : ev.target

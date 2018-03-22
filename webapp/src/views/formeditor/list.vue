@@ -36,7 +36,7 @@
         </ul>
       </div>
     </div>
-    <PreView :itemId="itemId" @hideView="isShowPreView=false" v-if="isShowPreView"/>
+    <PreView :itemId="itemId" @hideView="isShowPreView=false" :showSetting="false" v-if="isShowPreView"/>
   </div>
 </template>
 
