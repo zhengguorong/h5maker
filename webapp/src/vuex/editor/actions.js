@@ -27,7 +27,7 @@ export const saveTheme = ({commit}, theme) => {
  * @param commit
  */
 export const getUserThemeList = ({commit}, type) => {
-  api.getUserThemeList(type).then((res) => {
+  return api.getUserThemeList(type).then((res) => {
     commit(types.GET_USER_THEME_LIST, res)
   })
 }

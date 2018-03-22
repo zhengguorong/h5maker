@@ -173,7 +173,9 @@
         theme.pages.push({elements: []})
         api.createByTemplate(theme).then(res => {
           this.close()
-          this.$store.dispatch('getUserThemeList', 'h5')
+          this.$store.dispatch('getUserThemeList', 'h5').then(() => {
+            // this.$router.replace({ path: '/h5editor', query: { itemId: this.$store.state.editor.editorTheme._id } })
+          })
         })
       },
       getTemplate () {
