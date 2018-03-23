@@ -59,7 +59,7 @@ const saveFile = (filePath, data, type, successCallback) => {
   })
 }
 const html2img = (url, filepath) => {
-  puppeteer.launch().then(browser => {
+  puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']}).then(browser => {
     browser.newPage().then(page => {
       page.setViewport({
         width: 320,
