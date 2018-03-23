@@ -148,7 +148,7 @@ module.exports.update = (req, res) => {
       tools.saveFile(req.params.id + '.html', html, '', () => { // 把生成的h5页面转为缩略图
         var dirpath = path.join(__dirname, '../../public/screenshot')
         var filename = req.params.id + '.png'
-        var localUrl = 'http://localhost:3000/pages/' + req.params.id + '.html'
+        var localUrl = 'http://' + req.headers.host + '/pages/' + req.params.id + '.html'
         mkdirp(dirpath, (err) => {
           console.log(err)
           if (err) {

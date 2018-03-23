@@ -7,7 +7,7 @@
                  class="preview"
                  type="info"
                  :loading="loading">预览</el-button>
-      <div class="opt"><el-checkbox class="cbt" v-model="isCurTemplate">模板共享</el-checkbox> </div>
+      <div class="opt" v-if="openTemplate"><el-checkbox class="cbt" v-model="isCurTemplate">模板共享</el-checkbox> </div>
     </div>
     <!--<div class="right-panel">作为模板共享</div>-->
   </header>
@@ -18,7 +18,11 @@ export default {
   props: {
     goback: Function,
     perViewAction: Function,
-    isTemplate: Boolean
+    isTemplate: Boolean,
+    openTemplate: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {

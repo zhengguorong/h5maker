@@ -90,7 +90,8 @@
         releaseUrl: '',
         showPreView: false,
         isLoadingPreview: false,
-        panelTabState: 0
+        panelTabState: 0,
+        cacheThemeUnSave: null
       }
     },
     watch: {
@@ -146,7 +147,21 @@
         this.$store.commit('UPDATE_THEME_DES', v)
       },
       dialogSave () {
-        return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('simpleSpaList'))
+//        return Promise.resolve().then(() => this.save()).then(() => this.$router.replace('simpleSpaList'))
+        if (this.cacheThemeUnSave === JSON.stringify(this.$store.state.editor.editorTheme)) {
+          return Promise.resolve().then(this.$router.replace('simpleSpaList'))
+        } else {
+          this.$confirm('要保存您的更改吗？', '提示', {
+            confirmButtonText: '保存',
+            cancelButtonText: '放弃',
+            type: 'warning'
+          }).then(() => {
+            this.save()
+            this.$router.replace('simpleSpaList')
+          }).catch(() => {
+            this.$router.replace('simpleSpaList')
+          })
+        }
       },
       getPicList (_id) {
         this.$store.dispatch('getPicListByThemeId', _id)
@@ -208,6 +223,7 @@
       },
       save () {
         return this.$store.dispatch('saveTheme', tools.vue2json(this.$store.state.editor.editorTheme)).then(() => {
+          this.cacheThemeUnSave = JSON.stringify(this.$store.state.editor.editorTheme)
           this.$message({
             message: '保存成功',
             type: 'success'
@@ -247,7 +263,9 @@
       this.itemId = this.$route.query.itemId
       if (this.itemId) {
         if (!this.pages) {
-          this.$store.dispatch('getPageByThemeId', this.itemId)
+          this.$store.dispatch('getPageByThemeId', this.itemId).then(() => {
+            this.cacheThemeUnSave = JSON.stringify(this.$store.state.editor.editorTheme)
+          })
         }
         this.getPicList(this.itemId)
       } else {
