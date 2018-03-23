@@ -1,6 +1,6 @@
 <template>
   <div class="editor">
-    <HeaderEdit :goback="dialogSave" @saveSuccess="showPreView=true" :perViewAction="save" @template_status="template_status" :isTemplate="editorTheme.isTemplate"/>
+    <HeaderEdit :goback="dialogSave" @saveSuccess="showPreView=true" :perViewAction="save" :openTemplate="true" @template_status="template_status" :isTemplate="editorTheme.isTemplate"/>
     <section class="section">
       <Overview class="overview" />
       <Page class="canvas" :elements="editorPage.elements" :editorElement="element" :selectedElement="selectedElement" :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }" />

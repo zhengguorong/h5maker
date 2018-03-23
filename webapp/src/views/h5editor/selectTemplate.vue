@@ -173,8 +173,13 @@
         theme.pages.push({elements: []})
         api.createByTemplate(theme).then(res => {
           this.close()
+          item._id = res._id
+          item.loginId = res.loginId
+          item.templateId = res.templateId
           this.$store.dispatch('getUserThemeList', 'h5').then(() => {
-            // this.$router.replace({ path: '/h5editor', query: { itemId: this.$store.state.editor.editorTheme._id } })
+            this.$store.dispatch('setEditorTheme', item)
+            this.$store.dispatch('setEditorPage', item.pages[0])
+            this.$router.replace({ path: '/h5editor', query: { itemId: item._id } })
           })
         })
       },
