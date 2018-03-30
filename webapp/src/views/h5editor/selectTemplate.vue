@@ -4,7 +4,7 @@
      <div class="content">
        <div class="title-bar">
          <div class="title">选取模板</div>
-         <div>
+         <div style="width: 250px">
            <el-input placeholder="请输入模板创建人" v-model="searchKey" class="input-with-select">
              <el-button slot="append" :icon="isSearching ? 'loading' : 'search'" @click="getTemplate"></el-button>
            </el-input>
@@ -13,7 +13,8 @@
        <div class="t_list">
          <div class="t_card" v-for="item in template" :key="item.loginId">
            <div class="img_wrap">
-             <img :src="domain + '/screenshot/' + item._id + '.png'" alt="">
+             <!--<img :src="domain + '/screenshot/' + item._id + '.png'" alt="">-->
+             <TemplatePage :elements="item.pages[0].elements" :style="{ width: '320px', height: '504px', transform: 'scale(' + 180 / 320 +')', transformOrigin: 'left top', overflow: 'hidden'}" type="see" />
              <div class="cover">
                <div class="preview"><button @click="useTemplate(item)">使用模板</button></div>
              </div>
@@ -152,6 +153,7 @@
   import * as api from '../../api/editor'
   import appConst from '../../util/appConst'
   import Theme from '../../model/Theme'
+  import TemplatePage from '../../components/TemplatePage.vue'
   export default {
     data () {
       return {
@@ -164,6 +166,7 @@
     props: {
 
     },
+    components: { TemplatePage },
     methods: {
       close () {
         this.$emit('closeSelectTemplate')

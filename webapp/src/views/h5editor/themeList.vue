@@ -18,8 +18,9 @@
           </li>
           <template v-for="(item, index) in list">
             <li class="theme-item">
-              <div class="thumb">
-                <ImgLoad class="img-wrap" :src="domain + '/screenshot/' + item._id + '.png'"></ImgLoad>
+              <div class="thumb" style="height: 230px">
+                <!--<ImgLoad class="img-wrap" :src="domain + '/screenshot/' + item._id + '.png'"></ImgLoad>-->
+                <TemplatePage :elements="item.pages[0].elements" :style="{ width: '320px', height: '320px', transform: 'scale(' + 230 / 320 +')', transformOrigin: 'left top', overflow: 'hidden'}" type="see" />
                 <div class="cover">
                   <div class="toolbar">
                     <el-tooltip class="item" effect="dark" content="编辑" placement="top-start">
@@ -48,6 +49,7 @@
 
 <script>
   import HeaderBar from '../../components/HeaderBar'
+  import TemplatePage from '../../components/TemplatePage.vue'
   import SelectTemplate from './selectTemplate.vue'
   import ImgLoad from '../../components/ImgLoad.vue'
   import tools from '../../util/tools'
@@ -112,7 +114,7 @@
       }
     },
     components: {
-      HeaderBar, PreView, SelectTemplate, ImgLoad
+      HeaderBar, PreView, SelectTemplate, ImgLoad, TemplatePage
     }
   }
 </script>
