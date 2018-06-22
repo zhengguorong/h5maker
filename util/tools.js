@@ -16,6 +16,17 @@ const base64ToImg = (imgData, filePath) => {
         })
     })
 }
+/**
+ * 获取上传文件后缀
+ * @param {*} imgData
+ */
+const getFileExt = (imgData) => {
+  if (imgData.indexOf('image/gif') > -1) {
+    return '.gif'
+  } else {
+    return '.png'
+  }
+}
 const renderFile = (filePath, data, successCallback) => {
     var rootPath = path.join(__dirname, '../views/')
     fs.readFile(rootPath + filePath, { flag: 'r+', encoding: 'utf8' }, function (err, result) {
@@ -44,5 +55,6 @@ const saveFile = (filePath, data, successCallback) => {
 module.exports = {
     base64ToImg,
     renderFile,
-    saveFile
+    saveFile,
+    getFileExt
 }

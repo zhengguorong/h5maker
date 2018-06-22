@@ -32,7 +32,7 @@
           textAlign: this.element['textAlign'],
           fontSize: this.element['fontSize'] + 'px',
           fontWeight: this.element['fontWeight'],
-          fontFamily: this.element['fontFamily'],
+          'font-family': this.element['fontFamily'],
           opacity: this.element['opacity'] / 100,
           transform: 'rotate(' + this.element['transform'] + 'deg' + ')'
         }

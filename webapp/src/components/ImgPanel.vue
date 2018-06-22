@@ -30,8 +30,9 @@ export default {
   },
   methods: {
     uploadImage (data) {
+      console.log(data, data)
       this.$store.dispatch('savePic', {
-        'imgData': data['base64'],
+        'filePath': data['filePath'],
         'themeId': this.themeId,
         'width': data['width'],
         'height': data['height']

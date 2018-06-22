@@ -79,19 +79,27 @@ module.exports.getByThemeId = (req, res) => {
 
 // Creates a new File in the DB
 module.exports.create = (req, res) => {
-  var imageInfo = buildImgPath(req.body.themeId || 'all')
-  if (req.body.imgData) {
-    tools.base64ToImg(req.body.imgData, imageInfo.imagePath)
-    req.body.filePath = imageInfo.accessPath
+  if (!req.files) {
+    return res.status(400).send('No files were uploaded.');
   }
-  return File.create(req.body)
-    .then(respondWithResult(res, 201))
-    .catch(handleError(res))
+  let image = req.files.image;
+  var pathInfo = buildImgPath(req.body.themeId || 'all')
+  if (image) {
+    var ext = '.' + image.mimetype.split('/')[1]
+    image.mv(pathInfo.imagePath + ext, err => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      return File.create({filePath: pathInfo.accessPath + ext})
+      .then(respondWithResult(res, 201))
+      .catch(handleError(res))
+    })
+  }
 }
 
 const buildImgPath = (themeId) => {
   // 文件使用uuid生成别名
-  var fileName = uuid.v1().replace(/-/g, '') + '.png'
+  var fileName = uuid.v1().replace(/-/g, '')
   // 文件目录
   var dirPath = 'public/upload/' + themeId
   // 图片保存路径

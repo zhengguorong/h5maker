@@ -94,10 +94,7 @@ export const addBGElement = ({commit}, data) => {
  * @param data
  */
 export const savePic = ({commit}, data) => {
-  api.uploadPic(data).then((res) => {
-    // commit(types.SAVE_PIC, res)
-    commit(types.PUSH_PIC_LIST, res)
-  })
+  commit(types.PUSH_PIC_LIST, data)
 }
 /**
  * 清除背景

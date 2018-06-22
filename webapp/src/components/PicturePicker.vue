@@ -18,31 +18,25 @@
 </style>
 
 <script>
-  import lrz from 'lrz'
+  import * as http from '../util/http'
+  import appConst from '../util/appConst'
   export default {
     methods: {
       fileChange (event) {
         let file = event.target.files[0]
         if (file) {
-          lrz(file, {quality: 0.5}).then(result => {
-            if (result.fileLen > 2 * 1024 * 1024) {
-              this.$message.error('请选择小于2M的文件')
-              return
-            }
-            // let reader = new window.FileReader()
-            // reader.onload = (ev) => {
+          const formData = new window.FormData()
+          formData.append('image', file)
+          http.post('/api/upload', formData).then(res => {
             let img = document.createElement('img')
-            let base64 = result.base64
             img.onload = () => {
               this.$emit('uploaded', {
-                'base64': base64,
+                'filePath': res.filePath,
                 'width': img.width,
                 'height': img.height
               })
             }
-            img.src = base64
-            // }
-            // reader.readAsDataURL(file)
+            img.src = appConst.BACKEND_DOMAIN + res.filePath
           })
         }
       }
