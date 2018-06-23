@@ -5,6 +5,8 @@ var jsonpatch = require('fast-json-patch')
 var File = require('./file.model')
 var tools = require('../../util/tools')
 var uuid = require('node-uuid')
+var fs = require('fs')
+var path = require('path')
 
 const respondWithResult = (res, statusCode) => {
   statusCode = statusCode || 200
@@ -90,7 +92,8 @@ module.exports.create = (req, res) => {
       if (err) {
         return res.status(500).send(err);
       }
-      return File.create({filePath: pathInfo.accessPath + ext})
+      console.log(req.body.themeId, 'themeId')
+      return File.create({filePath: pathInfo.accessPath + ext, themeId: req.body.themeId || ''})
       .then(respondWithResult(res, 201))
       .catch(handleError(res))
     })
@@ -102,6 +105,8 @@ const buildImgPath = (themeId) => {
   var fileName = uuid.v1().replace(/-/g, '')
   // 文件目录
   var dirPath = 'public/upload/' + themeId
+  // 创建路径
+  fs.existsSync(path.resolve(dirPath)) == false &&tools.mkdirs(dirPath)
   // 图片保存路径
   var imagePath = dirPath + '/' + fileName
   // 图片访问路径

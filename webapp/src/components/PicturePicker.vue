@@ -21,12 +21,18 @@
   import * as http from '../util/http'
   import appConst from '../util/appConst'
   export default {
+    props: {
+      themeId: {
+        type: String
+      }
+    },
     methods: {
       fileChange (event) {
         let file = event.target.files[0]
         if (file) {
           const formData = new window.FormData()
           formData.append('image', file)
+          formData.append('themeId', this.themeId)
           http.post('/api/upload', formData).then(res => {
             let img = document.createElement('img')
             img.onload = () => {

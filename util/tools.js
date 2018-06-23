@@ -5,7 +5,7 @@ var fs = require('fs')
 var mkdirp = require('mkdirp')
 var path = require('path')
 var ejs = require('ejs')
-var fs = require('fs')
+var path = require('path');
 
 const base64ToImg = (imgData, filePath) => {
     var base64Data = imgData.replace(/^data:image\/\w+;base64,/, "")
@@ -51,10 +51,17 @@ const saveFile = (filePath, data, successCallback) => {
     })
 
 }
+const mkdirs = function(dirpath) {
+  if (!fs.existsSync(path.dirname(dirpath))) {
+    mkdirs(path.dirname(dirpath));
+  }
+  fs.mkdirSync(dirpath);
+}
 
 module.exports = {
     base64ToImg,
     renderFile,
     saveFile,
-    getFileExt
+    getFileExt,
+    mkdirs
 }

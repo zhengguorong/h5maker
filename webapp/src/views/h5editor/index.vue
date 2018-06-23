@@ -43,7 +43,7 @@
           </div>
           <!-- 添加元素 2 -->
           <div class="panel panel-element clearfix" v-show="panelState === 2">
-            <ImgPanel :selectedImg="addPicElement"/>
+            <ImgPanel :selectedImg="addPicElement" :themeId="itemId"/>
           </div>
           <!-- 图层编辑面板 -->
           <EditPanel :element="element" :panelState="panelState" v-show="panelState > 10"/>

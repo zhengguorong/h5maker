@@ -1,7 +1,7 @@
 <template>
   <div>
     <PicPicker class="ele"
-               @uploaded="uploadImage"></PicPicker>
+               @uploaded="uploadImage" :themeId="themeId"></PicPicker>
     <div class="ele"
          :style="{ backgroundImage: 'url(' + http + element.filePath + ')' }"
          @click="selectedImg(element)"
@@ -16,6 +16,9 @@ export default {
   props: {
     selectedImg: {
       type: Function
+    },
+    themeId: {
+      type: String
     }
   },
   data () {
@@ -30,7 +33,6 @@ export default {
   },
   methods: {
     uploadImage (data) {
-      console.log(data, data)
       this.$store.dispatch('savePic', {
         'filePath': data['filePath'],
         'themeId': this.themeId,
