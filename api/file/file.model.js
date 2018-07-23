@@ -9,6 +9,7 @@ var FileSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  fileType: String,
   width: Number,
   height: Number,
   fileName: String,

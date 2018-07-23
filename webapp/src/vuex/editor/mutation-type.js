@@ -20,6 +20,7 @@ export const CLEAN_ELE = 'CLEAN_ELE' // 清除元素
 export const FETCH_PIC_LIST = 'FETCH_PIC_LIST' // 获取图片列表
 export const SET_BG_ELEMENT = 'SET_BG_ELEMENT' // 设置背景图
 export const PUSH_PIC_LIST = 'PUSH_PIC_LIST' // 图片列表
+export const PUSH_VIDEO_LIST = 'PUSH_VIDEO_LIST' // 视频列表
 export const CLEAN_PIC_LIST = 'CLEAN_PIC_LIST' // 清除图片列表
 export const DELETE_THEME = 'DELETE_THEME' // 删除主题
 export const SORTELEMENTS_BY_ZINDEX = 'SORTELEMENTS_BY_ZINDEX' // 元素重新排序

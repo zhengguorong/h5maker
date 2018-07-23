@@ -93,7 +93,7 @@ module.exports.create = (req, res) => {
         return res.status(500).send(err);
       }
       console.log(req.body.themeId, 'themeId')
-      return File.create({filePath: pathInfo.accessPath + ext, themeId: req.body.themeId || ''})
+      return File.create({filePath: pathInfo.accessPath + ext, themeId: req.body.themeId || '', fileType: req.body.fileType, width: req.body.width, height: req.body.height})
       .then(respondWithResult(res, 201))
       .catch(handleError(res))
     })

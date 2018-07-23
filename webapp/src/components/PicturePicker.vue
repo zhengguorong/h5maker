@@ -24,6 +24,10 @@
     props: {
       themeId: {
         type: String
+      },
+      fileType: {
+        type: String,
+        default: 'image'
       }
     },
     methods: {

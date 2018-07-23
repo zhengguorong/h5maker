@@ -9,8 +9,12 @@
           <el-tooltip  effect="dark" content="新建文本" placement="left">
             <button class="func el-icon-edit" @click="togglePanel(1)" :class="{ active: panelState === 1 }"></button>
           </el-tooltip>
-          <el-tooltip  effect="dark" content="新建素材" placement="left">
+          <el-tooltip  effect="dark" content="图片素材" placement="left">
             <button class="func el-icon-picture" @click="togglePanel(2)" :class="{ active: panelState === 2 }"></button>
+          </el-tooltip>
+          <!-- 视频资源 -->
+          <el-tooltip  effect="dark" content="视频素材" placement="left">
+            <button class="func el-icon-menu" @click="togglePanel(3)" :class="{ active: panelState === 3 }"></button>
           </el-tooltip>
           <el-tooltip  effect="dark" content="播放动画" placement="left">
             <button class="func el-icon-caret-right" @click="playAnimate"></button>
@@ -45,6 +49,10 @@
           <div class="panel panel-element clearfix" v-show="panelState === 2">
             <ImgPanel :selectedImg="addPicElement" :themeId="itemId"/>
           </div>
+          <!-- 视频资源panel -->
+          <div class="panel panel-element clearfix" v-show="panelState === 3">
+            <VideoPanel :selectedImg="addVideoElement" :themeId="itemId"/>
+          </div>
           <!-- 图层编辑面板 -->
           <EditPanel :element="element" :panelState="panelState" v-show="panelState > 10"/>
         </div>
@@ -64,6 +72,7 @@
   import EditPanel from '../../components/EditPanel'
   import SvgPanel from '../../components/SvgPanel'
   import ImgPanel from '../../components/ImgPanel'
+  import VideoPanel from '../../components/VideoPanel'
   import appConst from '../../util/appConst'
   export default {
     data () {
@@ -134,7 +143,18 @@
         // }
         this.element.type = 'pic'
       },
-
+      addVideoElement (ele) {
+        let obj = {}
+        obj.type = 'video'
+        obj.top = 0
+        obj.left = 0
+        obj.width = ele.width
+        obj.height = ele.height
+        obj.videoSrc = ele.filePath
+        obj.loop = ele.loop
+        this.$store.dispatch('addElement', obj)
+        this.element.type = 'video'
+      },
       addBG (file) {
         this.$store.dispatch('addBGElement', { type: 'bg', imgSrc: file.filePath })
       },
@@ -194,12 +214,11 @@
         this.$store.dispatch('deleteSelectedElement')
       },
       togglePanel (code) {
-        console.log(code)
         this.panelState = code
       }
     },
     components: {
-      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, ImgPanel
+      Overview, Page, PicPicker, appConst, PreView, HeaderEdit, EditPanel, SvgPanel, ImgPanel, VideoPanel
     },
     mounted () {
       this.itemId = this.$route.query.itemId

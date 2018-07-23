@@ -96,6 +96,15 @@ export const addBGElement = ({commit}, data) => {
 export const savePic = ({commit}, data) => {
   commit(types.PUSH_PIC_LIST, data)
 }
+
+/**
+ * 保存视频
+ * @param commit
+ * @param data
+ */
+export const saveVideo = ({commit}, data) => {
+  commit(types.PUSH_VIDEO_LIST, data)
+}
 /**
  * 清除背景
  * @param commit

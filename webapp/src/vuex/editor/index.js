@@ -13,7 +13,8 @@ const state = {
     description: '',
     canvasHeight: 504
   }, // 正在编辑的主题
-  picList: [] // 图片列表
+  picList: [], // 图片列表
+  videoList: [] // 视频列表
 }
 
 export default{
