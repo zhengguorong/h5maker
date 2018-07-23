@@ -1,6 +1,7 @@
 <template>
   <div class='wrap' @mousedown="mousedown" @mouseup="mouseup">
-    <img @dragstart="dragstart" style="width:100%;height:100%;" :src="http + element.imgSrc">
+    <img v-if="fileType==='pic'" @dragstart="dragstart" style="width:100%;height:100%;" :src="http + element.imgSrc">
+    <video v-if="fileType==='video'" @dragstart="dragstart" style="width:100%;height:100%;" :src="http + element.videoSrc"/>
     <Operate v-show="showOperate" @mousedown.native.stop="scaleMousedown" @mouseup.native.stop="scaleMouseup" @mousemove.native.stop="scaleMousemove"
     />
   </div>
@@ -18,7 +19,10 @@
         showOperate: {
           type: Boolean
         },
-        type: ''
+        fileType: {
+          type: String,
+          default: 'pic'
+        }
       },
       data () {
         return {

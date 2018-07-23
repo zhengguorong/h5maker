@@ -176,6 +176,11 @@ export const getPicListByThemeId = ({commit}, _id) => {
     commit(types.FETCH_PIC_LIST, res)
   })
 }
+export const getVideoListByThemeId = ({commit}, _id) => {
+  api.getVideoListByThemeId(_id).then((res) => {
+    commit(types.FETCH_VIDEO_LIST, res)
+  })
+}
 
 export const cleanPicList = ({commit}) => {
   commit(types.CLEAN_PIC_LIST)

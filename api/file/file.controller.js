@@ -73,7 +73,7 @@ module.exports.show = (req, res) => {
 }
 
 module.exports.getByThemeId = (req, res) => {
-  return File.find({ themeId: req.params.id }).exec()
+  return File.find({ themeId: req.params.id, fileType:req.query.fileType}).exec()
     .then(handleEntityNotFound(res))
     .then(respondWithResult(res))
     .catch(handleError(res))

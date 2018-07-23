@@ -18,6 +18,7 @@ export const GET_PAGE_THEMEID = 'GET_PAGE_THEMEID' // 根据主题ID获取页面
 export const CLEAN_BG = 'CLEAN_BG' // 清除背景图
 export const CLEAN_ELE = 'CLEAN_ELE' // 清除元素
 export const FETCH_PIC_LIST = 'FETCH_PIC_LIST' // 获取图片列表
+export const FETCH_VIDEO_LIST = 'FETCH_VIDEO_LIST' // 获取视频列表
 export const SET_BG_ELEMENT = 'SET_BG_ELEMENT' // 设置背景图
 export const PUSH_PIC_LIST = 'PUSH_PIC_LIST' // 图片列表
 export const PUSH_VIDEO_LIST = 'PUSH_VIDEO_LIST' // 视频列表

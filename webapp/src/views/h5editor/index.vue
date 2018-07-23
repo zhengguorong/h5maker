@@ -51,7 +51,7 @@
           </div>
           <!-- 视频资源panel -->
           <div class="panel panel-element clearfix" v-show="panelState === 3">
-            <VideoPanel :selectedImg="addVideoElement" :themeId="itemId"/>
+            <VideoPanel :selectedVideo="addVideoElement" :themeId="itemId"/>
           </div>
           <!-- 图层编辑面板 -->
           <EditPanel :element="element" :panelState="panelState" v-show="panelState > 10"/>
@@ -103,6 +103,9 @@
           case 'pic':
             this.panelState = 12
             break
+          case 'video':
+            this.panelState = 12
+            break
           default:
             this.panelState = 0
         }
@@ -127,6 +130,9 @@
       getPicList (_id) {
         this.$store.dispatch('getPicListByThemeId', _id)
       },
+      getVideoList (_id) {
+        this.$store.dispatch('getVideoListByThemeId', _id)
+      },
       addPicElement (ele) {
         // if (ele) {
         let obj = {}
@@ -148,8 +154,8 @@
         obj.type = 'video'
         obj.top = 0
         obj.left = 0
-        obj.width = ele.width
-        obj.height = ele.height
+        obj.width = 100
+        obj.height = 50
         obj.videoSrc = ele.filePath
         obj.loop = ele.loop
         this.$store.dispatch('addElement', obj)
@@ -227,6 +233,7 @@
           this.$store.dispatch('getPageByThemeId', this.itemId)
         }
         this.getPicList(this.itemId)
+        this.getVideoList(this.itemId)
       } else {
         this.$store.dispatch('createTheme')
         this.$store.dispatch('addPage')
