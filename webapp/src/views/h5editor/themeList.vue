@@ -28,6 +28,7 @@
               <div class="footer">
                 <div class="title">{{item.title}}</div>
                 <div class="content">{{item.description}}</div>
+                <div class="content">创建于：{{timeFormat(item.createDate)}}</div>
               </div>
             </li>
           </template>
@@ -92,6 +93,12 @@
       showPreView (itemId) {
         this.isShowPreView = true
         this.itemId = itemId
+      },
+      timeFormat (date) {
+        const dateTime = new Date(date)
+        const displayTime = `${dateTime.getFullYear()}-${dateTime.getMonth() + 1}-${dateTime.getDate()}`
+        console.log(displayTime)
+        return displayTime
       }
     },
     components: {
