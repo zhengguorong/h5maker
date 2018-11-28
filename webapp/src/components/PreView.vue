@@ -31,16 +31,7 @@
               </el-radio-group>
             </div>
           </div>
-          <div class="link">
-            <div class="link-title">
-              链接地址：
-            </div>
-            <div class="href">
-              <input type="text" id="releaseUrl" v-model="releaseUrl">
-              </div>
-            <el-button type="info" @click="copyUrl">复制链接</el-button>
-          </div>
-          <div class="edit" @click="edit"><el-button style="width:180px" type="primary" icon="edit">编   辑</el-button></div>
+          <div class="edit"><el-button @click="openNewTab" style="width:180px" type="success">新窗口打开</el-button><el-button  @click="edit" style="width:180px" type="primary" icon="edit">编   辑</el-button></div>
         </div>
       </div>
       <div class="close" @click="close">
@@ -114,22 +105,7 @@
       }
       .link {
         width:100%;
-        overflow: scroll;
-        .link-title {
-          margin: 10px 0;
-        }
-        .href {
-          width: 280px;
-          line-height: 36px;
-          margin-right: 10px;
-          overflow: scroll;
-          float: left;
-          input {
-            border: 0;
-            color: blue;
-            width: 100%;
-          }
-        }
+        display: block;
       }
       .edit {
         text-align: center;
@@ -184,6 +160,9 @@ export default {
     copyUrl () {
       document.querySelector('#releaseUrl').select()
       document.execCommand('copy')
+    },
+    openNewTab () {
+      window.open(this.releaseUrl)
     },
     close () {
       this.$emit('hideView')

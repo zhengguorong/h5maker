@@ -64,7 +64,7 @@ module.exports.index = (req, res) => {
 module.exports.findByLoginId = (req, res) => {
   var loginId = req.user.loginId
   var type = req.query.type;
-  return Pages.find({ loginId: loginId, type: type }).exec()
+  return Pages.find({ loginId: loginId, type: type }).sort({_id: -1}).limit(30).exec()
     .then(respondWithResult(res))
     .catch(handleError(res))
 }
