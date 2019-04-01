@@ -36,3 +36,7 @@
 > npm run webapp // 启动前端工程
 
 > npm run local //  启动后端工程
+
+## License
+
+[996 License](https://github.com/zhengguorong/h5maker/blob/master/LICENSE)
