@@ -33,4 +33,8 @@ export default [{
   path: '/about',
   name: 'about',
   component: require('./views/user/about.vue')
+}, {
+  path: '/test',
+  name: 'test',
+  component: require('./views/user/test.vue')
 }]
