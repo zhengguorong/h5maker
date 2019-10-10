@@ -35,7 +35,7 @@
     "marked": "^0.3.6",
     "mkdirp": "^0.5.1",
     "mongoose": "^4.6.5",
-    "morgan": "~1.7.0",
+    "morgan": "~1.9.1",
     "node-uuid": "^1.4.7",
     "qrcode": "^0.8.1",
     "serve-favicon": "~2.3.0",
