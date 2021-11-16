@@ -14,7 +14,7 @@
   "dependencies": {
     "animate.css": "^3.5.2",
     "art-template": "^3.0.3",
-    "axios": "^0.15.3",
+    "axios": "^0.24.0",
     "bluebird": "^3.4.6",
     "body-parser": "~1.15.2",
     "composable-middleware": "^0.3.0",
