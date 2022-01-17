@@ -32,7 +32,7 @@
     "jsonwebtoken": "^7.1.9",
     "less-middleware": "~2.2.0",
     "lrz": "^4.9.40",
-    "marked": "^0.3.6",
+    "marked": "^4.0.10",
     "mkdirp": "^0.5.1",
     "mongoose": "^4.6.5",
     "morgan": "~1.7.0",
