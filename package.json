@@ -20,7 +20,7 @@
     "composable-middleware": "^0.3.0",
     "cookie-parser": "~1.4.3",
     "debug": ">=2.6.9",
-    "ejs": "^2.5.3",
+    "ejs": "^3.1.7",
     "element-ui": "^1.3.3",
     "express": "~4.14.0",
     "express-fileupload": "^0.4.0",
