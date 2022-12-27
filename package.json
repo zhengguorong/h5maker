@@ -25,7 +25,7 @@
     "express": "~4.14.0",
     "express-fileupload": "^0.4.0",
     "express-jwt": "^5.1.0",
-    "fast-json-patch": "^1.1.1",
+    "fast-json-patch": "^3.1.1",
     "fastclick": "^1.0.6",
     "github-markdown-css": "^2.4.1",
     "hbs": "~4.0.1",
