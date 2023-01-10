@@ -34,7 +34,7 @@
     "lrz": "^4.9.40",
     "marked": "^0.3.6",
     "mkdirp": "^0.5.1",
-    "mongoose": "^4.6.5",
+    "mongoose": "^5.2.6",
     "morgan": "~1.7.0",
     "node-uuid": "^1.4.7",
     "qrcode": "^0.8.1",
