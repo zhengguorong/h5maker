@@ -30,7 +30,7 @@
     "github-markdown-css": "^2.4.1",
     "hbs": "~4.0.1",
     "jsonwebtoken": "^7.1.9",
-    "less-middleware": "~2.2.0",
+    "less-middleware": "~3.0.0",
     "lrz": "^4.9.40",
     "marked": "^0.3.6",
     "mkdirp": "^0.5.1",
